@@ -23,6 +23,8 @@ public final class WeaponVisualEffectHelper {
     public static final String BASTION_FROST_AURA_STOP = "bastion_frost_aura_stop";
     public static final String BASTION_RULE_AURA_START = "bastion_rule_aura_start";
     public static final String BASTION_RULE_AURA_STOP = "bastion_rule_aura_stop";
+    public static final String BASTION_HEAVENS_GIFT_AURA_START = "bastion_heavens_gift_aura_start";
+    public static final String BASTION_HEAVENS_GIFT_AURA_STOP = "bastion_heavens_gift_aura_stop";
     public static final String DIAMOND_SHARD_SPAWN = "diamond_shard_spawn";
     public static final String DIAMOND_SHARD_DESPAWN = "diamond_shard_despawn";
     public static final String DRAGON_FURY_CHARGE_SPAWN = "dragon_fury_charge_spawn";
@@ -52,6 +54,8 @@ public final class WeaponVisualEffectHelper {
     public static void stopBastionFrostAura(Entity entity) { play(entity, BASTION_FROST_AURA_STOP); }
     public static void startBastionRuleAura(Entity entity) { play(entity, BASTION_RULE_AURA_START); }
     public static void stopBastionRuleAura(Entity entity) { play(entity, BASTION_RULE_AURA_STOP); }
+    public static void startBastionHeavensGiftAura(Entity entity) { play(entity, BASTION_HEAVENS_GIFT_AURA_START); }
+    public static void stopBastionHeavensGiftAura(Entity entity) { play(entity, BASTION_HEAVENS_GIFT_AURA_STOP); }
     public static void playDiamondShardSpawn(Entity entity) { play(entity, DIAMOND_SHARD_SPAWN); }
     public static void playDiamondShardDespawn(Entity entity) { play(entity, DIAMOND_SHARD_DESPAWN); }
     public static void playDragonFuryChargeSpawn(Entity entity) { play(entity, DRAGON_FURY_CHARGE_SPAWN); }

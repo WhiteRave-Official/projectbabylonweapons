@@ -49,6 +49,7 @@ public final class BastionPassiveHandler {
     private static final float PERMAFROST_SPIKE_DAMAGE_MULTIPLIER = 0.8F;
     private static final Map<UUID, FrostAuraState> ACTIVE_FROST_AURAS = new HashMap<>();
     private static final Map<UUID, RuleAuraState> ACTIVE_RULE_AURAS = new HashMap<>();
+    private static final Map<UUID, HeavensGiftAuraState> ACTIVE_HEAVENS_GIFT_AURAS = new HashMap<>();
     private static final List<PendingPermafrostSpikeBurst> PENDING_PERMAFROST_SPIKE_BURSTS = new ArrayList<>();
 
     private BastionPassiveHandler() {
@@ -87,6 +88,7 @@ public final class BastionPassiveHandler {
         BastionHeavensGiftBalance.Profile heavensGift = BastionHeavensGiftBalance.resolve(shieldStack);
         if (heavensGift != null) {
             applyAlliedPlayersEffect(caster, new MobEffectInstance(PBMEffects.HOLY_SIGIL.get(), heavensGift.holySigilDurationTicks(), 0, false, true, true));
+            startHeavensGiftAura(serverLevel, caster, heavensGift);
             return;
         }
 
@@ -105,6 +107,7 @@ public final class BastionPassiveHandler {
         tickPendingPermafrostSpikeBursts();
         tickFrostAuras();
         tickRuleAuras();
+        tickHeavensGiftAuras();
     }
 
     private static void tickPendingPermafrostSpikeBursts() {
@@ -186,6 +189,40 @@ public final class BastionPassiveHandler {
             applyAlliedPlayersEffect(caster, critResistance, state.profile.radiusBlocks());
         }
     }
+    private static void tickHeavensGiftAuras() {
+        var iterator = ACTIVE_HEAVENS_GIFT_AURAS.entrySet().iterator();
+        while (iterator.hasNext()) {
+            HeavensGiftAuraState state = iterator.next().getValue();
+            ServerPlayer caster = state.level.getServer().getPlayerList().getPlayer(state.casterId);
+            if (caster == null || !caster.isAlive()) {
+                WeaponVisualEffectHelper.stopBastionHeavensGiftAura(state.anchor);
+                iterator.remove();
+                continue;
+            }
+
+            if (state.level.getGameTime() >= state.endGameTime) {
+                WeaponVisualEffectHelper.stopBastionHeavensGiftAura(caster);
+                iterator.remove();
+                continue;
+            }
+
+            if (state.level.getGameTime() < state.nextHealGameTime) {
+                continue;
+            }
+
+            state.nextHealGameTime = state.level.getGameTime() + state.profile.healIntervalTicks();
+            for (ServerPlayer target : getAlliedPlayers(caster, state.profile.radiusBlocks())) {
+                float maxHealth = target.getMaxHealth();
+                if (maxHealth <= 0.0F || target.getHealth() >= maxHealth) {
+                    continue;
+                }
+
+                target.heal(maxHealth * state.profile.healMaxHealthPercent());
+                WeaponVisualEffectHelper.playBlessingHealPulse(target);
+            }
+        }
+    }
+
 
     private static void applyCrushing(ServerLevel level, LivingEntity caster, BastionCrushingBalance.Profile profile) {
         MobEffectInstance weakness = new MobEffectInstance(MobEffects.WEAKNESS, profile.weaknessDurationTicks(), 0, false, true, true);
@@ -327,7 +364,7 @@ public final class BastionPassiveHandler {
         WeaponVisualEffectHelper.startBastionFrostAura(serverPlayer);
     }
 
-    private static void startRuleAura(ServerLevel level, LivingEntity caster, BastionRuleAuraBalance.Profile profile) {
+        private static void startRuleAura(ServerLevel level, LivingEntity caster, BastionRuleAuraBalance.Profile profile) {
         if (!(caster instanceof ServerPlayer serverPlayer)) {
             return;
         }
@@ -338,21 +375,36 @@ public final class BastionPassiveHandler {
         WeaponVisualEffectHelper.startBastionRuleAura(serverPlayer);
     }
 
-    private static void applyAlliedPlayersEffect(LivingEntity caster, MobEffectInstance effect) {
-        applyAlliedPlayersEffect(caster, effect, AREA_RADIUS);
-    }
-
-    private static void applyAlliedPlayersEffect(LivingEntity caster, MobEffectInstance effect, double radius) {
-        if (!(caster.level() instanceof ServerLevel serverLevel) || !(caster instanceof ServerPlayer serverPlayer)) {
+    private static void startHeavensGiftAura(ServerLevel level, LivingEntity caster, BastionHeavensGiftBalance.Profile profile) {
+        if (!(caster instanceof ServerPlayer serverPlayer)) {
             return;
         }
 
-        serverPlayer.addEffect(new MobEffectInstance(effect));
-        AABB area = serverPlayer.getBoundingBox().inflate(radius, AREA_VERTICAL, radius);
-        List<ServerPlayer> nearbyPlayers = serverLevel.getEntitiesOfClass(ServerPlayer.class, area, target -> target.isAlive() && !target.isSpectator() && target != serverPlayer);
-        for (ServerPlayer target : nearbyPlayers) {
+        ACTIVE_HEAVENS_GIFT_AURAS.remove(serverPlayer.getUUID());
+        WeaponVisualEffectHelper.stopBastionHeavensGiftAura(serverPlayer);
+        ACTIVE_HEAVENS_GIFT_AURAS.put(serverPlayer.getUUID(), new HeavensGiftAuraState(serverPlayer.getUUID(), level, level.getGameTime() + profile.auraDurationTicks(), level.getGameTime(), profile, serverPlayer));
+        WeaponVisualEffectHelper.startBastionHeavensGiftAura(serverPlayer);
+    }
+
+    private static void applyAlliedPlayersEffect(LivingEntity caster, MobEffectInstance effect) {
+        applyAlliedPlayersEffect(caster, effect, AREA_RADIUS);
+    }
+    private static void applyAlliedPlayersEffect(LivingEntity caster, MobEffectInstance effect, double radius) {
+        if (!(caster.level() instanceof ServerLevel) || !(caster instanceof ServerPlayer serverPlayer)) {
+            return;
+        }
+
+        for (ServerPlayer target : getAlliedPlayers(serverPlayer, radius)) {
             target.addEffect(new MobEffectInstance(effect));
         }
+    }
+
+    private static List<ServerPlayer> getAlliedPlayers(ServerPlayer caster, double radius) {
+        List<ServerPlayer> targets = new ArrayList<>();
+        targets.add(caster);
+        AABB area = caster.getBoundingBox().inflate(radius, AREA_VERTICAL, radius);
+        targets.addAll(caster.serverLevel().getEntitiesOfClass(ServerPlayer.class, area, target -> target.isAlive() && !target.isSpectator() && target != caster));
+        return targets;
     }
 
     private static void applyEnemiesEffect(LivingEntity caster, MobEffectInstance effect) {
@@ -410,6 +462,23 @@ public final class BastionPassiveHandler {
             this.level = level;
             this.endGameTime = endGameTime;
             this.nextRefreshGameTime = nextRefreshGameTime;
+            this.profile = profile;
+            this.anchor = anchor;
+        }
+    }
+    private static final class HeavensGiftAuraState {
+        private final UUID casterId;
+        private final ServerLevel level;
+        private final long endGameTime;
+        private long nextHealGameTime;
+        private final BastionHeavensGiftBalance.Profile profile;
+        private final LivingEntity anchor;
+
+        private HeavensGiftAuraState(UUID casterId, ServerLevel level, long endGameTime, long nextHealGameTime, BastionHeavensGiftBalance.Profile profile, LivingEntity anchor) {
+            this.casterId = casterId;
+            this.level = level;
+            this.endGameTime = endGameTime;
+            this.nextHealGameTime = nextHealGameTime;
             this.profile = profile;
             this.anchor = anchor;
         }

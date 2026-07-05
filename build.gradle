@@ -88,7 +88,7 @@ dependencies {
     //implementation fg.deobf("curse.maven:epic-fight-invincible-1184379:7445318")
     //implementation fg.deobf("curse.maven:official-epic-fight-x-parcool-1259252:6870242")
     //implementation fg.deobf("curse.maven:parcool-482378:6881000")
-    implementation fg.deobf("com.rave.projectbabylonmaterials:projectbabylonmaterials:1.1.19")
+    implementation fg.deobf("com.rave.projectbabylonmaterials:projectbabylonmaterials:1.5.0")
     //implementation fg.deobf("curse.maven:epic-fight-mod-rapier-moveset-addon-1036425:7728552")
     implementation fg.deobf("curse.maven:epicfight-acg-battlescythe-revived-1483383:7742473")
     implementation fg.deobf("curse.maven:project-babylon-armors-1550525:8127923")

@@ -223,7 +223,6 @@
     "tooltip.project_babylon_weapons.passive.netherite.line3":  "Marked targets can trigger §6«Brimstone Blast»§raround them.",
     "tooltip.project_babylon_weapons.passive.diamond.name":  "Fang of the Wolf",
     "tooltip.project_babylon_weapons.passive.diamond.line1":  "With 15% chance, weapon attacks ignore §6100% enemy defence §r.",
-    "attribute.project_babylon_weapons.magic_damage":  "Magic Damage",
     "tooltip.project_babylon_weapons.passive.wand_diamond.name":  "Ricochet",
     "tooltip.project_babylon_weapons.passive.wand_diamond.line1":  "Projectiles have a 50% chance to ricochet off surfaces up to 2 times.",
     "tooltip.project_babylon_weapons.passive.wand_golden.name":  "Blood Pact",

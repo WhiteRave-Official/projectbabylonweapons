@@ -11,6 +11,10 @@
     ]
   },
   "profile": {
-    "holy_sigil_duration_ticks": 300
+    "holy_sigil_duration_ticks": 300,
+    "aura_duration_ticks": 200,
+    "heal_interval_ticks": 40,
+    "radius_blocks": 8.0,
+    "heal_max_health_percent": 0.05
   }
 }

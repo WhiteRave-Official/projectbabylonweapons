@@ -3,6 +3,7 @@ package com.rave.projectbabylonweapons.client;
 import com.rave.projectbabylonmaterials.client.photon.PBMPhotonEffectHelper;
 import com.rave.projectbabylonweapons.passive.bastion.BastionPermafrostBalance;
 import com.rave.projectbabylonweapons.passive.bastion.BastionRuleAuraBalance;
+import com.rave.projectbabylonweapons.passive.bastion.BastionHeavensGiftBalance;
 import com.rave.projectbabylonweapons.world.entity.effect.FireStormEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -174,6 +175,25 @@ public final class PhotonWeaponEffectHelper {
 
     public static void stopBastionRuleAura(Entity entity) {
         PBMPhotonEffectHelper.stopBastionRuleAura(entity);
+    }
+
+    public static void startBastionHeavensGiftAura(Entity entity) {
+        PBMPhotonEffectHelper.startBastionHeavensGiftAura(entity, resolveBastionHeavensGiftAuraRadius(entity));
+    }
+
+    public static void stopBastionHeavensGiftAura(Entity entity) {
+        PBMPhotonEffectHelper.stopBastionHeavensGiftAura(entity);
+    }
+
+    private static float resolveBastionHeavensGiftAuraRadius(Entity entity) {
+        if (entity instanceof LivingEntity livingEntity) {
+            BastionHeavensGiftBalance.Profile profile = BastionHeavensGiftBalance.resolve(livingEntity.getOffhandItem());
+            if (profile != null) {
+                return profile.radiusBlocks();
+            }
+        }
+
+        return 8.0F;
     }
 
     private static float resolveBastionAuraRadius(Entity entity, boolean frost) {

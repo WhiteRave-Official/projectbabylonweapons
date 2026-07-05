@@ -91,6 +91,14 @@ public final class WeaponVisualEffectClientHelper {
             PhotonWeaponEffectHelper.stopBastionRuleAura(entity);
             return;
         }
+        if (WeaponVisualEffectHelper.BASTION_HEAVENS_GIFT_AURA_START.equals(effectId)) {
+            PhotonWeaponEffectHelper.startBastionHeavensGiftAura(entity);
+            return;
+        }
+        if (WeaponVisualEffectHelper.BASTION_HEAVENS_GIFT_AURA_STOP.equals(effectId)) {
+            PhotonWeaponEffectHelper.stopBastionHeavensGiftAura(entity);
+            return;
+        }
         if (WeaponVisualEffectHelper.DIAMOND_SHARD_SPAWN.equals(effectId)) {
             PhotonWeaponEffectHelper.spawnDiamondShardBurst(entity);
             return;

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " M ",
+    "MCM",
+    " M "
+  ],
+  "key": {
+    "M": {
+      "item": "project_babylon_materials:everfrost_ingot"
+    },
+    "C": {
+      "item": "project_babylon_materials:steel_ingot"
+    }
+  },
+  "result": {
+    "item": "project_babylon_weapons:ice_small_shield"
+  }
+}

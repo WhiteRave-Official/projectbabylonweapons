@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " NI",
+    " SN",
+    "S  "
+  ],
+  "key": {
+    "N": {
+      "item": "minecraft:iron_nugget"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "S": {
+      "item": "project_babylon_materials:shaft"
+    }
+  },
+  "result": {
+    "item": "project_babylon_weapons:iron_battle_wand"
+  }
+}
