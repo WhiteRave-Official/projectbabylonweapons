@@ -1,0 +1,6 @@
+{
+  "parent": "project_babylon_weapons:displaysettings/dragonsteel_battle_wand_display",
+  "textures": {
+    "layer0": "project_babylon_weapons:item/dragonsteel_battle_wand"
+  }
+}

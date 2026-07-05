@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "project_babylon_weapons:netherite_pickaxe",
+    "project_babylon_weapons:netherite_axe",
+    "project_babylon_weapons:netherite_shovel",
+    "project_babylon_weapons:netherite_hoe"
+  ]
+}

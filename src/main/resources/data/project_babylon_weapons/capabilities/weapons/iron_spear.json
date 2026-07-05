@@ -1,0 +1,22 @@
+{
+  "attributes":
+    {
+    "common":
+    {
+      "damage_bonus": 2.0,
+      "speed_bonus": 0.4,
+      "impact": 0.8,
+      "armor_negation": 20.0,
+      "max_strikes": 0.0
+    },
+    "two_hand":
+    {
+      "damage_bonus": 2.0,
+      "speed_bonus": 0.4,
+      "impact": 0.8,
+      "armor_negation": 0.0,
+      "max_strikes": 2.0
+    }
+  },
+  "type":"cdmoveset:s_spear"
+}

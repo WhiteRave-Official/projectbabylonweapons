@@ -1,0 +1,22 @@
+{
+  "attributes":
+  {
+    "common":
+    {
+      "damage_bonus": 1.5,
+      "speed_bonus": 0.7,
+      "impact": 0.4,
+      "armor_negation": 0.0,
+      "max_strikes": 1.0
+    },
+    "two_hand":
+    {
+      "damage_bonus": 1.5,
+      "speed_bonus": 0.7,
+      "impact": 0.5,
+      "armor_negation": 0.0,
+      "max_strikes": 2.0
+    }
+  },
+  "type":"project_babylon_weapons:pb_sickle"
+}

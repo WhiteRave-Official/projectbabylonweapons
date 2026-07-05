@@ -1,0 +1,126 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "builtin/entity",
+  "gui_light": "front",
+  "display": {
+    "thirdperson_righthand": {
+      "translation": [
+        0,
+        1,
+        1.25
+      ],
+      "scale": [
+        1.07,
+        1.07,
+        1.07
+      ]
+    },
+    "thirdperson_lefthand": {
+      "translation": [
+        0,
+        1,
+        1.25
+      ],
+      "scale": [
+        1.07,
+        1.07,
+        1.07
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        36.25,
+        9,
+        6.37
+      ],
+      "translation": [
+        7.25,
+        -5.25,
+        -9
+      ],
+      "scale": [
+        1.16,
+        1.16,
+        1.16
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        36.25,
+        9,
+        6.37
+      ],
+      "translation": [
+        7.25,
+        -5.25,
+        -9
+      ],
+      "scale": [
+        1.16,
+        1.16,
+        1.16
+      ]
+    },
+    "ground": {
+      "rotation": [
+        -29.05,
+        3.49,
+        72.97
+      ],
+      "translation": [
+        1,
+        2.25,
+        0
+      ],
+      "scale": [
+        0.44,
+        0.44,
+        0.44
+      ]
+    },
+    "gui": {
+      "rotation": [
+        90,
+        45,
+        -90
+      ],
+      "translation": [
+        -4,
+        -4,
+        0
+      ],
+      "scale": [
+        0.52,
+        0.52,
+        0.54
+      ]
+    },
+    "head": {
+      "scale": [
+        0,
+        0,
+        0
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        -90,
+        44,
+        90
+      ],
+      "translation": [
+        5.5,
+        -4.75,
+        -1
+      ],
+      "scale": [
+        0.64,
+        0.64,
+        0.64
+      ]
+    }
+  },
+  "textures": {
+    "particle": "project_babylon_weapons:item/ice_greatsword"
+  }
+}

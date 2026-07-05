@@ -1,0 +1,47 @@
+{
+  "collider": {
+    "number": 3,
+    "size": [
+      0.5,
+      0.8,
+      1.0
+    ],
+    "center": [
+      0.0,
+      0.0,
+      -1.0
+    ]
+  },
+  "hit_particle": "epicfight:blood",
+  "hit_sound": "epicfight:entity.hit.blunt_hard",
+  "livingmotion_modifier": {
+    "common": {
+      "idle": "project_babylon_weapons:biped/living/hold_battlehammer",
+      "kneel": "project_babylon_weapons:biped/living/hold_battlehammer",
+      "fall": "project_babylon_weapons:biped/living/hold_battlehammer",
+      "sneak": "project_babylon_weapons:biped/living/hold_battlehammer",
+      "swim": "project_babylon_weapons:biped/living/hold_battlehammer",
+      "run": "project_babylon_weapons:biped/living/hold_battlehammer",
+      "walk": "project_babylon_weapons:biped/living/hold_battlehammer"
+    }
+  },
+  "swing_sound": "epicfight:entity.weapon.whoosh_hard",
+  "styles": {
+    "default": "two_hand",
+    "cases": []
+  },
+  "combos": {
+    "common": [
+      "wom:biped/combat/solar_auto_1",
+      "wom:biped/combat/solar_auto_2",
+      "wom:biped/combat/solar_auto_3",
+      "wom:biped/combat/torment_auto_4",
+      "project_babylon_weapons:biped/combat/battlehammer_dash",
+      "wom:biped/skill/torment_berserk_airslam"
+    ]
+  },
+  "category": "greatsword",
+  "innate_skills": {
+    "common": "project_babylon_weapons:tectonic"
+  }
+}

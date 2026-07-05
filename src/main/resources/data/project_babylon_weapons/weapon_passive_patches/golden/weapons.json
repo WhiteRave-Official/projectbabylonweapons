@@ -1,0 +1,35 @@
+{
+    "passive_id":  "project_babylon_weapons:golden_magic",
+    "weapon_ids":  [
+                       "project_babylon_weapons:golden_battleaxe",
+                       "project_babylon_weapons:golden_battlehammer",
+                       "project_babylon_weapons:golden_battlescythe",
+                       "project_babylon_weapons:golden_spear",
+                       "project_babylon_weapons:golden_staff",
+                       "project_babylon_weapons:golden_shortsword",
+                       "project_babylon_weapons:golden_longsword",
+                       "project_babylon_weapons:golden_greatsword",
+                       "project_babylon_weapons:golden_dagger",
+                       "project_babylon_weapons:golden_sickle",
+                       "project_babylon_weapons:golden_claws",
+                       "refm:gold_rapier",
+                       "epicfight_dd:golden_messer",
+                       "epicfight_dd:golden_knife",
+                       "epicfight_dd:golden_battlestaff",
+                       "epicfight_dd:golden_halbert",
+                       "epicfight_dd:golden_light_greatsword",
+                       "project_babylon_weapons:golden_tachi"
+                   ],
+    "visual":  {
+                   "frame_type":  "golden",
+                   "frame_texture":  "project_babylon_materials:textures/gui/tooltip/frame/material/gold_material_frame.png",
+                   "icon_texture":  "project_babylon_materials:textures/gui/tooltip/icon/material/gold_material_icon.png",
+                   "display_name_key":  "tooltip.project_babylon_weapons.passive.golden.name",
+                   "description_keys":  [
+                                            "tooltip.project_babylon_weapons.passive.golden.line1"
+                                        ]
+               },
+    "profile":  {
+                    "bonus_magic_damage_percent":  0.25
+                }
+}

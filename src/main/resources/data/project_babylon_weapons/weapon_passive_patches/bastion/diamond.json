@@ -1,0 +1,20 @@
+{
+  "passive_id": "project_babylon_weapons:bastion_diamond_crushing",
+  "weapon_id": "project_babylon_weapons:diamond_bastion_shield",
+  "visual": {
+    "frame_type": "diamond",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/diamond_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/diamond_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.bastion_diamond.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.bastion_diamond.line1",
+      "tooltip.project_babylon_weapons.passive.bastion_diamond.line2"
+    ]
+  },
+  "profile": {
+    "weakness_duration_ticks": 200,
+    "knockup_velocity": 0.9,
+    "horizontal_push": 0.24,
+    "block_ring_count": 4
+  }
+}

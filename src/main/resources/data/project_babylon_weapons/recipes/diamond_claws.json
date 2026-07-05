@@ -1,0 +1,20 @@
+{
+    "type":  "minecraft:crafting_shaped",
+    "category":  "equipment",
+    "pattern":  [
+                    " n ",
+                    "Inn",
+                    " I "
+                ],
+    "key":  {
+                "n":  {
+                          "item":  "project_babylon_materials:diamond_ingot_nugget"
+                      },
+                "I":  {
+                          "item":  "project_babylon_materials:diamond_ingot"
+                      }
+            },
+    "result":  {
+                   "item":  "project_babylon_weapons:diamond_claws"
+               }
+}

@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved,CC BY-NC-SA 4.0"
+
+[[mods]]
+modId="project_babylon_weapons"
+version="1.0.0"
+displayName="Project Babylon Weapons"
+logoFile="project_babylon_weapons_logo_big.png"
+credits=""
+authors="Rave"
+description='''An Epic Fight Arsenal.'''
+
+[[dependencies.project_babylon_weapons]]
+modId="forge"
+mandatory=true
+versionRange="[47,)"
+ordering="NONE"
+side="BOTH"
+
+[[dependencies.project_babylon_weapons]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1,1.21)"
+ordering="NONE"
+side="BOTH"

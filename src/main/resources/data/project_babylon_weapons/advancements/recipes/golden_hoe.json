@@ -1,0 +1,36 @@
+{
+    "parent":  "minecraft:recipes/root",
+    "criteria":  {
+                     "has_materials":  {
+                                           "trigger":  "minecraft:inventory_changed",
+                                           "conditions":  {
+                                                              "items":  [
+                                                                            {
+                                                                                "items":  [
+                                                                                              "project_babylon_materials:infused_golden_ingot"
+                                                                                          ]
+                                                                            }
+                                                                        ]
+                                                          }
+                                       },
+                     "has_the_recipe":  {
+                                            "trigger":  "minecraft:recipe_unlocked",
+                                            "conditions":  {
+                                                               "recipe":  "project_babylon_weapons:golden_hoe"
+                                                           }
+                                        }
+                 },
+    "rewards":  {
+                    "recipes":  [
+                                    "project_babylon_weapons:golden_hoe"
+                                ]
+                },
+    "requirements":  [
+                         [
+                             "has_materials"
+                         ],
+                         [
+                             "has_the_recipe"
+                         ]
+                     ]
+}

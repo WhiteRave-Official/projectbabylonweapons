@@ -1,0 +1,16 @@
+﻿{
+  "passive_id": "project_babylon_weapons:small_shield_golden_withering",
+  "weapon_id": "project_babylon_weapons:golden_small_shield",
+  "visual": {
+    "frame_type": "golden",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/gold_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/gold_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.small_shield_golden.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.small_shield_golden.line1"
+    ]
+  },
+  "profile": {
+    "exhausted_duration_ticks": 200
+  }
+}

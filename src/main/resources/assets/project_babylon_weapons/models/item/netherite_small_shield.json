@@ -1,0 +1,6 @@
+{
+  "parent": "project_babylon_weapons:displaysettings/netherite_small_shield_display",
+  "textures": {
+    "layer0": "project_babylon_weapons:item/netherite_small_shield"
+  }
+}

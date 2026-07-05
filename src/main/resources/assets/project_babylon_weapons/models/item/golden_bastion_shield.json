@@ -1,0 +1,6 @@
+{
+  "parent": "project_babylon_weapons:displaysettings/golden_bastion_shield_display",
+  "textures": {
+    "layer0": "project_babylon_weapons:item/golden_bastion_shield"
+  }
+}

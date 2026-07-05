@@ -1,0 +1,23 @@
+{
+    "passive_id":  "project_babylon_weapons:netherite_brimstone",
+    "weapon_id":  "minecraft:iron_swordd",
+    "visual":  {
+                   "frame_type":  "netherite",
+                   "frame_texture":  "project_babylon_materials:textures/gui/tooltip/frame/material/netherite_material_frame.png",
+                   "icon_texture":  "project_babylon_materials:textures/gui/tooltip/icon/material/netherite_material_icon.png",
+                   "display_name_key":  "tooltip.project_babylon_weapons.passive.netherite.name",
+                   "description_lines": [
+                                          "Me gay"
+                                        ]
+               },
+    "profile":  {
+                    "ignite_proc_chance":  0.28,
+                    "brimstone_flames_proc_chance":  0.28,
+                    "brimstone_flames_duration_ticks":  120,
+                    "brimstone_fire_proc_chance":  0.28,
+                    "brimstone_fire_duration_ticks":  120,
+                    "brimstone_blast_proc_chance":  0.28,
+                    "brimstone_blast_damage_multiplier":  0.4,
+                    "brimstone_blast_radius_blocks":  2
+                }
+}

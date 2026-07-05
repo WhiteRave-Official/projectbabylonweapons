@@ -1,0 +1,6 @@
+{
+  "parent": "project_babylon_weapons:displaysettings/frozen_debuff_ice_block_display",
+  "textures": {
+    "layer0": "project_babylon_weapons:block/frozen_debuff_ice_block"
+  }
+}

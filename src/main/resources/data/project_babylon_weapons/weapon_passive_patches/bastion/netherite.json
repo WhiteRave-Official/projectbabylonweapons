@@ -1,0 +1,16 @@
+{
+  "passive_id": "project_babylon_weapons:bastion_netherite_war_signal",
+  "weapon_id": "project_babylon_weapons:netherite_bastion_shield",
+  "visual": {
+    "frame_type": "netherite",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/netherite_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/netherite_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.bastion_netherite.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.bastion_netherite.line1"
+    ]
+  },
+  "profile": {
+    "ash_memory_duration_ticks": 400
+  }
+}

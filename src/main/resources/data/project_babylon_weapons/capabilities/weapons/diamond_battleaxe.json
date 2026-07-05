@@ -1,0 +1,22 @@
+{
+  "attributes":
+  {
+    "common":
+    {
+      "damage_bonus": 5.0,
+      "speed_bonus": -0.3,
+      "impact": 1.4,
+      "armor_negation": 15.0,
+      "max_strikes": 2.0
+    },
+    "two_hand":
+    {
+      "damage_bonus": 5.0,
+      "speed_bonus": -0.3,
+      "impact": 1.4,
+      "armor_negation": 15.0,
+      "max_strikes": 2.0
+    }
+  },
+  "type":"epicfight:greataxe"
+}

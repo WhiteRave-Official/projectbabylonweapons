@@ -1,0 +1,21 @@
+{
+  "passive_id": "project_babylon_weapons:bastion_dragonsteel_rule_aura",
+  "weapon_id": "project_babylon_weapons:dragonsteel_bastion_shield",
+  "visual": {
+    "frame_type": "dragonsteel",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/dragonsteel_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/dragonsteel_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.bastion_dragonsteel.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.bastion_dragonsteel.line1",
+      "tooltip.project_babylon_weapons.passive.bastion_dragonsteel.line2"
+    ]
+  },
+  "profile": {
+    "aura_duration_ticks": 240,
+    "provoke_duration_ticks": 100,
+    "crit_resistance_duration_ticks": 120,
+    "refresh_interval_ticks": 20,
+    "radius_blocks": 8.0
+  }
+}

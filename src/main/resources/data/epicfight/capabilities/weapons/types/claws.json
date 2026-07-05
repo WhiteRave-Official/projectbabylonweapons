@@ -1,0 +1,76 @@
+{
+  "collider": {
+    "number": 3,
+    "size": [
+      0.4,
+      0.4,
+      0.7
+    ],
+    "center": [
+      0.0,
+      0.0,
+      -0.35
+    ]
+  },
+  "livingmotion_modifier": {
+    "one_hand": {
+      "idle": "wom:biped/living/enderblaster_onehand_idle",
+      "walk": "wom:biped/living/enderblaster_twohand_walk",
+      "run": "epicfight:biped/living/run"
+    },
+    "ochs": {
+      "idle": "wom:biped/living/enderblaster_twohand_idle",
+      "walk": "wom:biped/living/enderblaster_twohand_walk",
+      "run": "epicfight:biped/living/run"
+    }
+  },
+  "hit_particle": "epicfight:cut",
+  "hit_sound": "epicfight:entity.hit.blade",
+  "offhand_item_compatible_predicate": [
+    {
+      "predicate": "epicfight:offhand_item_category",
+      "category": "sword"
+    }
+  ],
+  "swing_sound": "epicfight:entity.weapon.whoosh_small",
+  "styles": {
+    "default": "one_hand",
+    "cases": [
+      {
+        "style": "ochs",
+        "conditions": [
+          {
+            "predicate": "epicfight:offhand_item_category",
+            "category": "sword"
+          }
+        ]
+      }
+    ]
+  },
+  "combos": {
+    "one_hand": [
+      "wom:biped/combat/enderblaster_onehand_auto_1",
+      "wom:biped/combat/enderblaster_onehand_auto_2",
+      "wom:biped/combat/enderblaster_onehand_auto_3",
+      "wom:biped/combat/enderblaster_onehand_auto_4",
+      "wom:biped/combat/enderblaster_twohand_dash",
+      "wom:biped/combat/enderblaster_onehand_jumpkick"
+    ],
+    "ochs": [
+      "wom:biped/combat/enderblaster_twohand_auto_1",
+      "wom:biped/combat/enderblaster_twohand_auto_2",
+      "wom:biped/combat/enderblaster_twohand_auto_3",
+      "wom:biped/skill/kick_1",
+      "wom:biped/skill/kick_2",
+      "wom:biped/combat/enderblaster_twohand_auto_4",
+      "wom:biped/combat/enderblaster_onehand_dash",
+      "wom:biped/combat/enderblaster_twohand_tishnaw"
+    ]
+  },
+  "category": "sword",
+  "innate_skills": {
+    "one_hand": "project_babylon_weapons:uppercut",
+    "ochs": "project_babylon_weapons:beast_roar"
+  },
+  "usable_in_offhand": true
+}

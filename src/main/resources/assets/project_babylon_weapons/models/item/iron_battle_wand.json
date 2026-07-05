@@ -1,0 +1,6 @@
+{
+  "parent": "project_babylon_weapons:displaysettings/iron_battle_wand_display",
+  "textures": {
+    "layer0": "project_babylon_weapons:item/iron_battle_wand"
+  }
+}

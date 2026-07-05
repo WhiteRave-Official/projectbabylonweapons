@@ -1,0 +1,53 @@
+{
+  "sounds/got_frozen": {
+    "subtitle": "subtitles.project_babylon_weapons.sounds.got_frozen",
+    "sounds": [
+      "project_babylon_weapons:got_frozen"
+    ]
+  },
+  "sounds/fire_blast": {
+    "subtitle": "subtitles.project_babylon_weapons.sounds.fire_blast",
+    "sounds": [
+      "project_babylon_weapons:fire_blast"
+    ]
+  },
+  "fire_storm_start": {
+    "subtitle": "subtitles.project_babylon_weapons.fire_storm_start",
+    "sounds": [
+      "project_babylon_weapons:fire_storm_start"
+    ]
+  },
+  "fire_tornado": {
+    "subtitle": "subtitles.project_babylon_weapons.fire_tornado",
+    "sounds": [
+      {
+        "name": "project_babylon_weapons:fire_tornado",
+        "stream": true
+      }
+    ]
+  },
+  "sounds/rumbling_ground": {
+    "subtitle": "subtitles.project_babylon_weapons.sounds.rumbling_ground",
+    "sounds": [
+      "project_babylon_weapons:rumbling_ground"
+    ]
+  },
+  "sounds/chain_up": {
+    "subtitle": "subtitles.project_babylon_weapons.sounds.chain_up",
+    "sounds": [
+      "project_babylon_weapons:chain_up"
+    ]
+  },
+  "sounds/chain_down": {
+    "subtitle": "subtitles.project_babylon_weapons.sounds.chain_down",
+    "sounds": [
+      "project_babylon_weapons:chain_down"
+    ]
+  },
+  "sounds/blizzard": {
+    "subtitle": "subtitles.project_babylon_weapons.sounds.blizzard",
+    "sounds": [
+      "project_babylon_weapons:blizzard"
+    ]
+  }
+}

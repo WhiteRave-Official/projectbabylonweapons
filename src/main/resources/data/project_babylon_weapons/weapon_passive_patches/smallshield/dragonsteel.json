@@ -1,0 +1,19 @@
+﻿{
+  "passive_id": "project_babylon_weapons:small_shield_dragonsteel_retribution",
+  "weapon_id": "project_babylon_weapons:dragonsteel_small_shield",
+  "visual": {
+    "frame_type": "dragonsteel",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/dragonsteel_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/dragonsteel_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line1",
+      "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line2"
+    ]
+  },
+  "profile": {
+    "max_charges": 2,
+    "damage_bonus_multiplier_per_charge": 1.0,
+    "armor_negation_per_charge": 30.0
+  }
+}

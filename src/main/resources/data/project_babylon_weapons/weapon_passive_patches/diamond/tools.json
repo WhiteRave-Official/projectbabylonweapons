@@ -1,0 +1,21 @@
+{
+    "passive_id":  "project_babylon_weapons:diamond_fang",
+    "weapon_ids":  [
+                       "project_babylon_weapons:diamond_pickaxe",
+                       "project_babylon_weapons:diamond_axe",
+                       "project_babylon_weapons:diamond_shovel",
+                       "project_babylon_weapons:diamond_hoe"
+                   ],
+    "visual":  {
+                   "frame_type":  "diamond",
+                   "frame_texture":  "project_babylon_materials:textures/gui/tooltip/frame/material/diamond_material_frame.png",
+                   "icon_texture":  "project_babylon_materials:textures/gui/tooltip/icon/material/diamond_material_icon.png",
+                   "display_name_key":  "tooltip.project_babylon_weapons.passive.diamond.name",
+                   "description_keys":  [
+                                            "tooltip.project_babylon_weapons.passive.diamond.line1"
+                                        ]
+               },
+    "profile":  {
+                    "ignore_defense_proc_chance":  0.15
+                }
+}

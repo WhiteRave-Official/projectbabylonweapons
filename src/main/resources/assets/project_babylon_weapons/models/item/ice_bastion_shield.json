@@ -1,0 +1,6 @@
+{
+  "parent": "project_babylon_weapons:displaysettings/ice_bastion_shield_display",
+  "textures": {
+    "layer0": "project_babylon_weapons:item/ice_bastion_shield"
+  }
+}

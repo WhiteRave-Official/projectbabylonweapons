@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "project_babylon_weapons:golden_pickaxe",
+    "project_babylon_weapons:golden_axe",
+    "project_babylon_weapons:golden_shovel",
+    "project_babylon_weapons:golden_hoe"
+  ]
+}

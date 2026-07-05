@@ -1,0 +1,22 @@
+{
+  "attributes":
+    {
+    "common":
+    {
+      "damage_bonus": 4.5,
+      "speed_bonus": 1.4,
+      "impact": 1.5,
+      "armor_negation": 18.0,
+      "max_strikes": 1.0
+    },
+    "two_hand":
+    {
+      "damage_bonus": 4.5,
+      "speed_bonus": 1.4,
+      "impact": 1.5,
+      "armor_negation": 18.0,
+      "max_strikes": 1.0
+    }
+  },
+  "type":"refm:rapier"
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "project_babylon_weapons:diamond_pickaxe",
+    "project_babylon_weapons:diamond_axe",
+    "project_babylon_weapons:diamond_shovel",
+    "project_babylon_weapons:diamond_hoe"
+  ]
+}

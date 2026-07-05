@@ -1,0 +1,6 @@
+{
+  "parent": "project_babylon_weapons:displaysettings/ice_battlehammer_display",
+  "textures": {
+    "layer0": "project_babylon_weapons:item/icehammer"
+  }
+}

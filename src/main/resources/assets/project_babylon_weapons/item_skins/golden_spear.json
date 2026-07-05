@@ -1,0 +1,11 @@
+{
+    "trail": {
+    	"color": [205, 205, 225],
+    	"begin_pos": [0.0, 0.2, -0.9],
+    	"end_pos": [0.0, 0.25, -2.0],
+    	"lifetime": 8,
+		"interpolations": 4,
+    	"texture_path": "project_babylon_weapons:textures/particle/weapon_trail/golden_trail.png",
+    	"particle_type": "epicfight:swing_trail"
+    }
+}

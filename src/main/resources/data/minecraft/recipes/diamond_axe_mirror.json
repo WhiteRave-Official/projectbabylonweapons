@@ -1,0 +1,19 @@
+{
+    "type":  "minecraft:crafting_shaped",
+    "pattern":  [
+                    " ##",
+                    " X#",
+                    " X "
+                ],
+    "key":  {
+                "#":  {
+                          "item":  "minecraft:diamond"
+                      },
+                "X":  {
+                          "item":  "minecraft:stick"
+                      }
+            },
+    "result":  {
+                   "item":  "minecraft:diamond_axe_mirror"
+               }
+}

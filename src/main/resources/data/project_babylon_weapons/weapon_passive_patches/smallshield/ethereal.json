@@ -1,0 +1,19 @@
+﻿{
+  "passive_id": "project_babylon_weapons:small_shield_ethereal_purification",
+  "weapon_id": "project_babylon_weapons:ethereal_small_shield",
+  "visual": {
+    "frame_type": "ethereal",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/ethereal_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/ethereal_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.small_shield_ethereal.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.small_shield_ethereal.line1",
+      "tooltip.project_babylon_weapons.passive.small_shield_ethereal.line2"
+    ]
+  },
+  "profile": {
+    "weapon_charge_restore_per_buff": 0.1,
+    "absorption_percent_per_buff": 0.05,
+    "absorption_duration_ticks": 200
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "attributes":
+  {
+    "common":
+    {
+      "damage_bonus": -2.0,
+      "speed_bonus": 1.0,
+      "impact": 0.4,
+      "armor_negation": 17.0,
+      "max_strikes": 0.0
+    },
+    "two_hand":
+    {
+      "damage_bonus": -2.0,
+      "speed_bonus": 1.0,
+      "impact": 0.5,
+      "armor_negation": 17.0,
+      "max_strikes": 0.0
+    }
+  },
+  "type":"epicfight:claws"
+}

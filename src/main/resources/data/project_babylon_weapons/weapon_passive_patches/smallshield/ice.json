@@ -1,0 +1,18 @@
+﻿{
+  "passive_id": "project_babylon_weapons:small_shield_ice_prison",
+  "weapon_id": "project_babylon_weapons:ice_small_shield",
+  "visual": {
+    "frame_type": "ice",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/ice_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/ice_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.small_shield_ice.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.small_shield_ice.line1",
+      "tooltip.project_babylon_weapons.passive.small_shield_ice.line2"
+    ]
+  },
+  "profile": {
+    "frozen_duration_ticks": 60,
+    "chill_duration_ticks": 320
+  }
+}

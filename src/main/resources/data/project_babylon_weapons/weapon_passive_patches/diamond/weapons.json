@@ -1,0 +1,35 @@
+{
+    "passive_id":  "project_babylon_weapons:diamond_fang",
+    "weapon_ids":  [
+                       "project_babylon_weapons:diamond_battleaxe",
+                       "project_babylon_weapons:diamond_battlehammer",
+                       "project_babylon_weapons:diamond_battlescythe",
+                       "project_babylon_weapons:diamond_spear",
+                       "project_babylon_weapons:diamond_staff",
+                       "project_babylon_weapons:diamond_shortsword",
+                       "project_babylon_weapons:diamond_longsword",
+                       "project_babylon_weapons:diamond_greatsword",
+                       "project_babylon_weapons:diamond_dagger",
+                       "project_babylon_weapons:diamond_sickle",
+                       "project_babylon_weapons:diamond_claws",
+                       "refm:diamond_rapier",
+                       "epicfight_dd:diamond_messer",
+                       "epicfight_dd:diamond_knife",
+                       "epicfight_dd:diamond_battlestaff",
+                       "epicfight_dd:diamond_halbert",
+                       "epicfight_dd:diamond_light_greatsword",
+                       "project_babylon_weapons:diamond_tachi"
+                   ],
+    "visual":  {
+                   "frame_type":  "diamond",
+                   "frame_texture":  "project_babylon_materials:textures/gui/tooltip/frame/material/diamond_material_frame.png",
+                   "icon_texture":  "project_babylon_materials:textures/gui/tooltip/icon/material/diamond_material_icon.png",
+                   "display_name_key":  "tooltip.project_babylon_weapons.passive.diamond.name",
+                   "description_keys":  [
+                                            "tooltip.project_babylon_weapons.passive.diamond.line1"
+                                        ]
+               },
+    "profile":  {
+                    "ignore_defense_proc_chance":  0.15
+                }
+}

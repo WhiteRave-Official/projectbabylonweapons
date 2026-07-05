@@ -1,0 +1,6 @@
+{
+  "parent": "project_babylon_weapons:displaysettings/diamond_small_shield_display",
+  "textures": {
+    "layer0": "project_babylon_weapons:item/diamond_small_shield"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "builtin/entity",
+  "texture_size": [
+    64,
+    64
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        -1
+      ],
+      "scale": [
+        1.16,
+        1.16,
+        1.16
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        -1
+      ],
+      "scale": [
+        1.16,
+        1.16,
+        1.16
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        94.59,
+        17.6,
+        -86.19
+      ],
+      "translation": [
+        -8,
+        1.75,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        -94.46,
+        -11.35,
+        -85.69
+      ],
+      "translation": [
+        -8,
+        2,
+        0
+      ],
+      "scale": [
+        0.9,
+        0.9,
+        0.9
+      ]
+    },
+    "ground": {
+      "rotation": [
+        61.55,
+        -2.14,
+        -3.59
+      ],
+      "translation": [
+        0,
+        8.75,
+        0
+      ],
+      "scale": [
+        0.61,
+        0.61,
+        0.61
+      ]
+    },
+    "gui": {
+      "rotation": [
+        -180,
+        0,
+        -134.25
+      ],
+      "translation": [
+        -3.5,
+        -2,
+        0
+      ],
+      "scale": [
+        0.42,
+        0.42,
+        0.42
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        0,
+        0,
+        44.5
+      ],
+      "translation": [
+        4.5,
+        -2.5,
+        0
+      ],
+      "scale": [
+        0.53,
+        0.53,
+        0.53
+      ]
+    }
+  },
+  "textures": {
+    "particle": "project_babylon_weapons:item/ice_scythe5"
+  }
+}

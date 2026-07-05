@@ -1,0 +1,31 @@
+{
+    "passive_id":  "project_babylon_weapons:ethereal_holy",
+    "weapon_ids":  [
+                       "project_babylon_weapons:ethereal_battleaxe",
+                       "project_babylon_weapons:ethereal_battlehammer",
+                       "project_babylon_weapons:ethereal_battlescythe",
+                       "project_babylon_weapons:ethereal_spear",
+                       "project_babylon_weapons:ethereal_staff",
+                       "project_babylon_weapons:ethereal_shortsword",
+                       "project_babylon_weapons:ethereal_longsword",
+                       "project_babylon_weapons:ethereal_greatsword",
+                       "project_babylon_weapons:ethereal_dagger",
+                       "project_babylon_weapons:ethereal_sickle",
+                       "project_babylon_weapons:ethereal_claws",
+                       "project_babylon_weapons:ethereal_tachi",
+                       "project_babylon_weapons:ethereal_rapier"
+                   ],
+    "visual":  {
+                   "frame_type":  "ethereal",
+                   "frame_texture":  "project_babylon_materials:textures/gui/tooltip/frame/material/ethereal_material_frame.png",
+                   "icon_texture":  "project_babylon_materials:textures/gui/tooltip/icon/material/ethereal_material_icon.png",
+                   "display_name_key":  "tooltip.project_babylon_weapons.passive.ethereal.name",
+                   "description_keys":  [
+                                            "tooltip.project_babylon_weapons.passive.ethereal.line1"
+                                        ]
+               },
+    "profile":  {
+                    "holy_damage_percent":  0.75,
+                    "physical_damage_percent":  0.25
+                }
+}

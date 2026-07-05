@@ -1,0 +1,16 @@
+{
+  "passive_id": "project_babylon_weapons:bastion_golden_curse",
+  "weapon_id": "project_babylon_weapons:golden_bastion_shield",
+  "visual": {
+    "frame_type": "golden",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/gold_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/gold_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.bastion_golden.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.bastion_golden.line1"
+    ]
+  },
+  "profile": {
+    "fear_duration_ticks": 200
+  }
+}

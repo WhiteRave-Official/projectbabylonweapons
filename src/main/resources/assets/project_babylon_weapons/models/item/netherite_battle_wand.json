@@ -1,0 +1,6 @@
+{
+  "parent": "project_babylon_weapons:displaysettings/netherite_battle_wand_display",
+  "textures": {
+    "layer0": "project_babylon_weapons:item/netherite_battle_wand"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "attributes":
+  {
+    "common":
+    {
+      "damage_bonus": 2.0,
+      "speed_bonus": 0.4,
+      "impact": 0.9,
+      "max_strikes": 1.0
+    },
+    "two_hand":
+    {
+      "damage_bonus": 2.0,
+      "speed_bonus": 0.4,
+      "impact": 0.9,
+      "max_strikes": 2.0
+    }
+  },
+  "type":"epicfight:sword"
+}

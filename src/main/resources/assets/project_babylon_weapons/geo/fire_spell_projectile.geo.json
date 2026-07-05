@@ -1,0 +1,71 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.fire_spell_projectile",
+				"texture_width": 16,
+				"texture_height": 16,
+				"visible_bounds_width": 2,
+				"visible_bounds_height": 1.5,
+				"visible_bounds_offset": [0, 0.25, 0]
+			},
+			"bones": [
+				{
+					"name": "bone",
+					"pivot": [0.11259, 0.9511, 0.01749],
+					"cubes": [
+						{
+							"origin": [-1.81777, -0.98223, -2],
+							"size": [4, 4, 4],
+							"uv": {
+								"north": {"uv": [8, 0], "uv_size": [4, 4]},
+								"east": {"uv": [8, 4], "uv_size": [4, 4]},
+								"south": {"uv": [8, 8], "uv_size": [4, 4]},
+								"west": {"uv": [12, 0], "uv_size": [4, 4]},
+								"up": {"uv": [12, 4], "uv_size": [4, 4]},
+								"down": {"uv": [8, 16], "uv_size": [4, -4]}
+							}
+						}
+					]
+				},
+				{
+					"name": "bone2",
+					"pivot": [0.07777, 0.91777, 0.02623],
+					"cubes": [
+						{
+							"origin": [-4.08223, -3.24223, 0.02623],
+							"size": [8.32, 8.32, 0],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [8, 8]},
+								"east": {"uv": [0, 0], "uv_size": [0, 8]},
+								"south": {"uv": [0, 8], "uv_size": [8, 8]},
+								"west": {"uv": [0, 0], "uv_size": [0, 8]},
+								"up": {"uv": [0, 0], "uv_size": [8, 0]},
+								"down": {"uv": [8, 0], "uv_size": [-8, 0]}
+							}
+						}
+					]
+				},
+				{
+					"name": "bone3",
+					"pivot": [0.07777, 0.91777, 0.02623],
+					"cubes": [
+						{
+							"origin": [0.07777, -3.24223, -4.13377],
+							"size": [0, 8.32, 8.32],
+							"uv": {
+								"north": {"uv": [0, 0], "uv_size": [0, 8]},
+								"east": {"uv": [0, 8], "uv_size": [8, 8]},
+								"south": {"uv": [0, 0], "uv_size": [0, 8]},
+								"west": {"uv": [0, 0], "uv_size": [8, 8]},
+								"up": {"uv": [8, 0], "uv_size": [-8, 0]},
+								"down": {"uv": [8, 0], "uv_size": [-8, 0]}
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

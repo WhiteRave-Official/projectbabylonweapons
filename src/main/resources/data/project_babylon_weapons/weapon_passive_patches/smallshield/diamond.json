@@ -1,0 +1,22 @@
+﻿{
+  "passive_id": "project_babylon_weapons:small_shield_diamond_wolf_grip",
+  "weapon_id": "project_babylon_weapons:diamond_small_shield",
+  "visual": {
+    "frame_type": "diamond",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/diamond_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/diamond_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.small_shield_diamond.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.small_shield_diamond.line1",
+      "tooltip.project_babylon_weapons.passive.small_shield_diamond.line2"
+    ]
+  },
+  "profile": {
+    "max_shards": 5,
+    "shard_lifetime_ticks": 320,
+    "damage_multiplier": 0.15,
+    "weapon_chip_duration_ticks": 300,
+    "launch_distance": 14.0,
+    "launch_speed": 1.25
+  }
+}

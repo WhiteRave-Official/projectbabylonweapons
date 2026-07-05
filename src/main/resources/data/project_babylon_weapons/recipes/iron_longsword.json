@@ -1,0 +1,23 @@
+{
+    "type":  "minecraft:crafting_shaped",
+    "category":  "equipment",
+    "pattern":  [
+                    "  I",
+                    "nI ",
+                    "Sn "
+                ],
+    "key":  {
+                "I":  {
+                          "item":  "minecraft:iron_ingot"
+                      },
+                "n":  {
+                          "item":  "minecraft:iron_nugget"
+                      },
+                "S":  {
+                          "item":  "minecraft:stick"
+                      }
+            },
+    "result":  {
+                   "item":  "project_babylon_weapons:iron_longsword"
+               }
+}

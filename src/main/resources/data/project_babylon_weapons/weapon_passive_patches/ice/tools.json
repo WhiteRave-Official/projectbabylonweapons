@@ -1,0 +1,29 @@
+{
+    "passive_id":  "project_babylon_weapons:ice_chill",
+    "weapon_ids":  [
+                       "project_babylon_weapons:ice_pickaxe",
+                       "project_babylon_weapons:ice_axe",
+                       "project_babylon_weapons:ice_shovel",
+                       "project_babylon_weapons:ice_hoe"
+                   ],
+    "visual":  {
+                   "frame_type":  "ice",
+                   "frame_texture":  "project_babylon_materials:textures/gui/tooltip/frame/material/ice_material_frame.png",
+                   "icon_texture":  "project_babylon_materials:textures/gui/tooltip/icon/material/ice_material_icon.png",
+                   "display_name_key":  "tooltip.project_babylon_weapons.passive.ice.name",
+                   "description_keys":  [
+                                            "tooltip.project_babylon_weapons.passive.ice.line1",
+                                            "tooltip.project_babylon_weapons.passive.ice.line2"
+                                        ]
+               },
+    "profile":  {
+                    "chill_i_proc_chance":  0.2,
+                    "chill_i_duration_ticks":  100,
+                    "chill_ii_proc_chance":  0.2,
+                    "chill_ii_duration_ticks":  100,
+                    "chill_iii_proc_chance":  0.2,
+                    "chill_iii_duration_ticks":  100,
+                    "frozen_from_chill_iii_proc_chance":  0.2,
+                    "frozen_duration_ticks":  20
+                }
+}

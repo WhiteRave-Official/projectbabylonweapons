@@ -1,0 +1,18 @@
+﻿{
+  "passive_id": "project_babylon_weapons:small_shield_netherite_sulfur_brand",
+  "weapon_id": "project_babylon_weapons:netherite_small_shield",
+  "visual": {
+    "frame_type": "netherite",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/netherite_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/netherite_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.small_shield_netherite.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.small_shield_netherite.line1",
+      "tooltip.project_babylon_weapons.passive.small_shield_netherite.line2"
+    ]
+  },
+  "profile": {
+    "fire_duration_seconds": 5,
+    "brimstone_duration_ticks": 200
+  }
+}

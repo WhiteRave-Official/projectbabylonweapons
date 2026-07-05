@@ -1,0 +1,21 @@
+{
+    "passive_id":  "project_babylon_weapons:golden_magic",
+    "weapon_ids":  [
+                       "project_babylon_weapons:golden_pickaxe",
+                       "project_babylon_weapons:golden_axe",
+                       "project_babylon_weapons:golden_shovel",
+                       "project_babylon_weapons:golden_hoe"
+                   ],
+    "visual":  {
+                   "frame_type":  "golden",
+                   "frame_texture":  "project_babylon_materials:textures/gui/tooltip/frame/material/gold_material_frame.png",
+                   "icon_texture":  "project_babylon_materials:textures/gui/tooltip/icon/material/gold_material_icon.png",
+                   "display_name_key":  "tooltip.project_babylon_weapons.passive.golden.name",
+                   "description_keys":  [
+                                            "tooltip.project_babylon_weapons.passive.golden.line1"
+                                        ]
+               },
+    "profile":  {
+                    "bonus_magic_damage_percent":  0.25
+                }
+}

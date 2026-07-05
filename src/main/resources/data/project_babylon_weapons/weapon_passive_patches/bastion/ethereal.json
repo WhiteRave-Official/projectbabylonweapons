@@ -1,0 +1,16 @@
+{
+  "passive_id": "project_babylon_weapons:bastion_ethereal_heavens_gift",
+  "weapon_id": "project_babylon_weapons:ethereal_bastion_shield",
+  "visual": {
+    "frame_type": "ethereal",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/ethereal_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/ethereal_material_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.bastion_ethereal.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.bastion_ethereal.line1"
+    ]
+  },
+  "profile": {
+    "holy_sigil_duration_ticks": 300
+  }
+}

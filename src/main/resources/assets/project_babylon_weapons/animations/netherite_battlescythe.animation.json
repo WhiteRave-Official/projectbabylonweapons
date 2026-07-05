@@ -1,0 +1,31 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"animation.netherite_battlescythe.idle": {
+			"loop": true,
+			"animation_length": 8,
+			"bones": {
+				"pommel": {
+					"rotation": {
+						"0.0": {
+							"vector": [0, 0, 0]
+						},
+						"2.0": {
+							"vector": [0, -90, 0]
+						},
+						"4.0": {
+							"vector": [0, -180, 0]
+						},
+						"6.0": {
+							"vector": [0, -270, 0]
+						},
+						"8.0": {
+							"vector": [0, -365, 0]
+						}
+					}
+				}
+			}
+		}
+	},
+	"geckolib_format_version": 2
+}

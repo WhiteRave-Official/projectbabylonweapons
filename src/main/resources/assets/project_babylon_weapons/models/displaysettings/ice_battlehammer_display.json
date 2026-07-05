@@ -1,0 +1,129 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "builtin/entity",
+  "texture_size": [
+    128,
+    128
+  ],
+  "display": {
+    "thirdperson_righthand": {
+      "translation": [
+        0,
+        -2.5,
+        0
+      ],
+      "scale": [
+        1.07,
+        1.07,
+        1.07
+      ]
+    },
+    "thirdperson_lefthand": {
+      "translation": [
+        0,
+        -2.5,
+        0
+      ],
+      "scale": [
+        1.07,
+        1.07,
+        1.07
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        22.5,
+        8,
+        -4
+      ],
+      "translation": [
+        2.75,
+        -10.75,
+        -8
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        22.5,
+        8,
+        -4
+      ],
+      "translation": [
+        2.75,
+        -10.75,
+        -8
+      ]
+    },
+    "ground": {
+      "rotation": [
+        5.65,
+        3.33,
+        61.32
+      ],
+      "translation": [
+        0,
+        6,
+        0
+      ],
+      "scale": [
+        0.41,
+        0.41,
+        0.41
+      ]
+    },
+    "gui": {
+      "rotation": [
+        -89.44,
+        -44.5,
+        -89.16
+      ],
+      "translation": [
+        -4,
+        -4,
+        0
+      ],
+      "scale": [
+        0.38,
+        0.38,
+        0.38
+      ]
+    },
+    "head": {
+      "rotation": [
+        40.25,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        0,
+        -14.5
+      ],
+      "scale": [
+        1,
+        0.98438,
+        1
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        91.03,
+        -45,
+        90.67
+      ],
+      "translation": [
+        4,
+        -4.25,
+        0
+      ],
+      "scale": [
+        0.56,
+        0.56,
+        0.56
+      ]
+    }
+  },
+  "textures": {
+    "particle": "project_babylon_weapons:item/icehammer"
+  }
+}

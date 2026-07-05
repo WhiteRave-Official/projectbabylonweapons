@@ -1,0 +1,22 @@
+{
+  "attributes":
+  {
+    "common":
+    {
+      "damage_bonus": 4.3,
+      "speed_bonus": 0.2,
+      "impact": 0.9,
+      "armor_negation": 16.0,
+      "max_strikes": 4.0
+    },
+    "two_hand":
+    {
+      "damage_bonus": 4.3,
+      "speed_bonus": 0.2,
+      "impact": 0.9,
+      "armor_negation": 16.0,
+      "max_strikes": 4.0
+    }
+  },
+  "type":"acgbattlescytherevived:acg_battlescythe"
+}

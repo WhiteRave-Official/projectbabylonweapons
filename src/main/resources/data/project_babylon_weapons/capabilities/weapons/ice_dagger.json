@@ -1,0 +1,22 @@
+{
+  "attributes":
+  {
+    "common":
+    {
+      "damage_bonus": 1.7,
+      "speed_bonus": 1.0,
+      "impact": 0.6,
+      "armor_negation": 9.0,
+      "max_strikes": 0.0
+    },
+    "two_hand":
+    {
+      "damage_bonus": 1.7,
+      "speed_bonus": 1.0,
+      "impact": 0.6,
+      "armor_negation": 9.0,
+      "max_strikes": 1.0
+    }
+  },
+  "type":"epicfight:dagger"
+}

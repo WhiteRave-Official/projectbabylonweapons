@@ -1,0 +1,118 @@
+plugins {
+    alias libs.plugins.architectury
+    alias libs.plugins.architectury.loom apply false
+    alias libs.plugins.quiltFlower apply false // Quiltflower, a better decompiler
+    alias libs.plugins.machete // automatic jar compressing on build
+}
+
+def is_root_project = project == rootProject
+
+architectury {
+    minecraft = libs.versions.minecraft
+}
+
+subprojects {
+    apply plugin: "dev.architectury.loom"
+    apply plugin: "io.github.juuxel.loom-quiltflower"
+
+    loom {
+        silentMojangMappingsLicense()
+//        for (final def setting in runConfigs) {
+//            setting.vmArgs()
+//        }
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url = "https://maven.shedaniel.me/" } // Cloth Config, REI
+        maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+            content {
+                includeGroup "maven.modrinth"
+            }
+        } // Modrinth File
+        maven {
+            url "https://cursemaven.com"
+            content {
+                includeGroup "curse.maven"
+            }
+        } // Curse Forge File
+        maven {
+            name = "Jared's maven"
+            url = "https://maven.blamejared.com/"
+        } // JEI
+        maven {
+            // location of a maven mirror for JEI files, as a fallback
+            name = "ModMaven"
+            url = "https://modmaven.dev"
+        } // JEI mirror, AE2
+        maven { url = "https://maven.parchmentmc.org" } // Parchment mappings
+        maven { url = "https://maven.quiltmc.org/repository/release" } // Quilt Mappings
+        maven { url = "https://maven.firstdarkdev.xyz/snapshots" } // LDLib
+        maven { // Flywheel
+            url = "https://maven.tterrag.com/"
+            content {
+                // need to be specific here due to version overlaps
+                includeGroup("com.jozufozu.flywheel")
+            }
+        }
+        maven { // TOP-Fabric
+            url "https://maven.wispforest.io"
+        }
+
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${libs.versions.minecraft.get()}"
+
+        if (is_root_project) {
+            // layered mappings - Mojmap names, parchment and QM docs and parameters
+            mappings loom.layered {
+                it.mappings("org.quiltmc:quilt-mappings:${libs.versions.minecraft.get()}+build.${libs.versions.quiltMappings.get()}:intermediary-v2")
+                it.parchment("org.parchmentmc.data:parchment-${libs.versions.parchment.get()}@zip")
+                it.officialMojangMappings { nameSyntheticMembers = false }
+            }
+        }
+
+        // see each subproject for dependencies.
+
+        // lombok
+        compileOnly 'org.projectlombok:lombok:1.18.24'
+        annotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+        implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    archivesBaseName = "${project.name}-${libs.versions.minecraft.get()}"
+    group = rootProject.maven_group
+    version = "${mod_version}"
+
+    repositories {
+        // Add repositories to retrieve artifacts from in here.
+        // You should only use this when depending on other mods because
+        // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
+        // See https://docs.gradle.org/current/userguide/declaring_repositories.html
+        // for more information about repositories.
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    java {
+        withSourcesJar()
+    }
+
+    machete {
+        // disable machete locally for faster builds
+        enabled = false
+    }
+}

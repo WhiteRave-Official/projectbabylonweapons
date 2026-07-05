@@ -1,0 +1,22 @@
+{
+  "attributes":
+  {
+    "common":
+    {
+      "damage_bonus": 7.0,
+      "speed_bonus": -0.2,
+      "impact": 2.9,
+      "armor_negation": 12.0,
+      "max_strikes": 1.0
+    },
+    "two_hand":
+    {
+      "damage_bonus": 7.0,
+      "speed_bonus": -0.2,
+      "impact": 2.9,
+      "armor_negation": 12.0,
+      "max_strikes": 1.0
+    }
+  },
+  "type":"epicfight:battlehammer"
+}
