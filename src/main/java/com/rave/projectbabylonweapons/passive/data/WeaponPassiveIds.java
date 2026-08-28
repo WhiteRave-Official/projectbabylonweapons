@@ -9,6 +9,7 @@ public final class WeaponPassiveIds {
     public static final ResourceLocation GOLDEN_MAGIC = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "golden_magic");
     public static final ResourceLocation ETHEREAL_HOLY = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "ethereal_holy");
     public static final ResourceLocation NETHERITE_BRIMSTONE = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "netherite_brimstone");
+    public static final ResourceLocation DRAGONSTEEL_WYRM_ECHO = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "dragonsteel_wyrm_echo");
     public static final ResourceLocation WAND_DIAMOND_RICOCHET = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "wand_diamond_ricochet");
     public static final ResourceLocation WAND_GOLDEN_BLOOD_PACT = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "wand_golden_blood_pact");
     public static final ResourceLocation WAND_NETHERITE_ASHEN = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "wand_netherite_ashen");

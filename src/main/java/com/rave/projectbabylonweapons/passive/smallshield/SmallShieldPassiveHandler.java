@@ -127,7 +127,7 @@ public final class SmallShieldPassiveHandler {
 
         boolean ordinaryBlocked = event.getResult() == AttackResult.ResultType.BLOCKED;
         boolean vanillaShieldBlock = isVanillaShieldBlock(player, event);
-        boolean shieldBashParry = isShieldBashParry(event);
+        boolean shieldBashParry = isShieldBashParry(event) || isConfirmedShieldBashParry(event);
 
         DiamondSmallShieldBalance.Profile diamond = DiamondSmallShieldBalance.resolve(shieldStack);
         if (diamond != null && (ordinaryBlocked || vanillaShieldBlock || shieldBashParry) && player.level() instanceof ServerLevel serverLevel) {
@@ -258,6 +258,17 @@ public final class SmallShieldPassiveHandler {
         }
 
         return isFrontBlockableSource(playerPatch, event.getDamageSource());
+    }
+
+    private static boolean isConfirmedShieldBashParry(TakeDamageEvent.Attack event) {
+        if (event.getResult() != AttackResult.ResultType.BLOCKED) {
+            return false;
+        }
+
+        AnimationPlayer animationPlayer = event.getPlayerPatch().getAnimator().getPlayerFor(null);
+        return animationPlayer != null
+                && animationPlayer.getRealAnimation() != null
+                && animationPlayer.getRealAnimation().toString().equals(CorruptAnimations.SHILED_SLASH.registryName().toString());
     }
 
     private static boolean isShieldBashAnimation(DealDamageEvent.Hurt event) {

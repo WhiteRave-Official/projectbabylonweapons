@@ -8,6 +8,7 @@ import com.rave.projectbabylonweapons.item.claws.IceClawsItem;
 import com.rave.projectbabylonweapons.item.dagger.IceDaggerItem;
 import com.rave.projectbabylonweapons.item.greatsword.IceGreatswordItem;
 import com.rave.projectbabylonweapons.item.longsword.IceLongswordItem;
+import com.rave.projectbabylonweapons.item.messer.IceMesserItem;
 import com.rave.projectbabylonweapons.item.rapier.IceRapierItem;
 import com.rave.projectbabylonweapons.item.shortsword.IceShortswordItem;
 import com.rave.projectbabylonweapons.item.sickle.IceSickleItem;
@@ -34,6 +35,7 @@ public final class IceChillBalance {
     private static final Profile BATTLE_SCYTHE = new Profile(0.25F, 0.25F, 0.25F, 0.25F, 20 * 5, 20 * 5, 20 * 5, 20 * 2);
     private static final Profile SICKLE = new Profile(0.25F, 0.25F, 0.25F, 0.25F, 20 * 5, 20 * 5, 20 * 5, 20);
     private static final Profile SHORTSWORD = new Profile(0.30F, 0.30F, 0.30F, 0.30F, 20 * 6, 20 * 6, 20 * 6, 20 * 2);
+    private static final Profile MESSER = new Profile(0.30F, 0.30F, 0.30F, 0.30F, 20 * 6, 20 * 6, 20 * 6, 20 * 2);
     private static final Profile SPEAR = new Profile(0.30F, 0.30F, 0.30F, 0.30F, 20 * 6, 20 * 6, 20 * 6, 20 * 2);
     private static final Profile RAPIER = new Profile(0.40F, 0.40F, 0.40F, 0.40F, 20 * 6, 20 * 6, 20 * 6, 20 * 2);
     private static final Profile LONGSWORD = new Profile(0.33F, 0.33F, 0.33F, 0.33F, 20 * 7, 20 * 7, 20 * 7, 20 * 2);
@@ -80,6 +82,9 @@ public final class IceChillBalance {
         }
         if (item instanceof IceShortswordItem) {
             return SHORTSWORD;
+        }
+        if (item instanceof IceMesserItem) {
+            return MESSER;
         }
         if (item instanceof IceSpearItem) {
             return SPEAR;

@@ -7,6 +7,8 @@ import com.rave.projectbabylonweapons.block.display.FrozenDebuffIceBlockDisplayI
 
 import com.rave.projectbabylonweapons.item.claws.*;
 import com.rave.projectbabylonweapons.item.longsword.*;
+import com.rave.projectbabylonweapons.item.messer.DragonsteelMesserItem;
+import com.rave.projectbabylonweapons.item.messer.IceMesserItem;
 import com.rave.projectbabylonweapons.item.shortsword.*;
 import com.rave.projectbabylonweapons.item.sickle.*;
 import com.rave.projectbabylonweapons.item.greatsword.*;
@@ -329,6 +331,9 @@ public class PBModItems {
     public static final RegistryObject<Item> ICE_RAPIER =
             ITEMS.register("ice_rapier", () -> new IceRapierItem(new Item.Properties()));
 
+    public static final RegistryObject<Item> ICE_MESSER=
+            ITEMS.register("ice_messer", () -> new IceMesserItem(new Item.Properties()));
+
     public static final RegistryObject<Item> ICE_BATTLE_WAND =
             ITEMS.register("ice_battle_wand", () -> new IceBattleWandItem());
 
@@ -377,6 +382,9 @@ public class PBModItems {
 
     public static final RegistryObject<Item> DRAGONSTEEL_RAPIER =
             ITEMS.register("dragonsteel_rapier", () -> new DragonsteelRapierItem(new Item.Properties()));
+
+    public static final RegistryObject<Item> DRAGONSTEEL_MESSER =
+            ITEMS.register("dragonsteel_messer", () -> new DragonsteelMesserItem(new Item.Properties()));
 
     public static final RegistryObject<Item> DRAGONSTEEL_BATTLE_WAND =
             ITEMS.register("dragonsteel_battle_wand", () -> new DragonsteelBattleWandItem());

@@ -14,9 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
-
-public class IceBattleWandItemRenderer extends GeoItemRenderer<IceBattleWandItem> {
+public class IceBattleWandItemRenderer extends PBCullingGeoItemRenderer<IceBattleWandItem> {
 
     private static final float SCALE_RECIPROCAL = 0.0625F;
     protected boolean renderArms = false;

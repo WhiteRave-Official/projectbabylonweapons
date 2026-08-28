@@ -3,6 +3,7 @@
 	"credit": "Made By White_Rave",
 	"ambientocclusion": false,
 	"texture_size": [8, 8],
+	"overrides": [{"predicate": {"project_babylon_weapons:evergate_form": 1.0}, "model": "project_babylon_weapons:item/evergate"}],
 	"textures": {
 		"0": "project_babylon_weapons:item/ark/arklight",
 		"1": "project_babylon_weapons:item/ark/arklight1",

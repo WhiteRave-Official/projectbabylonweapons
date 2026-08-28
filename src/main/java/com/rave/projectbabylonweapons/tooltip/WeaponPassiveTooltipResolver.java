@@ -11,6 +11,8 @@ import com.rave.projectbabylonweapons.passive.data.WeaponPassiveIds;
 import com.rave.projectbabylonweapons.passive.data.WeaponPassivePatchManager;
 import com.rave.projectbabylonweapons.passive.diamond.DiamondFangBalance;
 import com.rave.projectbabylonweapons.passive.diamond.DiamondFangPassive;
+import com.rave.projectbabylonweapons.passive.dragonsteel.DragonsteelWyrmEchoBalance;
+import com.rave.projectbabylonweapons.passive.dragonsteel.DragonsteelWyrmEchoPassive;
 import com.rave.projectbabylonweapons.passive.ethereal.EtherealHolyBalance;
 import com.rave.projectbabylonweapons.passive.ethereal.EtherealHolyPassive;
 import com.rave.projectbabylonweapons.passive.golden.GoldenMagicBalance;
@@ -89,6 +91,9 @@ public final class WeaponPassiveTooltipResolver {
         }
         if (NetheriteBrimstoneBalance.resolve(stack) != null) {
             return resolveTooltip(stack, WeaponPassiveIds.NETHERITE_BRIMSTONE, NetheriteBrimstonePassive.getTooltipData());
+        }
+        if (DragonsteelWyrmEchoBalance.resolve(stack) != null) {
+            return resolveTooltip(stack, WeaponPassiveIds.DRAGONSTEEL_WYRM_ECHO, DragonsteelWyrmEchoPassive.getTooltipData());
         }
         if (DiamondSmallShieldBalance.resolve(stack) != null) {
             return resolveTooltip(stack, WeaponPassiveIds.SMALL_SHIELD_DIAMOND_WOLF_GRIP, DiamondSmallShieldPassive.getTooltipData());

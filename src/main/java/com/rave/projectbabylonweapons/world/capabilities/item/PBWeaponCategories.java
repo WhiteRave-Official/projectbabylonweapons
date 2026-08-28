@@ -9,6 +9,7 @@ import yesman.epicfight.world.capabilities.item.WeaponCategory;
 public enum PBWeaponCategories implements WeaponCategory, Function<Item, CapabilityItem.Builder> {
     PB_SICKLE,
     ARCLIGHT,
+    EVERGATE,
     PB_WAND;
 
     final int id;

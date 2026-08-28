@@ -8,6 +8,7 @@ import com.rave.projectbabylonweapons.client.renderer.DiamondShardRenderer;
 import com.rave.projectbabylonweapons.client.renderer.DragonFuryChargeRenderer;
 import com.rave.projectbabylonweapons.client.renderer.DiamondSpellProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.DragonDescendProjectileRenderer;
+import com.rave.projectbabylonweapons.client.renderer.DragonsteelWyrmEchoProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.GoldenSpellProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.EnderSpellProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.FireMagicalSealRenderer;
@@ -22,13 +23,18 @@ import com.rave.projectbabylonweapons.client.renderer.SickleChainRenderer;
 import com.rave.projectbabylonweapons.client.renderer.TectonicFallingBlockRenderer;
 import com.rave.projectbabylonweapons.init.PBModBlocks;
 import com.rave.projectbabylonweapons.init.PBModEntities;
+import com.rave.projectbabylonweapons.init.PBModItems;
+import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
 import com.rave.projectbabylonweapons.init.PBModParticles;
+import net.minecraft.client.renderer.item.ItemProperties;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @EventBusSubscriber(modid = ProjectBabylonWeapons.MODID, bus = Bus.MOD, value = Dist.CLIENT)
 public class ClientRegistries {
@@ -48,6 +54,7 @@ public class ClientRegistries {
         event.registerEntityRenderer(PBModEntities.ENDER_SPELL_PROJECTILE.get(), EnderSpellProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.MANA_BUBBLE_PROJECTILE.get(), ManaBubbleProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.DRAGON_DESCEND_PROJECTILE.get(), DragonDescendProjectileRenderer::new);
+        event.registerEntityRenderer(PBModEntities.DRAGONSTEEL_WYRM_ECHO_PROJECTILE.get(), DragonsteelWyrmEchoProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.GLACIER_ICE_SPIKE.get(), GlacierIceSpikeRenderer::new);
         event.registerEntityRenderer(PBModEntities.HOLY_MAGICAL_SEAL.get(), HolyMagicalSealRenderer::new);
         event.registerEntityRenderer(PBModEntities.FIRE_MAGICAL_SEAL.get(), FireMagicalSealRenderer::new);
@@ -59,5 +66,13 @@ public class ClientRegistries {
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpecial(PBModParticles.BASIC_SPELL_PROJECTILE_TRAIL.get(), new BasicSpellProjectileTrailParticle.Provider());
+    }
+
+    @SubscribeEvent
+    public static void clientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> ItemProperties.register(
+                PBModItems.ARCLIGHT_SWORD.get(),
+                ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "evergate_form"),
+                (stack, level, entity, seed) -> ArclightSwordItem.isEvergate(stack) ? 1.0F : 0.0F));
     }
 }

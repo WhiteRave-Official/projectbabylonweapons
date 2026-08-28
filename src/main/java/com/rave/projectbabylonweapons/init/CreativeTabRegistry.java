@@ -127,6 +127,7 @@ public class CreativeTabRegistry {
                         output.accept(PBModItems.ICE_STAFF.get());
                         output.accept(PBModItems.ICE_TACHI.get());
                         output.accept(PBModItems.ICE_RAPIER.get());
+                        output.accept(PBModItems.ICE_MESSER.get());
                         output.accept(PBModItems.ICE_BATTLE_WAND.get());
                         output.accept(PBModItems.ICE_SMALL_SHIELD.get());
                         output.accept(PBModItems.ICE_BASTION_SHIELD.get());
@@ -152,6 +153,7 @@ public class CreativeTabRegistry {
                         output.accept(PBModItems.DRAGONSTEEL_STAFF.get());
                         output.accept(PBModItems.DRAGONSTEEL_TACHI.get());
                         output.accept(PBModItems.DRAGONSTEEL_RAPIER.get());
+                        output.accept(PBModItems.DRAGONSTEEL_MESSER.get());
                         output.accept(PBModItems.DRAGONSTEEL_BATTLE_WAND.get());
                         output.accept(PBModItems.DRAGONSTEEL_SMALL_SHIELD.get());
                         output.accept(PBModItems.DRAGONSTEEL_BASTION_SHIELD.get());

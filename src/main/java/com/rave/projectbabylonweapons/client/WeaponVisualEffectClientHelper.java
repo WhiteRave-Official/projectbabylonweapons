@@ -7,7 +7,6 @@ import net.minecraft.world.entity.Entity;
 public final class WeaponVisualEffectClientHelper {
     private WeaponVisualEffectClientHelper() {
     }
-
     public static void play(String effectId, int entityId) {
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null) {

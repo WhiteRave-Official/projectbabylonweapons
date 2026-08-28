@@ -160,12 +160,12 @@ public final class WeaponPassivePatchManager extends SimpleJsonResourceReloadLis
             for (JsonElement weaponIdElement : weaponIdsArray) {
                 ResourceLocation weaponId = parseIdString(weaponIdElement.getAsString(), "weapon_ids", patchId);
                 if (weaponId == null) {
-                    return List.of();
+                    continue;
                 }
 
                 if (!ForgeRegistries.ITEMS.containsKey(weaponId)) {
-                    ProjectBabylonWeapons.LOGGER.warn("Skipping passive patch {} because weapon item {} is not registered", patchId, weaponId);
-                    return List.of();
+                    ProjectBabylonWeapons.LOGGER.warn("Ignoring weapon item {} in passive patch {} because it is not registered", weaponId, patchId);
+                    continue;
                 }
 
                 weaponIds.add(weaponId);

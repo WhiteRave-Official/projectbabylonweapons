@@ -1,0 +1,44 @@
+{
+    "passive_id": "project_babylon_weapons:dragonsteel_wyrm_echo",
+    "weapon_ids": [
+        "project_babylon_weapons:dragonsteel_battleaxe",
+        "project_babylon_weapons:dragonsteel_battlehammer",
+        "project_babylon_weapons:dragonsteel_battlescythe",
+        "project_babylon_weapons:dragonsteel_spear",
+        "project_babylon_weapons:dragonsteel_staff",
+        "project_babylon_weapons:dragonsteel_shortsword",
+        "project_babylon_weapons:dragonsteel_longsword",
+        "project_babylon_weapons:dragonsteel_greatsword",
+        "project_babylon_weapons:dragonsteel_dagger",
+        "project_babylon_weapons:dragonsteel_sickle",
+        "project_babylon_weapons:dragonsteel_claws",
+        "project_babylon_weapons:dragonsteel_tachi",
+        "project_babylon_weapons:dragonsteel_rapier"
+    ],
+    "visual": {
+        "frame_type": "dragonsteel",
+        "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/dragonsteel_material_frame.png",
+        "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/dragonsteel_material_icon.png",
+        "display_name_key": "tooltip.project_babylon_weapons.passive.dragonsteel.name",
+        "description_keys": [
+            "tooltip.project_babylon_weapons.passive.dragonsteel.line1",
+            "tooltip.project_babylon_weapons.passive.dragonsteel.line2"
+        ]
+    },
+    "profile": {
+        "normal_attack_interval": 5,
+        "normal_damage_multiplier": 0.15,
+        "normal_range_blocks": 5.0,
+        "normal_trail_damage_multiplier": 0.03,
+        "normal_trail_lifetime_ticks": 40,
+        "berserk_attack_interval": 4,
+        "berserk_damage_multiplier": 0.20,
+        "berserk_range_blocks": 5.0,
+        "berserk_trail_damage_multiplier": 0.06,
+        "berserk_trail_lifetime_ticks": 60,
+        "projectile_speed": 0.85,
+        "hit_radius": 1.55,
+        "trail_damage_interval_ticks": 5
+    }
+}
+

@@ -1,4 +1,4 @@
-{
+﻿{
     "creativetab.projectbabylonweapons.weapons": "Project Babylon: Оружие",
 
     "effect.project_babylon_weapons.bleed_debuff": "Кровотечение",
@@ -233,6 +233,9 @@
     "tooltip.project_babylon_weapons.passive.wand_ice.line2": "На максимуме стаков «Охлаждения» может вызвать «Заморозку» по небольшой области.",
     "tooltip.project_babylon_weapons.passive.wand_dragonsteel.name": "Повелитель Драконов",
     "tooltip.project_babylon_weapons.passive.wand_dragonsteel.line1": "Каждая атака выпускает 2 дополнительных мини-снаряда, наносящих 50% урона.",
+    "tooltip.project_babylon_weapons.passive.dragonsteel.name": "Эхо Змея",
+    "tooltip.project_babylon_weapons.passive.dragonsteel.line1": "Каждый 5-й удар в ближнем бою выпускает §5«Эхо Края»§r, наносящее 15% урона оружия на дистанции до 5 блоков и оставляющее затухающий шлейф, наносящий периодический урон.",
+    "tooltip.project_babylon_weapons.passive.dragonsteel.line2": "В полном сете Драконостали и с активной перезарядкой «Возрождения» каждый 4-й удар выпускает пронзающее усиленное эхо, наносящее 20% урона на дистанции до 5 блоков."
     
     "tooltip.project_babylon_weapons.passive.small_shield_diamond.name": "Волчья Хватка",
     "tooltip.project_babylon_weapons.passive.small_shield_diamond.line1": "Успешный блок щитом создаёт вращающийся алмазный осколок на 16 секунд, до 5 осколков.",

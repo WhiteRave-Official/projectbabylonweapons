@@ -1,4 +1,5 @@
-﻿{
+﻿
+{
     "block.project_babylon_weapons.frozen_debuff_ice_block":  "Frozen Debuff Ice Block",
 
     "creativetab.projectbabylonweapons.weapons":  "Project Babylon Weapons",
@@ -169,7 +170,6 @@
     "item.project_babylon_weapons.ethereal_sickle":  "§6Ethereal Sickle",
     "item.project_babylon_weapons.ethereal_spear":  "§6Ethereal Spear",
     "item.project_babylon_weapons.ethereal_staff":  "§6Ethereal Staff",
-    "item.project_babylon_weapons.ethereal_battle_wand":  "§6Ethereal Battle Wand",
     "item.project_babylon_weapons.ethereal_tachi":  "§6Ethereal Tachi",
     "item.project_babylon_weapons.ethereal_battle_wand":  "§6Ethereal Battle Wand",
     "item.project_babylon_weapons.ethereal_small_shield":  "§6Ethereal Small Shield",
@@ -237,6 +237,9 @@
     "tooltip.project_babylon_weapons.passive.wand_ice.name":  "Frost Touch",
     "tooltip.project_babylon_weapons.passive.wand_ice.line1":  "Projectile hits can stack «Chill» on the target.",
     "tooltip.project_babylon_weapons.passive.wand_ice.line2":  "At maximum «Chill», hits can trigger «Frozen» in a small area.",
+    "tooltip.project_babylon_weapons.passive.dragonsteel.name":  "Wyrm Echo",
+    "tooltip.project_babylon_weapons.passive.dragonsteel.line1":  "Every 5th melee hit releases an §5«Echo Of Ender»§r dealing 15% weapon damage up to 5 blocks and leaves a lingering trail that deal damage over time.",
+    "tooltip.project_babylon_weapons.passive.dragonsteel.line2":  "With full «Dragonsteel» armor and «Rebirth» cooldown active, every 4rd hit releases a piercing empowered echo dealing 20% damage up to 5 blocks.",
     "tooltip.project_babylon_weapons.passive.wand_dragonsteel.name":  "Dragonlord",
     "tooltip.project_babylon_weapons.passive.wand_dragonsteel.line1":  "Each attack fires 2 side mini-projectiles that deal 50% damage.",
     "tooltip.project_babylon_weapons.passive.small_shield_diamond.name":  "Wolf Grip",

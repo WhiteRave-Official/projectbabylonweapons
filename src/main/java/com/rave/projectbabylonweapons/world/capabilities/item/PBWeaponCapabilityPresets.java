@@ -5,6 +5,7 @@ import java.util.function.Function;
 import com.rave.projectbabylonweapons.gameasset.PBAnimations;
 import com.rave.projectbabylonweapons.gameasset.PBColliderPresets;
 import com.rave.projectbabylonweapons.gameasset.PBSkills;
+import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
 import com.rave.projectbabylonweapons.item.shield.BastionShield;
 import net.corruptdog.cdm.gameasset.CDSkills;
 import net.corruptdog.cdm.gameasset.CorruptAnimations;
@@ -29,6 +30,8 @@ import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
 import yesman.epicfight.world.capabilities.item.CapabilityItem;
 import yesman.epicfight.world.capabilities.item.WeaponCapability;
+
+import static com.rave.projectbabylonweapons.world.capabilities.item.PBWeaponCategories.EVERGATE;
 
 @Mod.EventBusSubscriber(
         modid = "project_babylon_weapons",
@@ -112,8 +115,8 @@ public class PBWeaponCapabilityPresets {
     public static final Function<Item, CapabilityItem.Builder> ARCLIGHT = (item) -> {
         WeaponCapability.Builder builder = WeaponCapability.builder()
                 .category(PBWeaponCategories.ARCLIGHT)
-                .styleProvider((playerpatch) -> CapabilityItem.Styles.TWO_HAND)
-                .collider(PBColliderPresets.SICKLE)
+                .styleProvider(playerpatch -> ArclightSwordItem.isEvergate(playerpatch.getOriginal().getMainHandItem()) ? PBArclightStyles.EVERGATE : CapabilityItem.Styles.TWO_HAND)
+                .collider(PBColliderPresets.ARCLIGHT)
                 .canBePlacedOffhand(true)
                 .weaponCombinationPredicator((entitypatch) ->
                         EpicFightCapabilities.getItemStackCapability(((LivingEntity) entitypatch.getOriginal()).getOffhandItem()).getWeaponCategory() == PBWeaponCategories.ARCLIGHT
@@ -141,11 +144,76 @@ public class PBWeaponCapabilityPresets {
                         PBAnimations.ARCLIGHT_DASH,
                         PBAnimations.ARCLIGHT_AIRSlASH
                 })
+                .newStyleCombo(PBArclightStyles.EVERGATE, new AnimationManager.AnimationAccessor[]{
+                        PBAnimations.EVERGATE_AUTO_1, PBAnimations.EVERGATE_AUTO_2, PBAnimations.EVERGATE_AUTO_3,
+                        PBAnimations.EVERGATE_AUTO_4, PBAnimations.EVERGATE_AUTO_5,
+                        PBAnimations.EVERGATE_DASH, PBAnimations.EVERGATE_AIRSLASH
+                })
+                .newStyleCombo(CapabilityItem.Styles.MOUNT, new AnimationManager.AnimationAccessor[]{
+                        Animations.SWORD_MOUNT_ATTACK
+                })
+                .innateSkill(CapabilityItem.Styles.TWO_HAND, itemstack -> PBSkills.ARCLIGHT_AWAKENING)
+                .innateSkill(PBArclightStyles.EVERGATE, itemstack -> PBSkills.ARCLIGHT_AWAKENING)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.IDLE, PBAnimations.ARCLIGHT_IDLE)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.KNEEL, Animations.BIPED_KNEEL)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.WALK, PBAnimations.ARCLIGHT_WALK)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.CHASE, Animations.BIPED_WALK)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.RUN, PBAnimations.ARCLIGHT_RUN)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.SNEAK, Animations.BIPED_SNEAK)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.SWIM, PBAnimations.ARCLIGHT_IDLE)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FLOAT, PBAnimations.ARCLIGHT_IDLE)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FALL, PBAnimations.ARCLIGHT_IDLE)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.IDLE, PBAnimations.EVERGATE_IDLE)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.KNEEL, Animations.BIPED_KNEEL)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.WALK, PBAnimations.ARCLIGHT_WALK)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.CHASE, Animations.BIPED_WALK)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.RUN, PBAnimations.ARCLIGHT_RUN)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.SNEAK, Animations.BIPED_SNEAK)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.SWIM, PBAnimations.ARCLIGHT_IDLE)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.FLOAT, PBAnimations.ARCLIGHT_IDLE)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.FALL, PBAnimations.ARCLIGHT_IDLE);
+
+        return builder;
+    };
+
+    public static final Function<Item, CapabilityItem.Builder> EVERGATE = (item) -> {
+        WeaponCapability.Builder builder = WeaponCapability.builder()
+                .category(PBWeaponCategories.EVERGATE)
+                .styleProvider((playerpatch) -> CapabilityItem.Styles.TWO_HAND)
+                .collider(PBColliderPresets.EVERGATE)
+                .canBePlacedOffhand(true)
+                .weaponCombinationPredicator((entitypatch) ->
+                        EpicFightCapabilities.getItemStackCapability(((LivingEntity) entitypatch.getOriginal()).getOffhandItem()).getWeaponCategory() == PBWeaponCategories.ARCLIGHT
+                );
+
+        if (item instanceof TieredItem tieredItem) {
+            if (tieredItem.getTier() == Tiers.WOOD) {
+                builder.hitSound(EpicFightSounds.BLUNT_HIT.get())
+                        .hitParticle(EpicFightParticles.HIT_BLUNT.get());
+            } else {
+                builder.hitSound(EpicFightSounds.BLADE_HIT.get())
+                        .hitParticle(EpicFightParticles.HIT_BLADE.get());
+            }
+        } else {
+            builder.hitSound(EpicFightSounds.BLADE_HIT.get())
+                    .hitParticle(EpicFightParticles.HIT_BLADE.get());
+        }
+
+        builder
+                .newStyleCombo(CapabilityItem.Styles.TWO_HAND, new AnimationManager.AnimationAccessor[]{
+                        PBAnimations.EVERGATE_AUTO_1,
+                        PBAnimations.EVERGATE_AUTO_2,
+                        PBAnimations.EVERGATE_AUTO_3,
+                        PBAnimations.EVERGATE_AUTO_4,
+                        PBAnimations.EVERGATE_AUTO_5,
+                        PBAnimations.EVERGATE_DASH,
+                        PBAnimations.EVERGATE_AIRSLASH
+                })
                 .newStyleCombo(CapabilityItem.Styles.MOUNT, new AnimationManager.AnimationAccessor[]{
                         Animations.SWORD_MOUNT_ATTACK
                 })
                 .innateSkill(CapabilityItem.Styles.TWO_HAND, (itemstack) -> PBSkills.THE_HARVEST)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.IDLE, PBAnimations.ARCLIGHT_IDLE)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.IDLE, PBAnimations.EVERGATE_IDLE)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.KNEEL, Animations.BIPED_KNEEL)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.WALK, PBAnimations.ARCLIGHT_WALK)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.CHASE, Animations.BIPED_WALK)
@@ -228,7 +296,7 @@ public class PBWeaponCapabilityPresets {
                 .newStyleCombo(PBLongswordStyles.BASTION, CorruptAnimations.SWORD_ONEHAND_AUTO1, CorruptAnimations.SWORD_ONEHAND_AUTO2, CorruptAnimations.SWORD_ONEHAND_AUTO3, CorruptAnimations.SWORD_ONEHAND_AUTO4, CorruptAnimations.SWORD_ONEHAND_DASH, Animations.SWORD_AIR_SLASH)
                 .innateSkill(CapabilityItem.Styles.ONE_HAND, (itemstack) -> CDSkills.SHILEDSLASH)
                 .innateSkill(CapabilityItem.Styles.TWO_HAND, (itemstack) -> CDSkills.GUARDPARRY)
-                .innateSkill(CapabilityItem.Styles.OCHS, (itemstack) -> EpicFightSkills.LIECHTENAUER)
+                .innateSkill(CapabilityItem.Styles.OCHS, (itemstack) -> CDSkills.GUARDPARRY)
                 .innateSkill(PBLongswordStyles.BASTION, (itemstack) -> PBSkills.STERN_SLAM)
                 .livingMotionModifier(CapabilityItem.Styles.COMMON, LivingMotions.IDLE, PBAnimations.BASTION_IDLE)
                 .livingMotionModifier(CapabilityItem.Styles.COMMON, LivingMotions.WALK, Animations.BIPED_WALK_LONGSWORD)
@@ -273,6 +341,10 @@ public class PBWeaponCapabilityPresets {
         event.getTypeEntry().put(
                 ResourceLocation.fromNamespaceAndPath("project_babylon_weapons", "pb_wand"),
                 PB_WAND);
+
+        event.getTypeEntry().put(
+                ResourceLocation.fromNamespaceAndPath("project_babylon_weapons", "evergate"),
+                EVERGATE);
 
         event.getTypeEntry().put(
                 ResourceLocation.fromNamespaceAndPath("project_babylon_weapons", "pb_longsword"),

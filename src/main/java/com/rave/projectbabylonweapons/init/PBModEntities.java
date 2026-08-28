@@ -11,6 +11,7 @@ import com.rave.projectbabylonweapons.world.entity.effect.TectonicFallingBlockEn
 import com.rave.projectbabylonweapons.world.entity.projectile.BasicSpellProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.DiamondSpellProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.DragonDescendProjectileEntity;
+import com.rave.projectbabylonweapons.world.entity.projectile.DragonsteelWyrmEchoProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.EnderSpellProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.FireSpellProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.GoldenSpellProjectileEntity;
@@ -107,6 +108,14 @@ public class PBModEntities {
                             .updateInterval(1)
                             .build("dragon_descend_projectile"));
 
+
+    public static final RegistryObject<EntityType<DragonsteelWyrmEchoProjectileEntity>> DRAGONSTEEL_WYRM_ECHO_PROJECTILE =
+            ENTITIES.register("dragonsteel_wyrm_echo_projectile", () ->
+                    EntityType.Builder.<DragonsteelWyrmEchoProjectileEntity>of(DragonsteelWyrmEchoProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.45f, 0.45f)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build("dragonsteel_wyrm_echo_projectile"));
     public static final RegistryObject<EntityType<GlacierIceSpikeEntity>> GLACIER_ICE_SPIKE =
             ENTITIES.register("glacier_ice_spike", () ->
                     EntityType.Builder.<GlacierIceSpikeEntity>of(GlacierIceSpikeEntity::new, MobCategory.MISC)

@@ -11,6 +11,8 @@ import yesman.epicfight.api.collider.OBBCollider;
 public class PBColliderPresets {
     private static final BiMap<ResourceLocation, Collider> PRESETS = HashBiMap.create();
     public static final Collider SICKLE =  new MultiOBBCollider(3, 0.42, 0.45, 0.6, (double)0.0F, 0.1, (double)-0.2F);
+    public static final Collider EVERGATE =  new MultiOBBCollider(3, 0.4, 0.55, 1.2D, 0D, 0.1, -0.8D);
+    public static final Collider ARCLIGHT =  new MultiOBBCollider(3, 0.4, 0.4, 1.0D, 0D, 0.1, -0.8D);
     public static final Collider SCYTHE =  new MultiOBBCollider(3, 0.5, 1.0, 0.9, (double)0.0F, 0.1, (double)-1.3F);
     public static final Collider APPERCUT_SKILL =  new MultiOBBCollider(3, 0.7, 0.7, 0.7, (double)0.0F, 0.1, (double)0.0F);
     public static final Collider TECTONIC_SKILL =  new MultiOBBCollider(3, 1.0, 1.0, 1.3, (double)0.0F, 0.1, (double)-1.0F);

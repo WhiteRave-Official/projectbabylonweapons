@@ -13,9 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
-import software.bernie.geckolib.renderer.GeoItemRenderer;
-
-public class DragonsteelBattleWandItemRenderer extends GeoItemRenderer<DragonsteelBattleWandItem> {
+public class DragonsteelBattleWandItemRenderer extends PBCullingGeoItemRenderer<DragonsteelBattleWandItem> {
     private static final float SCALE_RECIPROCAL = 0.0625F;
     protected boolean renderArms = false;
     protected MultiBufferSource currentBuffer;

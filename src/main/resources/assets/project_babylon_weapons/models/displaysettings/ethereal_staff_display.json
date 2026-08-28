@@ -1,0 +1,142 @@
+{
+  "credit": "Made with Blockbench",
+  "parent": "builtin/entity",
+  "texture_size": [
+    32,
+    32
+  ],
+  "gui_light": "front",
+  "display": {
+    "thirdperson_righthand": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        -6.5,
+        1
+      ],
+      "scale": [
+        1.47,
+        1.47,
+        1.47
+      ]
+    },
+    "thirdperson_lefthand": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "translation": [
+        0,
+        -6.5,
+        1
+      ],
+      "scale": [
+        1.47,
+        1.47,
+        1.47
+      ]
+    },
+    "firstperson_righthand": {
+      "rotation": [
+        25.75,
+        -90,
+        0
+      ],
+      "translation": [
+        2,
+        0,
+        -1.25
+      ],
+      "scale": [
+        0.88,
+        0.88,
+        0.88
+      ]
+    },
+    "firstperson_lefthand": {
+      "rotation": [
+        25.75,
+        -90,
+        0
+      ],
+      "translation": [
+        2,
+        0,
+        -1.25
+      ],
+      "scale": [
+        0.88,
+        0.88,
+        0.88
+      ]
+    },
+    "ground": {
+      "rotation": [
+        154.5,
+        0,
+        134.96000000000004
+      ],
+      "translation": [
+        -0.75,
+        8.75,
+        0
+      ],
+      "scale": [
+        0.46,
+        0.46,
+        0.46
+      ]
+    },
+    "gui": {
+      "rotation": [
+        -1,
+        -180,
+        45
+      ],
+      "translation": [
+        -1.25,
+        -1.25,
+        0
+      ],
+      "scale": [
+        0.52,
+        0.52,
+        0.52
+      ]
+    },
+    "head": {
+      "translation": [
+        0.25,
+        8.5,
+        0.75
+      ],
+      "scale": [
+        0.6,
+        0.6,
+        0.6
+      ]
+    },
+    "fixed": {
+      "rotation": [
+        -180,
+        -180,
+        -135
+      ],
+      "translation": [
+        1.75,
+        -1.75,
+        -0.75
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ]
+    }
+  }
+}

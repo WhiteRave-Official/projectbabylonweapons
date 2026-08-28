@@ -7,6 +7,7 @@ import com.rave.projectbabylonweapons.passive.bastion.BastionHeavensGiftBalance;
 import com.rave.projectbabylonweapons.world.entity.effect.FireStormEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 
 public final class PhotonWeaponEffectHelper {
@@ -145,6 +146,28 @@ public final class PhotonWeaponEffectHelper {
         PBMPhotonEffectHelper.spawnDiamondProjectileImpact(entity, entity.position().add(0.0D, 0.08D, 0.0D));
     }
 
+
+    public static void spawnDragonsteelWyrmEchoFlight(Entity projectile, Vec3 movement, boolean berserk, int trailVisualLifetimeTicks) {
+        PBMPhotonEffectHelper.spawnDragonDescendFlight(projectile, movement, trailVisualLifetimeTicks);
+        if (berserk) {
+            PBMPhotonEffectHelper.spawnDragonDescendFlight(projectile, movement.scale(1.25D), trailVisualLifetimeTicks);
+            PBMPhotonEffectHelper.spawnEnderProjectileFlight(projectile, movement.scale(1.1D));
+        }
+    }
+
+    public static void spawnDragonsteelWyrmEchoImpact(Entity projectile, Vec3 hitPos, boolean berserk) {
+        PBMPhotonEffectHelper.spawnEnderProjectileImpact(projectile, hitPos);
+        if (berserk) {
+            PBMPhotonEffectHelper.spawnEnderProjectileImpact(projectile, hitPos.add(0.0D, 0.15D, 0.0D));
+        }
+    }
+
+    public static void spawnDragonsteelWyrmEchoLingering(Level level, Vec3 position, Vec3 forward, int pulseLifetimeTicks) {
+        if (level instanceof net.minecraft.client.multiplayer.ClientLevel clientLevel) {
+            PBMPhotonEffectHelper.spawnDragonDescendLingeringTrail(clientLevel, position, forward, pulseLifetimeTicks);
+        }
+    }
+
     public static void spawnDragonFuryChargeTrail(Entity entity, Vec3 movement) {
         PBMPhotonEffectHelper.spawnEnderProjectileFlight(entity, movement.scale(1.05D));
     }
@@ -218,3 +241,4 @@ public final class PhotonWeaponEffectHelper {
         PBMPhotonEffectHelper.spawnAbsorptionShield(entity, progress, tick, absorptionAmount);
     }
 }
+
