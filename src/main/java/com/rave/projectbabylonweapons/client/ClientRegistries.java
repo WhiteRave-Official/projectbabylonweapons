@@ -3,7 +3,9 @@ package com.rave.projectbabylonweapons.client;
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
 import com.rave.projectbabylonweapons.block.renderer.FrozenDebuffIceBlockTileRenderer;
 import com.rave.projectbabylonweapons.client.particle.BasicSpellProjectileTrailParticle;
+import com.rave.projectbabylonweapons.client.renderer.ArclightMiniProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.BasicSpellProjectileRenderer;
+import com.rave.projectbabylonweapons.client.renderer.item.ArclightAwakeningItemRenderer;
 import com.rave.projectbabylonweapons.client.renderer.DiamondShardRenderer;
 import com.rave.projectbabylonweapons.client.renderer.DragonFuryChargeRenderer;
 import com.rave.projectbabylonweapons.client.renderer.DiamondSpellProjectileRenderer;
@@ -30,7 +32,9 @@ import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import yesman.epicfight.api.client.forgeevent.PatchedRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
@@ -39,8 +43,24 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 @EventBusSubscriber(modid = ProjectBabylonWeapons.MODID, bus = Bus.MOD, value = Dist.CLIENT)
 public class ClientRegistries {
     @SubscribeEvent
+    public static void registerItemRenderers(PatchedRenderersEvent.RegisterItemRenderer event) {
+        event.addItemRenderer(
+                ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "arclight_awakening"),
+                ArclightAwakeningItemRenderer::new
+        );
+    }
+
+    @SubscribeEvent
+    public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
+        event.register(ArclightMiniProjectileRenderer.MINI_MODEL);
+        event.register(ArclightMiniProjectileRenderer.SPEAR_MODEL);
+    }
+
+    @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(PBModEntities.SICKLE_PROJECTILE.get(), SickleChainRenderer::new);
+        event.registerEntityRenderer(PBModEntities.ARCLIGHT_MINI_PROJECTILE.get(), ArclightMiniProjectileRenderer::new);
+        event.registerEntityRenderer(PBModEntities.ARCLIGHT_SPEAR_PROJECTILE.get(), ArclightMiniProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.BASIC_SPELL_PROJECTILE.get(), BasicSpellProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.GOLDEN_SPELL_PROJECTILE.get(), GoldenSpellProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.DIAMOND_SPELL_PROJECTILE.get(), DiamondSpellProjectileRenderer::new);

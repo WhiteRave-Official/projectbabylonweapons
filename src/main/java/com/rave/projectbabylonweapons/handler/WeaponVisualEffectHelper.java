@@ -1,5 +1,6 @@
 package com.rave.projectbabylonweapons.handler;
 
+
 import com.rave.projectbabylonweapons.network.PBNetworkManager;
 import com.rave.projectbabylonweapons.network.SPPlayWeaponVisualEffect;
 import net.minecraft.world.entity.Entity;
@@ -32,6 +33,9 @@ public final class WeaponVisualEffectHelper {
     public static final String MANA_BUBBLE_CONTACT_BASIC = "mana_bubble_contact_basic";
 
     public static final String NETHERITE_BRIMSTONE_BLAST = "netherite_brimstone_blast";
+    public static final String ARCLIGHT_AWAKENING_START = "arclight_awakening_start";
+    public static final String ARCLIGHT_AWAKENING_BURST = "arclight_awakening_burst";
+    public static final String ARCLIGHT_AWAKENING_STOP = "arclight_awakening_stop";
 
     private WeaponVisualEffectHelper() {
     }
@@ -63,12 +67,14 @@ public final class WeaponVisualEffectHelper {
     public static void playManaBubbleBasicContact(Entity entity) { play(entity, MANA_BUBBLE_CONTACT_BASIC); }
 
     public static void playBrimstoneBlast(Entity entity) { play(entity, NETHERITE_BRIMSTONE_BLAST); }
+    public static void startArclightAwakening(Entity entity) { play(entity, ARCLIGHT_AWAKENING_START); }
+    public static void burstArclightAwakening(Entity entity) { play(entity, ARCLIGHT_AWAKENING_BURST); }
+    public static void stopArclightAwakening(Entity entity) { play(entity, ARCLIGHT_AWAKENING_STOP); }
 
     private static void play(Entity entity, String effectId) {
         if (entity == null || entity.level().isClientSide) {
             return;
         }
-
         PBNetworkManager.sendToTrackingAndSelf(entity, new SPPlayWeaponVisualEffect(effectId, entity.getId()));
     }
 }

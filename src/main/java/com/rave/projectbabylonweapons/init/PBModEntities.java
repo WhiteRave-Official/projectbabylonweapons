@@ -8,6 +8,7 @@ import com.rave.projectbabylonweapons.world.entity.effect.FireStormEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.GlacierIceSpikeEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.HolyMagicalSealEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.TectonicFallingBlockEntity;
+import com.rave.projectbabylonweapons.world.entity.projectile.ArclightMiniProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.BasicSpellProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.DiamondSpellProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.DragonDescendProjectileEntity;
@@ -116,6 +117,21 @@ public class PBModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build("dragonsteel_wyrm_echo_projectile"));
+    public static final RegistryObject<EntityType<ArclightMiniProjectileEntity>> ARCLIGHT_MINI_PROJECTILE =
+            ENTITIES.register("arclight_mini_projectile", () ->
+                    EntityType.Builder.<ArclightMiniProjectileEntity>of(ArclightMiniProjectileEntity::new, MobCategory.MISC)
+                            .sized(0.35F, 0.35F)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build("arclight_mini_projectile"));
+
+    public static final RegistryObject<EntityType<ArclightMiniProjectileEntity>> ARCLIGHT_SPEAR_PROJECTILE =
+            ENTITIES.register("arclight_spear_projectile", () ->
+                    EntityType.Builder.<ArclightMiniProjectileEntity>of(ArclightMiniProjectileEntity::new, MobCategory.MISC)
+                            .sized(1.65F, 1.65F)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build("arclight_spear_projectile"));
     public static final RegistryObject<EntityType<GlacierIceSpikeEntity>> GLACIER_ICE_SPIKE =
             ENTITIES.register("glacier_ice_spike", () ->
                     EntityType.Builder.<GlacierIceSpikeEntity>of(GlacierIceSpikeEntity::new, MobCategory.MISC)

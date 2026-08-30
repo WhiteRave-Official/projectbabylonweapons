@@ -26,6 +26,17 @@ public final class PhotonWeaponEffectHelper {
         PBMPhotonEffectHelper.stopDragonDescendCast(entity);
     }
 
+    public static void startArclightAwakening(Entity entity) {
+        PBMPhotonEffectHelper.startArclightAwakening(entity);
+    }
+
+    public static void burstArclightAwakening(Entity entity) {
+        PBMPhotonEffectHelper.burstArclightAwakening(entity);
+    }
+
+    public static void stopArclightAwakening(Entity entity) {
+        PBMPhotonEffectHelper.stopArclightAwakening(entity);
+    }
     public static void startGlacierCast(Entity entity) {
         PBMPhotonEffectHelper.startGlacierCast(entity);
     }
@@ -237,6 +248,45 @@ public final class PhotonWeaponEffectHelper {
         return 8.0F;
     }
 
+    public static void spawnArclightMiniPortal(Entity projectile, Vec3 direction) {
+        PBMPhotonEffectHelper.spawnArclightMiniPortal(projectile, direction);
+    }
+
+    public static void spawnArclightMiniLaunch(Entity projectile, Vec3 direction) {
+        PBMPhotonEffectHelper.spawnArclightMiniLaunch(projectile, direction);
+    }
+
+    public static void spawnArclightMiniFlight(Entity projectile, Vec3 movement) {
+        PBMPhotonEffectHelper.spawnArclightMiniFlight(projectile, movement);
+    }
+
+    public static void spawnArclightMiniImpact(Entity projectile, Vec3 hitPos, Vec3 direction) {
+        PBMPhotonEffectHelper.spawnArclightMiniImpact(projectile, hitPos, direction);
+    }
+
+    public static void spawnArclightMiniDissolve(Entity projectile, Vec3 position) {
+        PBMPhotonEffectHelper.spawnArclightMiniDissolve(projectile, position);
+    }
+
+    public static void spawnArclightSpearPortal(Entity projectile, Vec3 direction) {
+        PBMPhotonEffectHelper.spawnArclightSpearPortal(projectile, direction);
+    }
+
+    public static void spawnArclightSpearLaunch(Entity projectile, Vec3 direction) {
+        PBMPhotonEffectHelper.spawnArclightSpearLaunch(projectile, direction);
+    }
+
+    public static void spawnArclightSpearFlight(Entity projectile, Vec3 movement) {
+        PBMPhotonEffectHelper.spawnArclightSpearFlight(projectile, movement);
+    }
+
+    public static void spawnArclightSpearImpact(Entity projectile, Vec3 hitPos, Vec3 direction) {
+        PBMPhotonEffectHelper.spawnArclightSpearImpact(projectile, hitPos, direction);
+    }
+
+    public static void spawnArclightSpearDissolve(Entity projectile, Vec3 position) {
+        PBMPhotonEffectHelper.spawnArclightSpearDissolve(projectile, position);
+    }
     public static void spawnAbsorptionShield(LivingEntity entity, float progress, int tick, float absorptionAmount) {
         PBMPhotonEffectHelper.spawnAbsorptionShield(entity, progress, tick, absorptionAmount);
     }

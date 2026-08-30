@@ -268,5 +268,7 @@
     "tooltip.project_babylon_weapons.passive.small_shield_ethereal.line2": "Каждый снятый бафф восстанавливает 10% заряда навыка оружия и даёт «Поглощение» в размере 5% от вашего макс. здоровья.",
     "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.name": "Возмездие",
     "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line1": "Успешное парирование «Ударом Щитом» даёт 1 заряд «Драконей Ярости», до 2.",
-    "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line2": "Следующий удар оружием поглощает все заряды, получая +100% урона и +30% игнорирования брони за каждый заряд."
+    "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line2": "Следующий удар оружием поглощает все заряды, получая +100% урона и +30% игнорирования брони за каждый заряд.",
+    "skill.project_babylon_weapons.eternal_light": "\u0412\u0435\u0447\u043d\u044b\u0439 \u0421\u0432\u0435\u0442",
+    "skill.project_babylon_weapons.eternal_light.tooltip": "\u041d\u0430\u043a\u0430\u043f\u043b\u0438\u0432\u0430\u0435\u0442 \u0434\u043e 10 \u0437\u0430\u0440\u044f\u0434\u043e\u0432. \u0418\u0441\u043f\u043e\u043b\u044c\u0437\u0443\u0439\u0442\u0435 \u043d\u0430\u0432\u044b\u043a \u0432\u043e \u0432\u0440\u0435\u043c\u044f \u0431\u0435\u0433\u0430 \u0438\u043b\u0438 \u0432 \u0432\u043e\u0437\u0434\u0443\u0445\u0435 \u0434\u043b\u044f \u0443\u0441\u0438\u043b\u0435\u043d\u043d\u044b\u0445 \u0430\u0442\u0430\u043a."
 }

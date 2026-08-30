@@ -153,7 +153,7 @@ public class PBWeaponCapabilityPresets {
                         Animations.SWORD_MOUNT_ATTACK
                 })
                 .innateSkill(CapabilityItem.Styles.TWO_HAND, itemstack -> PBSkills.ARCLIGHT_AWAKENING)
-                .innateSkill(PBArclightStyles.EVERGATE, itemstack -> PBSkills.ARCLIGHT_AWAKENING)
+                .innateSkill(PBArclightStyles.EVERGATE, itemstack -> PBSkills.ETERNAL_LIGHT)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.IDLE, PBAnimations.ARCLIGHT_IDLE)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.KNEEL, Animations.BIPED_KNEEL)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.WALK, PBAnimations.ARCLIGHT_WALK)

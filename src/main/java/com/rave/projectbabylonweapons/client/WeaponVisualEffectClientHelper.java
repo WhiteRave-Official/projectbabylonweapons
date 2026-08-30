@@ -120,6 +120,21 @@ public final class WeaponVisualEffectClientHelper {
         }
         if (WeaponVisualEffectHelper.NETHERITE_BRIMSTONE_BLAST.equals(effectId)) {
             PhotonWeaponEffectHelper.spawnBrimstoneBlast(entity);
+            return;
+        }
+        if (WeaponVisualEffectHelper.ARCLIGHT_AWAKENING_START.equals(effectId)) {
+            ArclightAwakeningClientState.start(entity);
+            PhotonWeaponEffectHelper.startArclightAwakening(entity);
+            return;
+        }
+        if (WeaponVisualEffectHelper.ARCLIGHT_AWAKENING_BURST.equals(effectId)) {
+            PhotonWeaponEffectHelper.burstArclightAwakening(entity);
+            ArclightAwakeningClientState.stop(entity);
+            return;
+        }
+        if (WeaponVisualEffectHelper.ARCLIGHT_AWAKENING_STOP.equals(effectId)) {
+            PhotonWeaponEffectHelper.stopArclightAwakening(entity);
+            ArclightAwakeningClientState.stop(entity);
         }
     }
 }

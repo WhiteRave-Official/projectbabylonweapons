@@ -273,5 +273,7 @@
     "tooltip.project_babylon_weapons.passive.small_shield_ethereal.line2":  "Each removed buff restores 10% of weapon skill charge and grants «Absorption» as 5% of your max health.",
     "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.name":  "Retribution",
     "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line1":  "A successful «Shield Bash» parry grants 1 Dragon Fury charge, up to 2.",
-    "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line2":  "The next weapon hit consumes all charges, gaining +100% damage and +30% armor negation per charge."
+    "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line2":  "The next weapon hit consumes all charges, gaining +100% damage and +30% armor negation per charge.",
+    "skill.project_babylon_weapons.eternal_light": "Eternal Light",
+    "skill.project_babylon_weapons.eternal_light.tooltip": "Stores up to 10 charges. Use the skill while sprinting or airborne to perform empowered attacks."
 }

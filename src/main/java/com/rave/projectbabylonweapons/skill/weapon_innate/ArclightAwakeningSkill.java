@@ -2,6 +2,7 @@ package com.rave.projectbabylonweapons.skill.weapon_innate;
 
 import com.rave.projectbabylonweapons.gameasset.PBAnimations;
 import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
+import com.rave.projectbabylonweapons.handler.WeaponVisualEffectHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,6 +15,7 @@ import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
 import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
 
 import java.util.UUID;
@@ -48,6 +50,7 @@ public class ArclightAwakeningSkill extends WeaponInnateSkill {
         super.executeOnServer(container, args);
         container.activate();
         container.getExecutor().playAnimationSynchronized(PBAnimations.ARCLIGHT_AWAKENING, 0.0F);
+        WeaponVisualEffectHelper.startArclightAwakening(container.getExecutor().getOriginal());
     }
 
     @Override
@@ -58,7 +61,8 @@ public class ArclightAwakeningSkill extends WeaponInnateSkill {
 
     @Override
     public void onRemoved(SkillContainer container) {
-        if (!container.getExecutor().isLogicalClient()) {
+        if (!container.getExecutor().isLogicalClient()
+                && !ArclightSwordItem.isEvergate(container.getExecutor().getOriginal().getMainHandItem())) {
             resetForm(container);
         }
         super.onRemoved(container);
@@ -83,15 +87,26 @@ public class ArclightAwakeningSkill extends WeaponInnateSkill {
 
         ItemStack arclight = player.getMainHandItem();
         if (!(arclight.getItem() instanceof ArclightSwordItem) || ArclightSwordItem.isEvergate(arclight)) return;
-
+        WeaponVisualEffectHelper.burstArclightAwakening(player);
         ArclightSwordItem.awaken(arclight);
         syncInventory(player);
         serverPatch.modifyLivingMotionByCurrentItem(false);
+
+        // Replacing the innate skill removes/adds Epic Fight listeners. Queue it so the
+        // current ATTACK_PHASE_END_EVENT iteration can finish without being mutated.
+        player.server.tell(new net.minecraft.server.TickTask(player.server.getTickCount() + 1, () -> {
+            ItemStack current = player.getMainHandItem();
+            if (current.getItem() instanceof ArclightSwordItem && ArclightSwordItem.isEvergate(current)) {
+                EpicFightCapabilities.getItemStackCapability(current).changeWeaponInnateSkill(serverPatch, current);
+            }
+        }));
     }
 
-    private static void resetForm(SkillContainer container) {
+    static void resetForm(SkillContainer container) {
         if (!(container.getExecutor() instanceof ServerPlayerPatch serverPatch)
                 || !(container.getExecutor().getOriginal() instanceof ServerPlayer player)) return;
+
+        WeaponVisualEffectHelper.stopArclightAwakening(player);
 
         boolean changed = false;
         for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {

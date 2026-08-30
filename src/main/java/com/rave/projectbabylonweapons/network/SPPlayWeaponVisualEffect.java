@@ -27,7 +27,9 @@ public class SPPlayWeaponVisualEffect {
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> WeaponVisualEffectClientHelper.play(this.effectId, this.entityId));
+        context.enqueueWork(() -> {
+            WeaponVisualEffectClientHelper.play(this.effectId, this.entityId);
+        });
         context.setPacketHandled(true);
     }
 }
