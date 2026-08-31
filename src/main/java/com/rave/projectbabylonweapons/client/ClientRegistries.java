@@ -4,6 +4,7 @@ import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
 import com.rave.projectbabylonweapons.block.renderer.FrozenDebuffIceBlockTileRenderer;
 import com.rave.projectbabylonweapons.client.particle.BasicSpellProjectileTrailParticle;
 import com.rave.projectbabylonweapons.client.renderer.ArclightMiniProjectileRenderer;
+import com.rave.projectbabylonweapons.client.renderer.ArclightRainPortalRenderer;
 import com.rave.projectbabylonweapons.client.renderer.BasicSpellProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.item.ArclightAwakeningItemRenderer;
 import com.rave.projectbabylonweapons.client.renderer.DiamondShardRenderer;
@@ -59,6 +60,7 @@ public class ClientRegistries {
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(PBModEntities.SICKLE_PROJECTILE.get(), SickleChainRenderer::new);
+        event.registerEntityRenderer(PBModEntities.ARCLIGHT_RAIN_PORTAL.get(), ArclightRainPortalRenderer::new);
         event.registerEntityRenderer(PBModEntities.ARCLIGHT_MINI_PROJECTILE.get(), ArclightMiniProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.ARCLIGHT_SPEAR_PROJECTILE.get(), ArclightMiniProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.BASIC_SPELL_PROJECTILE.get(), BasicSpellProjectileRenderer::new);

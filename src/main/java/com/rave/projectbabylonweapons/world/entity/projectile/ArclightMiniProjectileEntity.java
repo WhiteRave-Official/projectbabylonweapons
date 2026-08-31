@@ -15,12 +15,16 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class ArclightMiniProjectileEntity extends Projectile {
     public static final int STATE_WAITING = 0;
@@ -38,6 +42,8 @@ public class ArclightMiniProjectileEntity extends Projectile {
             SynchedEntityData.defineId(ArclightMiniProjectileEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Float> DATA_DIRECTION_Z =
             SynchedEntityData.defineId(ArclightMiniProjectileEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Boolean> DATA_PORTAL_VISUAL =
+            SynchedEntityData.defineId(ArclightMiniProjectileEntity.class, EntityDataSerializers.BOOLEAN);
 
     private static final float SPEED = 2.35F;
     private static final int WAITING_LIFETIME = 60;
@@ -49,6 +55,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
     private int stateTicks;
     private int previousClientState = -1;
     private boolean clientDissolveSpawned;
+    private final Set<Integer> piercedEntityIds = new HashSet<>();
 
     public ArclightMiniProjectileEntity(EntityType<? extends ArclightMiniProjectileEntity> type, Level level) {
         super(type, level);
@@ -64,14 +71,20 @@ public class ArclightMiniProjectileEntity extends Projectile {
     }
 
     public void configure(LivingEntity owner, Vec3 direction, float damage) {
+        this.configure(owner, direction, damage, true);
+    }
+
+    public void configure(LivingEntity owner, Vec3 direction, float damage, boolean portalVisual) {
         Vec3 normalized = direction.lengthSqr() < 1.0E-6D
                 ? new Vec3(0.0D, 0.0D, 1.0D)
                 : direction.normalize();
         this.setOwner(owner);
+        this.piercedEntityIds.clear();
         this.damage = Math.max(0.0F, damage);
         this.setDirection(normalized);
         this.entityData.set(DATA_STATE, STATE_WAITING);
         this.entityData.set(DATA_LAUNCH_DELAY, 0);
+        this.entityData.set(DATA_PORTAL_VISUAL, portalVisual);
         this.setDeltaMovement(Vec3.ZERO);
         this.updateRotationFromDirection(normalized);
     }
@@ -98,6 +111,19 @@ public class ArclightMiniProjectileEntity extends Projectile {
     }
 
     @Override
+    protected AABB makeBoundingBox() {
+        double halfWidth = this.getBbWidth() * 0.5D;
+        double halfHeight = this.getBbHeight() * 0.5D;
+        return new AABB(
+                this.getX() - halfWidth,
+                this.getY() - halfHeight,
+                this.getZ() - halfWidth,
+                this.getX() + halfWidth,
+                this.getY() + halfHeight,
+                this.getZ() + halfWidth
+        );
+    }
+    @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
@@ -109,6 +135,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
         this.entityData.define(DATA_DIRECTION_X, 0.0F);
         this.entityData.define(DATA_DIRECTION_Y, 0.0F);
         this.entityData.define(DATA_DIRECTION_Z, 1.0F);
+        this.entityData.define(DATA_PORTAL_VISUAL, true);
     }
 
     @Override
@@ -132,7 +159,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
     private void tickWaiting() {
         this.setDeltaMovement(Vec3.ZERO);
         if (this.level().isClientSide) {
-            if ((this.tickCount % 3) == 0) {
+            if (this.entityData.get(DATA_PORTAL_VISUAL) && (this.tickCount % 3) == 0) {
                 this.spawnPortalVisual();
             }
         } else if (++this.stateTicks > WAITING_LIFETIME) {
@@ -143,7 +170,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
     private void tickQueued() {
         this.setDeltaMovement(Vec3.ZERO);
         if (this.level().isClientSide) {
-            if ((this.tickCount % 3) == 0) {
+            if (this.entityData.get(DATA_PORTAL_VISUAL) && (this.tickCount % 3) == 0) {
                 this.spawnPortalVisual();
             }
             return;
@@ -198,7 +225,8 @@ public class ArclightMiniProjectileEntity extends Projectile {
 
     @Override
     protected boolean canHitEntity(Entity target) {
-        if (!super.canHitEntity(target) || target == this.getOwner()) {
+        if (!super.canHitEntity(target) || target == this.getOwner()
+                || this.piercedEntityIds.contains(target.getId())) {
             return false;
         }
         return !(this.getOwner() instanceof LivingEntity owner) || !target.isAlliedTo(owner);
@@ -211,6 +239,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
         }
 
         Entity target = result.getEntity();
+        this.piercedEntityIds.add(target.getId());
         Vec3 originalMovement = target.getDeltaMovement();
         int originalInvulnerableTime = target.invulnerableTime;
         target.invulnerableTime = 0;
@@ -221,7 +250,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
             target.setDeltaMovement(originalMovement);
             target.hurtMarked = true;
         }
-        this.discard();
+        this.level().broadcastEntityEvent(this, (byte) 4);
     }
 
     @Override
@@ -249,6 +278,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
         tag.putDouble("DirectionY", direction.y);
         tag.putDouble("DirectionZ", direction.z);
         tag.putInt("StateTicks", this.stateTicks);
+        tag.putBoolean("PortalVisual", this.entityData.get(DATA_PORTAL_VISUAL));
     }
 
     @Override
@@ -259,8 +289,17 @@ public class ArclightMiniProjectileEntity extends Projectile {
         this.entityData.set(DATA_LAUNCH_DELAY, tag.getInt("LaunchDelay"));
         this.setDirection(new Vec3(tag.getDouble("DirectionX"), tag.getDouble("DirectionY"), tag.getDouble("DirectionZ")));
         this.stateTicks = tag.getInt("StateTicks");
+        this.entityData.set(DATA_PORTAL_VISUAL, !tag.contains("PortalVisual") || tag.getBoolean("PortalVisual"));
     }
 
+    @Override
+    public void handleEntityEvent(byte eventId) {
+        if (eventId == 4) {
+            this.spawnImpactVisual(this.position());
+            return;
+        }
+        super.handleEntityEvent(eventId);
+    }
     @Override
     public void remove(RemovalReason reason) {
         if (this.level().isClientSide && !this.clientDissolveSpawned && reason != RemovalReason.UNLOADED_TO_CHUNK) {

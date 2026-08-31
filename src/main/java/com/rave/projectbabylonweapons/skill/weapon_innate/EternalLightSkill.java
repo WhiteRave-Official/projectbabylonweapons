@@ -2,6 +2,7 @@ package com.rave.projectbabylonweapons.skill.weapon_innate;
 
 import com.rave.projectbabylonweapons.gameasset.PBAnimations;
 import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
+import com.rave.projectbabylonweapons.world.entity.effect.ArclightRainPortalEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.ArclightMiniProjectileEntity;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.KeyMapping;
@@ -40,8 +41,9 @@ public class EternalLightSkill extends WeaponInnateSkill {
     private static final float SPEAR_DAMAGE_MULTIPLIER = 1.0F;
     private static final int AUTO_SEQUENCE_WINDOW_TICKS = 60;
     private static final Map<UUID, List<UUID>> PENDING_MINI_PROJECTILES = new ConcurrentHashMap<>();
-    private static final Map<UUID, UUID> PENDING_SPEAR_PROJECTILES = new ConcurrentHashMap<>();
+    private static final Map<UUID, List<UUID>> PENDING_SPEAR_PROJECTILES = new ConcurrentHashMap<>();
     private static final Map<UUID, AutoSequence> AUTO_SEQUENCES = new ConcurrentHashMap<>();
+    private static final Map<UUID, List<UUID>> PENDING_RAIN_PORTALS = new ConcurrentHashMap<>();
 
     public EternalLightSkill(SkillBuilder<? extends WeaponInnateSkill> builder) {
         super(builder);
@@ -58,11 +60,14 @@ public class EternalLightSkill extends WeaponInnateSkill {
                         return;
                     }
                     if (event.getAnimation() == PBAnimations.EVERGATE_EXTRA_AUTO_1
-                            && event.getPhaseOrder() >= 2) {
+                            && event.getPhaseOrder() == 1) {
                         launchPendingProjectiles(event.getPlayerPatch().getOriginal());
                     } else if (event.getAnimation() == PBAnimations.EVERGATE_EXTRA_AUTO_2
-                            && event.getPhaseOrder() >= 1) {
+                            && event.getPhaseOrder() == 0) {
                         launchPendingSpear(event.getPlayerPatch().getOriginal());
+                    } else if (event.getAnimation() == PBAnimations.EVERGATE_EXTRA_AUTO_3
+                            && event.getPhaseOrder() == 0) {
+                        activateRainPortals(event.getPlayerPatch().getOriginal());
                     }
                 }
         );
@@ -113,6 +118,7 @@ public class EternalLightSkill extends WeaponInnateSkill {
         if (!container.getExecutor().isLogicalClient()) {
             clearPendingProjectiles(container.getExecutor().getOriginal());
             clearPendingSpear(container.getExecutor().getOriginal());
+            clearRainPortals(container.getExecutor().getOriginal());
             AUTO_SEQUENCES.remove(container.getExecutor().getOriginal().getUUID());
             ArclightAwakeningSkill.resetForm(container);
         }
@@ -126,18 +132,86 @@ public class EternalLightSkill extends WeaponInnateSkill {
         boolean continueSequence = sequence != null
                 && gameTime - sequence.lastUseTick() <= AUTO_SEQUENCE_WINDOW_TICKS;
 
-        if (continueSequence) {
-            spawnSpear(caster);
-            container.getExecutor().playAnimationSynchronized(PBAnimations.EVERGATE_EXTRA_AUTO_2, 0.0F);
-            AUTO_SEQUENCES.remove(caster.getUUID());
-        } else {
+        if (!continueSequence) {
             clearPendingSpear(caster);
             spawnPortals(caster);
             container.getExecutor().playAnimationSynchronized(PBAnimations.EVERGATE_EXTRA_AUTO_1, 0.0F);
-            AUTO_SEQUENCES.put(caster.getUUID(), new AutoSequence(gameTime));
+            AUTO_SEQUENCES.put(caster.getUUID(), new AutoSequence(gameTime, 1));
+            return;
+        }
+
+        if (sequence.step() == 1) {
+            spawnSpear(caster);
+            container.getExecutor().playAnimationSynchronized(PBAnimations.EVERGATE_EXTRA_AUTO_2, 0.0F);
+            AUTO_SEQUENCES.put(caster.getUUID(), new AutoSequence(gameTime, 2));
+            return;
+        }
+
+        spawnRainPortals(caster);
+        container.getExecutor().playAnimationSynchronized(PBAnimations.EVERGATE_EXTRA_AUTO_3, 0.0F);
+        AUTO_SEQUENCES.remove(caster.getUUID());
+    }
+
+    private static void spawnRainPortals(LivingEntity caster) {
+        if (!(caster.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        clearRainPortals(caster);
+        Vec3 forward = flatForward(caster);
+        Vec3 areaCenter = caster.position().add(forward.scale(8.0D)).add(0.0D, 7.0D, 0.0D);
+        float damage = (float) caster.getAttributeValue(Attributes.ATTACK_DAMAGE) * MINI_DAMAGE_MULTIPLIER;
+        int portalCount = 6 + caster.getRandom().nextInt(4);
+        List<UUID> portals = new ArrayList<>(portalCount);
+
+        for (int i = 0; i < portalCount; i++) {
+            ArclightRainPortalEntity portal = new ArclightRainPortalEntity(level);
+            portal.configure(caster, areaCenter, forward, damage, 1 + caster.getRandom().nextInt(3));
+            level.addFreshEntity(portal);
+            portals.add(portal.getUUID());
+        }
+
+        PENDING_RAIN_PORTALS.put(caster.getUUID(), portals);
+    }
+
+    private static void activateRainPortals(LivingEntity caster) {
+        if (!(caster.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        List<UUID> portalIds = PENDING_RAIN_PORTALS.get(caster.getUUID());
+        if (portalIds == null) {
+            return;
+        }
+
+        List<ArclightRainPortalEntity> portals = new ArrayList<>(portalIds.size());
+        for (UUID portalId : portalIds) {
+            if (level.getEntity(portalId) instanceof ArclightRainPortalEntity portal) {
+                portals.add(portal);
+            }
+        }
+        portals.sort((left, right) -> Double.compare(right.getY(), left.getY()));
+        for (int i = 0; i < portals.size(); i++) {
+            portals.get(i).activate(i * 2);
         }
     }
 
+    private static void clearRainPortals(LivingEntity caster) {
+        if (!(caster.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        List<UUID> portalIds = PENDING_RAIN_PORTALS.remove(caster.getUUID());
+        if (portalIds == null) {
+            return;
+        }
+
+        for (UUID portalId : portalIds) {
+            if (level.getEntity(portalId) instanceof ArclightRainPortalEntity portal) {
+                portal.discard();
+            }
+        }
+    }
     private static void spawnSpear(LivingEntity caster) {
         if (!(caster.level() instanceof ServerLevel level)) {
             return;
@@ -146,18 +220,23 @@ public class EternalLightSkill extends WeaponInnateSkill {
         clearPendingSpear(caster);
         Vec3 forward = flatForward(caster);
         Vec3 right = new Vec3(-forward.z, 0.0D, forward.x);
-        Vec3 spawnPosition = caster.position()
-                .subtract(right.scale(1.75D))
-                .subtract(forward.scale(1.0D))
-                .add(0.0D, 1.35D, 0.0D);
         float damage = (float) caster.getAttributeValue(Attributes.ATTACK_DAMAGE) * SPEAR_DAMAGE_MULTIPLIER;
+        List<UUID> spears = new ArrayList<>(2);
 
-        ArclightMiniProjectileEntity spear = new ArclightMiniProjectileEntity(
-                com.rave.projectbabylonweapons.init.PBModEntities.ARCLIGHT_SPEAR_PROJECTILE.get(), level);
-        spear.setPos(spawnPosition);
-        spear.configure(caster, forward, damage);
-        level.addFreshEntity(spear);
-        PENDING_SPEAR_PROJECTILES.put(caster.getUUID(), spear.getUUID());
+        for (double sideOffset : new double[]{-1.25D, 1.25D}) {
+            Vec3 spawnPosition = caster.position()
+                    .add(right.scale(sideOffset))
+                    .subtract(forward.scale(1.0D))
+                    .add(0.0D, 1.35D, 0.0D);
+            ArclightMiniProjectileEntity spear = new ArclightMiniProjectileEntity(
+                    com.rave.projectbabylonweapons.init.PBModEntities.ARCLIGHT_SPEAR_PROJECTILE.get(), level);
+            spear.setPos(spawnPosition);
+            spear.configure(caster, forward, damage);
+            level.addFreshEntity(spear);
+            spears.add(spear.getUUID());
+        }
+
+        PENDING_SPEAR_PROJECTILES.put(caster.getUUID(), spears);
     }
 
     private static void launchPendingSpear(LivingEntity caster) {
@@ -165,10 +244,15 @@ public class EternalLightSkill extends WeaponInnateSkill {
             return;
         }
 
-        UUID projectileId = PENDING_SPEAR_PROJECTILES.remove(caster.getUUID());
-        if (projectileId != null
-                && level.getEntity(projectileId) instanceof ArclightMiniProjectileEntity spear) {
-            spear.queueLaunch(0);
+        List<UUID> projectileIds = PENDING_SPEAR_PROJECTILES.remove(caster.getUUID());
+        if (projectileIds == null) {
+            return;
+        }
+
+        for (UUID projectileId : projectileIds) {
+            if (level.getEntity(projectileId) instanceof ArclightMiniProjectileEntity spear) {
+                spear.queueLaunch(0);
+            }
         }
     }
 
@@ -177,11 +261,16 @@ public class EternalLightSkill extends WeaponInnateSkill {
             return;
         }
 
-        UUID projectileId = PENDING_SPEAR_PROJECTILES.remove(caster.getUUID());
-        if (projectileId != null
-                && level.getEntity(projectileId) instanceof ArclightMiniProjectileEntity spear
-                && spear.getState() <= ArclightMiniProjectileEntity.STATE_QUEUED) {
-            spear.discard();
+        List<UUID> projectileIds = PENDING_SPEAR_PROJECTILES.remove(caster.getUUID());
+        if (projectileIds == null) {
+            return;
+        }
+
+        for (UUID projectileId : projectileIds) {
+            if (level.getEntity(projectileId) instanceof ArclightMiniProjectileEntity spear
+                    && spear.getState() <= ArclightMiniProjectileEntity.STATE_QUEUED) {
+                spear.discard();
+            }
         }
     }
     private static void spawnPortals(LivingEntity caster) {
@@ -276,7 +365,7 @@ public class EternalLightSkill extends WeaponInnateSkill {
         return EpicFightKeyMappings.WEAPON_INNATE_SKILL;
     }
 
-    private record AutoSequence(long lastUseTick) {
+    private record AutoSequence(long lastUseTick, int step) {
     }
     private enum AttackType {
         AUTO(AUTO_COST),

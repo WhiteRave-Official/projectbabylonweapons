@@ -85,6 +85,7 @@ public class PBAnimations {
 
     public static AnimationManager.AnimationAccessor<AttackAnimation> EVERGATE_EXTRA_AUTO_1;
     public static AnimationManager.AnimationAccessor<AttackAnimation> EVERGATE_EXTRA_AUTO_2;
+    public static AnimationManager.AnimationAccessor<AttackAnimation> EVERGATE_EXTRA_AUTO_3;
     public static AnimationManager.AnimationAccessor<AttackAnimation> EVERGATE_EXTRA_AUTO_5;
 
     public static AnimationManager.AnimationAccessor<AttackAnimation> EVERGATE_EXTRA_DASH;
@@ -214,9 +215,10 @@ public class PBAnimations {
         );
 
         EVERGATE_DASH = builder.nextAccessor("biped/combat/evergate_dash", (accessor) -> (AttackAnimation) (new AttackAnimation(0.25F, accessor, Armatures.BIPED, new AttackAnimation.Phase[]{
-                new AttackAnimation.Phase(0.0F, 0.15F, 0.3F, 1.0F, 1.0F, 1.0F, InteractionHand.MAIN_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE),
-                new AttackAnimation.Phase(1.0F, 1.0F, 1.2F, 1.6F, 1.7F, 1.7F, InteractionHand.MAIN_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE),
-        })).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.8F)).newTimePair(0.0F, 0.75F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.0F));
+                new AttackAnimation.Phase(0.0F, 0.15F, 1.7F, 2.6F, 2.7F, 2.7F, InteractionHand.MAIN_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE),
+                new AttackAnimation.Phase(2.7F, 3.0F, 3.1F, 3.6F, 4.0F, 4.0F, InteractionHand.MAIN_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE),
+                new AttackAnimation.Phase(4.0F, 4.2F, 4.3F, 5.5F, 7.3F, 7.2F, InteractionHand.MAIN_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE)
+        })).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)).newTimePair(0.0F, 1.36F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 0.7F));
 
         EVERGATE_EXTRA_DASH = builder.nextAccessor("biped/combat/evergate_extra_dash", (accessor) -> (AttackAnimation)(new AttackAnimation(0.1F, accessor, Armatures.BIPED, new AttackAnimation.Phase[]{
                         new AttackAnimation.Phase(0.0F, 0.25F, 0.50F, 0.50F, 0.50F, InteractionHand.MAIN_HAND, ((HumanoidArmature)Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE),
@@ -255,15 +257,13 @@ public class PBAnimations {
         .addEvents(AnimationEvent.InTimeEvent.create(0.20F, (entityPatch, animation, params) -> {LivingEntity entity = entityPatch.getOriginal(); entity.level().addParticle(EpicFightParticles.WHITE_AFTERIMAGE.get(), entity.getX(), entity.getY(), entity.getZ(), Double.longBitsToDouble(entity.getId()), 0.0D, 0.0D);}, AnimationEvent.Side.CLIENT))
         );
         EVERGATE_EXTRA_AUTO_1 = builder.nextAccessor("biped/combat/evergate_extra_auto_1", (accessor) -> (AttackAnimation) (new AttackAnimation(0.25F, accessor, Armatures.BIPED, new AttackAnimation.Phase[]{
-                new AttackAnimation.Phase(0.0F, 0.15F, 0.2F, 0.6F, 0.7F, 0.7F, InteractionHand.MAIN_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE),
-                new AttackAnimation.Phase(0.7F, 1.3F, 1.6F, 2.0F, 2.1F, 2.1F, InteractionHand.MAIN_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE),
-                new AttackAnimation.Phase(2.1F, 2.5F, 3.0F, 3.7F, 3.8F, 3.8F, InteractionHand.OFF_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolL, ColliderPreset.FIST)
-        })).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)).newTimePair(0.0F, 1.36F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.0F));
+                new AttackAnimation.Phase(0.0F, 0.15F, 0.7F, 1.4F, 1.7F, 1.7F, InteractionHand.MAIN_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE),
+                new AttackAnimation.Phase(1.7F, 1.7F, 3.4F, 3.7F, 3.8F, 3.8F, InteractionHand.OFF_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolL, ColliderPreset.FIST)
+        })).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)).newTimePair(0.0F, 1.36F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 0.9F));
 
-        EVERGATE_EXTRA_AUTO_2 = builder.nextAccessor("biped/combat/evergate_extra_auto_2", (accessor) -> (AttackAnimation) (new AttackAnimation(0.25F, accessor, Armatures.BIPED, new AttackAnimation.Phase[]{
-                new AttackAnimation.Phase(0.0F, 0.15F, 0.8F, 1.2F, 1.36F, 1.36F, InteractionHand.MAIN_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE),
-                new AttackAnimation.Phase(1.36F, 1.4F, 1.7F, 1.8F, 1.9F, 1.9F, InteractionHand.OFF_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolL, ColliderPreset.FIST)
-        })).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(0.5F)).newTimePair(0.0F, 1.36F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.0F));
+        EVERGATE_EXTRA_AUTO_2= builder.nextAccessor("biped/combat/evergate_extra_auto_2", (accessor) ->  new AttackAnimation(0.20F,  1.25F,  2.0F,  2.20F, 2.6F, ColliderPreset.FIST, ((HumanoidArmature)Armatures.BIPED.get()).toolL, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 0.8F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.1F));
+
+        EVERGATE_EXTRA_AUTO_3 = builder.nextAccessor("biped/combat/evergate_extra_auto_3", (accessor) ->  new AttackAnimation(0.20F,  1.25F,  2.0F,  2.20F, 2.6F, ColliderPreset.FIST, ((HumanoidArmature)Armatures.BIPED.get()).toolL, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 0.8F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.1F));
 
         EVERGATE_EXTRA_AUTO_5 = builder.nextAccessor("biped/combat/evergate_extra_auto_5", (accessor) ->  new AttackAnimation(0.25F,  0.25F,  0.3F,  2.4F, 2.7F, PBColliderPresets.EVERGATE, ((HumanoidArmature)Armatures.BIPED.get()).toolR, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 0.75F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.ActionAnimationProperty.STOP_MOVEMENT, true).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 0.8F));
 

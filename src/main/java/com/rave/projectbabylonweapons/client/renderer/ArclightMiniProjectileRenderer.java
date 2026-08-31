@@ -30,7 +30,7 @@ public class ArclightMiniProjectileRenderer extends EntityRenderer<ArclightMiniP
 
     private static final int FULL_BRIGHT = 0x00F000F0;
     private static final float MINI_MODEL_SCALE = 0.5F;
-    private static final float SPEAR_MODEL_SCALE = 1.0F;
+    private static final float SPEAR_MODEL_SCALE = 1.15F;
     private static final float GLOW_SCALE = 1.08F;
     private static final float FORMATION_TICKS = 12.0F;
     private static final float MINI_PORTAL_RETRACT_DISTANCE = 0.9F;

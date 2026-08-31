@@ -1,6 +1,7 @@
 package com.rave.projectbabylonweapons.init;
 
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
+import com.rave.projectbabylonweapons.world.entity.effect.ArclightRainPortalEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.DiamondShardEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.DragonFuryChargeEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.FireMagicalSealEntity;
@@ -117,6 +118,13 @@ public class PBModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build("dragonsteel_wyrm_echo_projectile"));
+    public static final RegistryObject<EntityType<ArclightRainPortalEntity>> ARCLIGHT_RAIN_PORTAL =
+            ENTITIES.register("arclight_rain_portal", () ->
+                    EntityType.Builder.<ArclightRainPortalEntity>of(ArclightRainPortalEntity::new, MobCategory.MISC)
+                            .sized(0.1F, 0.1F)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build("arclight_rain_portal"));
     public static final RegistryObject<EntityType<ArclightMiniProjectileEntity>> ARCLIGHT_MINI_PROJECTILE =
             ENTITIES.register("arclight_mini_projectile", () ->
                     EntityType.Builder.<ArclightMiniProjectileEntity>of(ArclightMiniProjectileEntity::new, MobCategory.MISC)
