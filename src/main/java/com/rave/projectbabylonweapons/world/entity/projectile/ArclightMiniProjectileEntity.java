@@ -49,9 +49,10 @@ public class ArclightMiniProjectileEntity extends Projectile {
     private static final int WAITING_LIFETIME = 60;
     private static final int FLYING_LIFETIME = 50;
     private static final int BLOCK_COLLISION_GRACE_TICKS = 2;
-    private static final int EMBEDDED_LIFETIME = 45;
+    private static final int EMBEDDED_LIFETIME = 20;
 
     private float damage;
+    private boolean areaDamage;
     private int stateTicks;
     private int previousClientState = -1;
     private boolean clientDissolveSpawned;
@@ -71,16 +72,21 @@ public class ArclightMiniProjectileEntity extends Projectile {
     }
 
     public void configure(LivingEntity owner, Vec3 direction, float damage) {
-        this.configure(owner, direction, damage, true);
+        this.configure(owner, direction, damage, true, false);
     }
 
     public void configure(LivingEntity owner, Vec3 direction, float damage, boolean portalVisual) {
+        this.configure(owner, direction, damage, portalVisual, false);
+    }
+
+    public void configure(LivingEntity owner, Vec3 direction, float damage, boolean portalVisual, boolean areaDamage) {
         Vec3 normalized = direction.lengthSqr() < 1.0E-6D
                 ? new Vec3(0.0D, 0.0D, 1.0D)
                 : direction.normalize();
         this.setOwner(owner);
         this.piercedEntityIds.clear();
         this.damage = Math.max(0.0F, damage);
+        this.areaDamage = areaDamage;
         this.setDirection(normalized);
         this.entityData.set(DATA_STATE, STATE_WAITING);
         this.entityData.set(DATA_LAUNCH_DELAY, 0);
@@ -238,7 +244,43 @@ public class ArclightMiniProjectileEntity extends Projectile {
             return;
         }
 
-        Entity target = result.getEntity();
+        if (this.areaDamage) {
+            this.damageArea(result.getLocation(), owner);
+        } else {
+            this.damageTarget(result.getEntity(), owner);
+        }
+        this.level().broadcastEntityEvent(this, (byte) 4);
+    }
+
+    @Override
+    protected void onHitBlock(BlockHitResult result) {
+        if (this.level().isClientSide) {
+            return;
+        }
+
+        if (this.areaDamage && this.getOwner() instanceof LivingEntity owner) {
+            this.damageArea(result.getLocation(), owner);
+        }
+
+        Vec3 direction = this.getFlightDirection();
+        Vec3 embeddedPosition = result.getLocation().subtract(direction.scale(0.08D));
+        this.setPos(embeddedPosition);
+        this.setDeltaMovement(Vec3.ZERO);
+        this.entityData.set(DATA_STATE, STATE_EMBEDDED);
+        this.stateTicks = 0;
+    }
+
+    private void damageArea(Vec3 center, LivingEntity owner) {
+        AABB area = new AABB(
+                center.x - 1.0D, center.y - 1.0D, center.z - 1.0D,
+                center.x + 1.0D, center.y + 1.0D, center.z + 1.0D
+        );
+        for (LivingEntity target : this.level().getEntitiesOfClass(LivingEntity.class, area, this::canHitEntity)) {
+            this.damageTarget(target, owner);
+        }
+    }
+
+    private void damageTarget(Entity target, LivingEntity owner) {
         this.piercedEntityIds.add(target.getId());
         Vec3 originalMovement = target.getDeltaMovement();
         int originalInvulnerableTime = target.invulnerableTime;
@@ -250,27 +292,12 @@ public class ArclightMiniProjectileEntity extends Projectile {
             target.setDeltaMovement(originalMovement);
             target.hurtMarked = true;
         }
-        this.level().broadcastEntityEvent(this, (byte) 4);
     }
-
-    @Override
-    protected void onHitBlock(BlockHitResult result) {
-        if (this.level().isClientSide) {
-            return;
-        }
-
-        Vec3 direction = this.getFlightDirection();
-        Vec3 embeddedPosition = result.getLocation().subtract(direction.scale(0.08D));
-        this.setPos(embeddedPosition);
-        this.setDeltaMovement(Vec3.ZERO);
-        this.entityData.set(DATA_STATE, STATE_EMBEDDED);
-        this.stateTicks = 0;
-    }
-
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putFloat("Damage", this.damage);
+        tag.putBoolean("AreaDamage", this.areaDamage);
         tag.putInt("State", this.getState());
         tag.putInt("LaunchDelay", this.entityData.get(DATA_LAUNCH_DELAY));
         Vec3 direction = this.getFlightDirection();
@@ -285,6 +312,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.damage = tag.getFloat("Damage");
+        this.areaDamage = tag.getBoolean("AreaDamage");
         this.entityData.set(DATA_STATE, tag.getInt("State"));
         this.entityData.set(DATA_LAUNCH_DELAY, tag.getInt("LaunchDelay"));
         this.setDirection(new Vec3(tag.getDouble("DirectionX"), tag.getDouble("DirectionY"), tag.getDouble("DirectionZ")));

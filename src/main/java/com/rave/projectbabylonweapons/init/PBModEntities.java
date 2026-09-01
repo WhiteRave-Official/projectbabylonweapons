@@ -128,7 +128,7 @@ public class PBModEntities {
     public static final RegistryObject<EntityType<ArclightMiniProjectileEntity>> ARCLIGHT_MINI_PROJECTILE =
             ENTITIES.register("arclight_mini_projectile", () ->
                     EntityType.Builder.<ArclightMiniProjectileEntity>of(ArclightMiniProjectileEntity::new, MobCategory.MISC)
-                            .sized(0.35F, 0.35F)
+                            .sized(0.525F, 0.525F)
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build("arclight_mini_projectile"));

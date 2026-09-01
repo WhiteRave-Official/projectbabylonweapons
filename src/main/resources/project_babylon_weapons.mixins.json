@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.rave.projectbabylonweapons.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "project_babylon_weapons.refmap.json",
+  "mixins": [
+    "EntityPushMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -29,7 +29,7 @@ public class ArclightMiniProjectileRenderer extends EntityRenderer<ArclightMiniP
             ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "item/arclight_spear");
 
     private static final int FULL_BRIGHT = 0x00F000F0;
-    private static final float MINI_MODEL_SCALE = 0.5F;
+    private static final float MINI_MODEL_SCALE = 0.8F;
     private static final float SPEAR_MODEL_SCALE = 1.15F;
     private static final float GLOW_SCALE = 1.08F;
     private static final float FORMATION_TICKS = 12.0F;

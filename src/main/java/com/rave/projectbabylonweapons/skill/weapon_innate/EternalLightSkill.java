@@ -166,7 +166,7 @@ public class EternalLightSkill extends WeaponInnateSkill {
 
         for (int i = 0; i < portalCount; i++) {
             ArclightRainPortalEntity portal = new ArclightRainPortalEntity(level);
-            portal.configure(caster, areaCenter, forward, damage, 1 + caster.getRandom().nextInt(3));
+            portal.configure(caster, areaCenter, forward, damage, 2 + caster.getRandom().nextInt(3));
             level.addFreshEntity(portal);
             portals.add(portal.getUUID());
         }

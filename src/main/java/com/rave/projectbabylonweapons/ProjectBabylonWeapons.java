@@ -2,6 +2,7 @@ package com.rave.projectbabylonweapons;
 
 import com.mojang.logging.LogUtils;
 import com.rave.projectbabylonweapons.config.PBConfig;
+import com.rave.projectbabylonweapons.gameasset.PBAnimationProperties;
 import com.rave.projectbabylonweapons.gameasset.PBAnimations;
 import com.rave.projectbabylonweapons.gameasset.PBSkills;
 import com.rave.projectbabylonweapons.init.CreativeTabRegistry;
@@ -50,6 +51,7 @@ public class ProjectBabylonWeapons {
         modBus.addListener(this::addPackFindersEvent);
         modBus.addListener(PBSkills::buildSkillEvent);
         modBus.addListener(PBAnimations::registerAnimations);
+        modBus.addListener(PBAnimationProperties::applyArclightProperties);
 
         CreativeTabRegistry.TABS.register(modBus);
         PBModBlocks.register(modBus);

@@ -13,6 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
@@ -84,6 +85,7 @@ public class ArclightRainPortalEntity extends Entity {
         if (this.level().isClientSide) {
             if (this.getPortalState() != STATE_CLOSED && this.tickCount % 3 == 0) {
                 PhotonWeaponEffectHelper.spawnArclightMiniPortal(this, SHOT_DIRECTION);
+                PhotonWeaponEffectHelper.spawnArclightRainTarget(this, this.findGroundTarget());
             }
             return;
         }
@@ -105,6 +107,17 @@ public class ArclightRainPortalEntity extends Entity {
         }
     }
 
+    private Vec3 findGroundTarget() {
+        Vec3 start = this.position();
+        Vec3 end = new Vec3(start.x, this.level().getMinBuildHeight(), start.z);
+        return this.level().clip(new ClipContext(
+                start,
+                end,
+                ClipContext.Block.COLLIDER,
+                ClipContext.Fluid.NONE,
+                this
+        )).getLocation().add(0.0D, 0.035D, 0.0D);
+    }
     private void tickActive() {
         if (this.actionDelay > 0) {
             this.actionDelay--;
@@ -114,17 +127,23 @@ public class ArclightRainPortalEntity extends Entity {
         this.fireSword();
         this.remainingShots--;
         this.level().broadcastEntityEvent(this, (byte) 4);
+        this.entityData.set(DATA_STATE, STATE_CLOSED);
         if (this.remainingShots <= 0) {
-            this.discard();
+            // Keep the controller alive briefly so clients receive the closing burst before removal.
+            this.actionDelay = 2;
             return;
         }
 
-        this.entityData.set(DATA_STATE, STATE_CLOSED);
         this.actionDelay = REOPEN_DELAY_MIN + this.random.nextInt(REOPEN_DELAY_VARIANCE);
     }
 
     private void tickClosed() {
         if (this.actionDelay-- > 0) {
+            return;
+        }
+
+        if (this.remainingShots <= 0) {
+            this.discard();
             return;
         }
 
@@ -140,7 +159,7 @@ public class ArclightRainPortalEntity extends Entity {
 
         ArclightMiniProjectileEntity sword = new ArclightMiniProjectileEntity(level);
         sword.setPos(this.position());
-        sword.configure(owner, SHOT_DIRECTION, this.damage, false);
+        sword.configure(owner, SHOT_DIRECTION, this.damage, false, true);
         level.addFreshEntity(sword);
         sword.queueLaunch(0);
     }
@@ -219,3 +238,4 @@ public class ArclightRainPortalEntity extends Entity {
         return false;
     }
 }
+
