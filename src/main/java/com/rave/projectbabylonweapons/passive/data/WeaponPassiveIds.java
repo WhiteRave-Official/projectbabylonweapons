@@ -4,6 +4,8 @@ import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
 import net.minecraft.resources.ResourceLocation;
 
 public final class WeaponPassiveIds {
+    public static final ResourceLocation ARCLIGHT_CONDUIT = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "arclight_conduit");
+    public static final ResourceLocation EVERGATE_UNITY = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "evergate_unity");
     public static final ResourceLocation DIAMOND_FANG = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "diamond_fang");
     public static final ResourceLocation ICE_CHILL = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "ice_chill");
     public static final ResourceLocation GOLDEN_MAGIC = ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "golden_magic");

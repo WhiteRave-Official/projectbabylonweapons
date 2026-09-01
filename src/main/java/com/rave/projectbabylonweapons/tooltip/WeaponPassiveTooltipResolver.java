@@ -33,6 +33,9 @@ import com.rave.projectbabylonweapons.passive.smallshield.IceSmallShieldBalance;
 import com.rave.projectbabylonweapons.passive.smallshield.IceSmallShieldPassive;
 import com.rave.projectbabylonweapons.passive.smallshield.NetheriteSmallShieldBalance;
 import com.rave.projectbabylonweapons.passive.smallshield.NetheriteSmallShieldPassive;
+import com.rave.projectbabylonweapons.passive.special.ArclightConduitBalance;
+import com.rave.projectbabylonweapons.passive.special.ArclightFormPassiveTooltips;
+import com.rave.projectbabylonweapons.passive.special.EvergateUnityBalance;
 import com.rave.projectbabylonweapons.passive.wand.DiamondRicochetBalance;
 import com.rave.projectbabylonweapons.passive.wand.DiamondRicochetPassive;
 import com.rave.projectbabylonweapons.passive.wand.DragonsteelDragonlordBalance;
@@ -59,6 +62,12 @@ public final class WeaponPassiveTooltipResolver {
             return null;
         }
 
+        if (ArclightConduitBalance.resolve(stack) != null) {
+            return resolveTooltip(stack, WeaponPassiveIds.ARCLIGHT_CONDUIT, ArclightFormPassiveTooltips.conduit());
+        }
+        if (EvergateUnityBalance.resolve(stack) != null) {
+            return resolveTooltip(stack, WeaponPassiveIds.EVERGATE_UNITY, ArclightFormPassiveTooltips.unity());
+        }
         if (DiamondRicochetBalance.resolve(stack) != null) {
             return resolveTooltip(stack, WeaponPassiveIds.WAND_DIAMOND_RICOCHET, DiamondRicochetPassive.getTooltipData());
         }

@@ -294,5 +294,9 @@ public final class PhotonWeaponEffectHelper {
     public static void spawnAbsorptionShield(LivingEntity entity, float progress, int tick, float absorptionAmount) {
         PBMPhotonEffectHelper.spawnAbsorptionShield(entity, progress, tick, absorptionAmount);
     }
+
+    public static void spawnBarrierShield(LivingEntity entity, float progress, int tick, float barrierAmount) {
+        PBMPhotonEffectHelper.spawnBarrierShield(entity, progress, tick, barrierAmount);
+    }
 }
 

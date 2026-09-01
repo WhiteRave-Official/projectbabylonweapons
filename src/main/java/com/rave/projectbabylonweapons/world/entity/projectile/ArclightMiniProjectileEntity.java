@@ -2,6 +2,9 @@ package com.rave.projectbabylonweapons.world.entity.projectile;
 
 import com.rave.projectbabylonweapons.client.PhotonWeaponEffectHelper;
 import com.rave.projectbabylonweapons.init.PBModEntities;
+import io.redspace.ironsspellbooks.damage.ISSDamageTypes;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -286,7 +289,13 @@ public class ArclightMiniProjectileEntity extends Projectile {
         int originalInvulnerableTime = target.invulnerableTime;
         target.invulnerableTime = 0;
         try {
-            target.hurt(this.damageSources().indirectMagic(this, owner), this.damage);
+            DamageSource holySource = new DamageSource(
+                    this.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
+                            .getHolderOrThrow(ISSDamageTypes.HOLY_MAGIC),
+                    this,
+                    owner
+            );
+            target.hurt(holySource, this.damage);
         } finally {
             target.invulnerableTime = originalInvulnerableTime;
             target.setDeltaMovement(originalMovement);

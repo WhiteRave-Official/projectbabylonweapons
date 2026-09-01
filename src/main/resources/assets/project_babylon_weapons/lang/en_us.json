@@ -1,4 +1,3 @@
-﻿
 {
     "block.project_babylon_weapons.frozen_debuff_ice_block":  "Frozen Debuff Ice Block",
 
@@ -275,5 +274,14 @@
     "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line1":  "A successful «Shield Bash» parry grants 1 Dragon Fury charge, up to 2.",
     "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line2":  "The next weapon hit consumes all charges, gaining +100% damage and +30% armor negation per charge.",
     "skill.project_babylon_weapons.eternal_light": "Eternal Light",
-    "skill.project_babylon_weapons.eternal_light.tooltip": "Stores up to 10 charges. Use the skill while sprinting or airborne to perform empowered attacks."
+    "skill.project_babylon_weapons.eternal_light.tooltip": "Stores up to 10 charges. Use the skill while sprinting or airborne to perform empowered attacks.",
+    "tooltip.project_babylon_weapons.passive.conduit.name": "Conduit",
+    "tooltip.project_babylon_weapons.passive.conduit.line1": "Increases mana regeneration by 25%.",
+    "tooltip.project_babylon_weapons.passive.conduit.line2": "Each attack consumes 15 mana to deal 15% increased damage.",
+    "tooltip.project_babylon_weapons.passive.conduit.line3": "Each attack deals 10% additional Holy damage.",
+    "tooltip.project_babylon_weapons.passive.conduit.line4": "50% of magical damage dealt becomes stacking Barrier for 3 seconds, up to maximum health.",
+    "tooltip.project_babylon_weapons.passive.unity.name": "Unity",
+    "tooltip.project_babylon_weapons.passive.unity.line1": "Increases movement speed by 8%.",
+    "tooltip.project_babylon_weapons.passive.unity.line2": "Each attack deals 15% additional Holy damage.",
+    "tooltip.project_babylon_weapons.passive.unity.line3": "Each attack grants Stun Immunity for 1 second."
 }

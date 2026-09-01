@@ -1,0 +1,24 @@
+{
+  "passive_id": "project_babylon_weapons:arclight_conduit",
+  "weapon_id": "project_babylon_weapons:arclight_sword",
+  "visual": {
+    "frame_type": "arclight",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/arclight_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/arclight_passive_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.conduit.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.conduit.line1",
+      "tooltip.project_babylon_weapons.passive.conduit.line2",
+      "tooltip.project_babylon_weapons.passive.conduit.line3",
+      "tooltip.project_babylon_weapons.passive.conduit.line4"
+    ]
+  },
+  "profile": {
+    "mana_regeneration_bonus": 0.25,
+    "mana_cost": 15.0,
+    "damage_bonus": 0.15,
+    "holy_damage_percent": 0.10,
+    "barrier_conversion_percent": 0.50,
+    "barrier_duration_ticks": 60
+  }
+}

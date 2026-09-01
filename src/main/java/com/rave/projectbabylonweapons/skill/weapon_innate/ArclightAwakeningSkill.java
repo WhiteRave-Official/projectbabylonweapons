@@ -1,6 +1,7 @@
 package com.rave.projectbabylonweapons.skill.weapon_innate;
 
 import com.rave.projectbabylonweapons.gameasset.PBAnimations;
+import com.rave.projectbabylonweapons.gameasset.PBSkills;
 import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
 import com.rave.projectbabylonweapons.handler.WeaponVisualEffectHelper;
 import net.minecraft.client.KeyMapping;
@@ -88,7 +89,7 @@ public class ArclightAwakeningSkill extends WeaponInnateSkill {
         ItemStack arclight = player.getMainHandItem();
         if (!(arclight.getItem() instanceof ArclightSwordItem) || ArclightSwordItem.isEvergate(arclight)) return;
         WeaponVisualEffectHelper.burstArclightAwakening(player);
-        ArclightSwordItem.awaken(arclight);
+        ArclightSwordItem.awaken(arclight, player.level().getGameTime() + PBSkills.ARCLIGHT_AWAKENING.getMaxDuration());
         syncInventory(player);
         serverPatch.modifyLivingMotionByCurrentItem(false);
 

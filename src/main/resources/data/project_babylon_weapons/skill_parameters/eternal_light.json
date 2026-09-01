@@ -1,4 +1,9 @@
 {
   "consumption": 15.0,
-  "max_stacks": 10
+  "max_stacks": 10,
+  "damage_bonus_per_charge": 0.015,
+  "damage_bonus_duration_ticks": 100,
+  "expiration_warning_ticks": 40,
+  "barrier_per_remaining_charge": 0.015,
+  "expiration_barrier_duration_ticks": 200
 }

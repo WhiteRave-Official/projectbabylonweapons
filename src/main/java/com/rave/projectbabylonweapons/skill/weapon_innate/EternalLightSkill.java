@@ -1,21 +1,35 @@
 package com.rave.projectbabylonweapons.skill.weapon_innate;
 
+import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
 import com.rave.projectbabylonweapons.gameasset.PBAnimations;
+import com.rave.projectbabylonweapons.gameasset.PBSkills;
+import com.rave.projectbabylonweapons.handler.WeaponVisualEffectHelper;
+import com.rave.projectbabylonweapons.passive.special.ArclightFormPassiveHandler;
 import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
 import com.rave.projectbabylonweapons.world.entity.effect.ArclightRainPortalEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.ArclightMiniProjectileEntity;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import yesman.epicfight.client.events.engine.ControlEngine;
+import yesman.epicfight.client.gui.BattleModeGui;
 import yesman.epicfight.client.input.EpicFightKeyMappings;
 import yesman.epicfight.skill.Skill;
 import yesman.epicfight.skill.SkillBuilder;
@@ -32,6 +46,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Mod.EventBusSubscriber(modid = ProjectBabylonWeapons.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE)
 public class EternalLightSkill extends WeaponInnateSkill {
     private static final UUID AUTO_CONTACT_UUID = UUID.fromString("81f16175-fc23-4a70-b164-91e231c33eb2");
     private static final int AUTO_COST = 1;
@@ -44,9 +59,36 @@ public class EternalLightSkill extends WeaponInnateSkill {
     private static final Map<UUID, List<UUID>> PENDING_SPEAR_PROJECTILES = new ConcurrentHashMap<>();
     private static final Map<UUID, AutoSequence> AUTO_SEQUENCES = new ConcurrentHashMap<>();
     private static final Map<UUID, List<UUID>> PENDING_RAIN_PORTALS = new ConcurrentHashMap<>();
+    private static final Map<UUID, DamageBonusState> DAMAGE_BONUSES = new ConcurrentHashMap<>();
+
+    private float damageBonusPerCharge = 0.015F;
+    private int damageBonusDurationTicks = 100;
+    private int expirationWarningTicks = 40;
+    private float barrierPerRemainingCharge = 0.015F;
+    private int expirationBarrierDurationTicks = 200;
 
     public EternalLightSkill(SkillBuilder<? extends WeaponInnateSkill> builder) {
         super(builder);
+    }
+
+    @Override
+    public void setParams(CompoundTag parameters) {
+        super.setParams(parameters);
+        if (parameters.contains("damage_bonus_per_charge")) {
+            this.damageBonusPerCharge = parameters.getFloat("damage_bonus_per_charge");
+        }
+        if (parameters.contains("damage_bonus_duration_ticks")) {
+            this.damageBonusDurationTicks = parameters.getInt("damage_bonus_duration_ticks");
+        }
+        if (parameters.contains("expiration_warning_ticks")) {
+            this.expirationWarningTicks = parameters.getInt("expiration_warning_ticks");
+        }
+        if (parameters.contains("barrier_per_remaining_charge")) {
+            this.barrierPerRemainingCharge = parameters.getFloat("barrier_per_remaining_charge");
+        }
+        if (parameters.contains("expiration_barrier_duration_ticks")) {
+            this.expirationBarrierDurationTicks = parameters.getInt("expiration_barrier_duration_ticks");
+        }
     }
 
     @Override
@@ -97,6 +139,7 @@ public class EternalLightSkill extends WeaponInnateSkill {
         if (container.getSkill() == this && container.getStack() >= type.cost) {
             if (!playerPatch.isLogicalClient()) {
                 Skill.setSkillStackSynchronize(container, container.getStack() - type.cost);
+                addDamageBonus(playerPatch.getOriginal(), type.cost);
             }
             return true;
         }
@@ -120,9 +163,141 @@ public class EternalLightSkill extends WeaponInnateSkill {
             clearPendingSpear(container.getExecutor().getOriginal());
             clearRainPortals(container.getExecutor().getOriginal());
             AUTO_SEQUENCES.remove(container.getExecutor().getOriginal().getUUID());
+            DAMAGE_BONUSES.remove(container.getExecutor().getOriginal().getUUID());
             ArclightAwakeningSkill.resetForm(container);
         }
         super.onRemoved(container);
+    }
+
+    @SubscribeEvent
+    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
+        if (event.phase != TickEvent.Phase.START || event.player.level().isClientSide
+                || !(event.player instanceof ServerPlayer player)
+                || !(PBSkills.ETERNAL_LIGHT instanceof EternalLightSkill skill)) {
+            return;
+        }
+
+        long gameTime = player.level().getGameTime();
+        DamageBonusState bonus = DAMAGE_BONUSES.get(player.getUUID());
+        if (bonus != null && gameTime >= bonus.expiresAt()) {
+            DAMAGE_BONUSES.remove(player.getUUID());
+        }
+
+        ItemStack weapon = player.getMainHandItem();
+        if (!ArclightSwordItem.isEvergate(weapon)) {
+            return;
+        }
+
+        long expiresAt = ArclightSwordItem.getFormExpiresAt(weapon);
+        if (expiresAt <= 0L) {
+            expiresAt = gameTime + PBSkills.ARCLIGHT_AWAKENING.getMaxDuration();
+            ArclightSwordItem.awaken(weapon, expiresAt);
+            syncInventory(player);
+        }
+
+        long remaining = expiresAt - gameTime;
+        if (remaining <= skill.expirationWarningTicks && !ArclightSwordItem.hasExpirationWarning(weapon)) {
+            ArclightSwordItem.markExpirationWarning(weapon);
+            WeaponVisualEffectHelper.playEvergateExpirationWarning(player);
+            syncInventory(player);
+        }
+        if (remaining <= 0L) {
+            skill.expireForm(player, weapon);
+        }
+    }
+
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void onLivingHurt(LivingHurtEvent event) {
+        if (event.getEntity().level().isClientSide
+                || !(event.getSource().getEntity() instanceof ServerPlayer attacker)
+                || event.getAmount() <= 0.0F) {
+            return;
+        }
+
+        DamageBonusState bonus = DAMAGE_BONUSES.get(attacker.getUUID());
+        long gameTime = attacker.level().getGameTime();
+        if (bonus == null || gameTime >= bonus.expiresAt()) {
+            DAMAGE_BONUSES.remove(attacker.getUUID());
+            return;
+        }
+        event.setAmount(event.getAmount() * (1.0F + bonus.spentCharges() * current().damageBonusPerCharge));
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
+        DAMAGE_BONUSES.remove(event.getEntity().getUUID());
+    }
+
+    private void addDamageBonus(LivingEntity player, int spentCharges) {
+        long expiresAt = player.level().getGameTime() + this.damageBonusDurationTicks;
+        DAMAGE_BONUSES.compute(player.getUUID(), (id, current) -> new DamageBonusState(
+                (current == null ? 0 : current.spentCharges()) + spentCharges,
+                expiresAt
+        ));
+    }
+
+    private void expireForm(ServerPlayer player, ItemStack weapon) {
+        PlayerPatch<?> playerPatch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
+        SkillContainer container = playerPatch == null ? null : playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
+        int remainingCharges = container != null && container.getSkill() == this ? container.getStack() : 0;
+        if (remainingCharges > 0) {
+            ArclightFormPassiveHandler.grantBarrier(
+                    player,
+                    player.getMaxHealth() * this.barrierPerRemainingCharge * remainingCharges,
+                    this.expirationBarrierDurationTicks
+            );
+            Skill.setSkillStackSynchronize(container, 0);
+        }
+
+        WeaponVisualEffectHelper.burstArclightAwakening(player);
+        DAMAGE_BONUSES.remove(player.getUUID());
+        clearPendingProjectiles(player);
+        clearPendingSpear(player);
+        clearRainPortals(player);
+        AUTO_SEQUENCES.remove(player.getUUID());
+        ArclightSwordItem.reset(weapon);
+        syncInventory(player);
+
+        if (playerPatch != null) {
+            playerPatch.modifyLivingMotionByCurrentItem(false);
+            player.server.tell(new net.minecraft.server.TickTask(player.server.getTickCount() + 1, () -> {
+                ItemStack currentWeapon = player.getMainHandItem();
+                if (currentWeapon.getItem() instanceof ArclightSwordItem && !ArclightSwordItem.isEvergate(currentWeapon)) {
+                    EpicFightCapabilities.getItemStackCapability(currentWeapon)
+                            .changeWeaponInnateSkill((yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch) playerPatch, currentWeapon);
+                }
+            }));
+        }
+    }
+
+    private static EternalLightSkill current() {
+        return (EternalLightSkill) PBSkills.ETERNAL_LIGHT;
+    }
+
+    private static void syncInventory(ServerPlayer player) {
+        player.getInventory().setChanged();
+        player.inventoryMenu.broadcastChanges();
+        if (player.containerMenu != player.inventoryMenu) {
+            player.containerMenu.broadcastChanges();
+        }
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    @Override
+    public void drawOnGui(BattleModeGui gui, SkillContainer container, GuiGraphics guiGraphics,
+                          float x, float y, float partialTick) {
+        super.drawOnGui(gui, container, guiGraphics, x, y, partialTick);
+        ItemStack weapon = container.getExecutor().getOriginal().getMainHandItem();
+        long expiresAt = ArclightSwordItem.getFormExpiresAt(weapon);
+        if (expiresAt <= 0L) {
+            return;
+        }
+
+        long remainingTicks = Math.max(0L, expiresAt - container.getExecutor().getOriginal().level().getGameTime());
+        String timer = String.format("%.1f", remainingTicks / 20.0F);
+        int textX = Math.round(x + 16.0F - gui.getFont().width(timer) * 0.5F);
+        int textY = Math.round(y - 10.0F);
+        guiGraphics.drawString(gui.getFont(), timer, textX, textY, 0xFFF4D88A, true);
     }
 
     private static void executeAutoSequence(SkillContainer container) {
@@ -366,6 +541,9 @@ public class EternalLightSkill extends WeaponInnateSkill {
     }
 
     private record AutoSequence(long lastUseTick, int step) {
+    }
+
+    private record DamageBonusState(int spentCharges, long expiresAt) {
     }
     private enum AttackType {
         AUTO(AUTO_COST),

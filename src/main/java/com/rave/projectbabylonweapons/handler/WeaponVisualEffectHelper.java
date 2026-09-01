@@ -36,6 +36,7 @@ public final class WeaponVisualEffectHelper {
     public static final String ARCLIGHT_AWAKENING_START = "arclight_awakening_start";
     public static final String ARCLIGHT_AWAKENING_BURST = "arclight_awakening_burst";
     public static final String ARCLIGHT_AWAKENING_STOP = "arclight_awakening_stop";
+    public static final String EVERGATE_EXPIRATION_WARNING = "evergate_expiration_warning";
 
     private WeaponVisualEffectHelper() {
     }
@@ -70,6 +71,7 @@ public final class WeaponVisualEffectHelper {
     public static void startArclightAwakening(Entity entity) { play(entity, ARCLIGHT_AWAKENING_START); }
     public static void burstArclightAwakening(Entity entity) { play(entity, ARCLIGHT_AWAKENING_BURST); }
     public static void stopArclightAwakening(Entity entity) { play(entity, ARCLIGHT_AWAKENING_STOP); }
+    public static void playEvergateExpirationWarning(Entity entity) { play(entity, EVERGATE_EXPIRATION_WARNING); }
 
     private static void play(Entity entity, String effectId) {
         if (entity == null || entity.level().isClientSide) {

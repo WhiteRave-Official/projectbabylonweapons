@@ -3,6 +3,7 @@ package com.rave.projectbabylonweapons.client;
 import com.rave.projectbabylonweapons.handler.WeaponVisualEffectHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
+import yesman.epicfight.particle.EpicFightParticles;
 
 public final class WeaponVisualEffectClientHelper {
     private WeaponVisualEffectClientHelper() {
@@ -135,6 +136,14 @@ public final class WeaponVisualEffectClientHelper {
         if (WeaponVisualEffectHelper.ARCLIGHT_AWAKENING_STOP.equals(effectId)) {
             PhotonWeaponEffectHelper.stopArclightAwakening(entity);
             ArclightAwakeningClientState.stop(entity);
+            return;
+        }
+        if (WeaponVisualEffectHelper.EVERGATE_EXPIRATION_WARNING.equals(effectId)) {
+            entity.level().addParticle(
+                    EpicFightParticles.WHITE_AFTERIMAGE.get(),
+                    entity.getX(), entity.getY(), entity.getZ(),
+                    Double.longBitsToDouble(entity.getId()), 0.0D, 0.0D
+            );
         }
     }
 }

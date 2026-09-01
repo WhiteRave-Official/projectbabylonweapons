@@ -1,0 +1,20 @@
+{
+  "passive_id": "project_babylon_weapons:evergate_unity",
+  "weapon_id": "project_babylon_weapons:arclight_sword",
+  "visual": {
+    "frame_type": "evergate",
+    "frame_texture": "project_babylon_materials:textures/gui/tooltip/frame/material/evergate_material_frame.png",
+    "icon_texture": "project_babylon_materials:textures/gui/tooltip/icon/material/evergate_passive_icon.png",
+    "display_name_key": "tooltip.project_babylon_weapons.passive.unity.name",
+    "description_keys": [
+      "tooltip.project_babylon_weapons.passive.unity.line1",
+      "tooltip.project_babylon_weapons.passive.unity.line2",
+      "tooltip.project_babylon_weapons.passive.unity.line3"
+    ]
+  },
+  "profile": {
+    "movement_speed_bonus": 0.08,
+    "holy_damage_percent": 0.15,
+    "stun_immunity_duration_ticks": 20
+  }
+}

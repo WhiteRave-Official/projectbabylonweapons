@@ -69,8 +69,15 @@ public class PBNetworkManager {
                 SPPlayWeaponVisualEffect::handle,
                 java.util.Optional.of(NetworkDirection.PLAY_TO_CLIENT)
         );
+        CHANNEL.registerMessage(
+                id++,
+                SPBarrierSync.class,
+                SPBarrierSync::encode,
+                SPBarrierSync::new,
+                SPBarrierSync::handle,
+                java.util.Optional.of(NetworkDirection.PLAY_TO_CLIENT)
+        );
     }
-
     public static void sendToServer(Object packet) {
         CHANNEL.sendToServer(packet);
     }
