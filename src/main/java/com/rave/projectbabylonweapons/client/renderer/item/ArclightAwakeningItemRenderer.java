@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.rave.projectbabylonweapons.client.ArclightAwakeningClientState;
 import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
+import com.rave.projectbabylonweapons.skill.weapon_innate.EternalLightSkill;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -45,9 +46,19 @@ public final class ArclightAwakeningItemRenderer extends RenderItemBase {
                                  int packedLight, float partialTicks) {
         super.renderItemInHand(stack, entityPatch, hand, poses, buffer, poseStack, packedLight, partialTicks);
 
-        float progress = hand == InteractionHand.MAIN_HAND && !ArclightSwordItem.isEvergate(stack)
-                ? ArclightAwakeningClientState.getProgress(entityPatch, partialTicks)
-                : 0.0F;
+        boolean evergate = ArclightSwordItem.isEvergate(stack);
+        float progress = 0.0F;
+        if (hand == InteractionHand.MAIN_HAND) {
+            if (evergate && ArclightAwakeningClientState.isExpirationActive(entityPatch)) {
+                long expiresAt = ArclightSwordItem.getFormExpiresAt(stack);
+                float gameTime = entityPatch.getOriginal().level().getGameTime() + partialTicks;
+                float warningDuration = Math.max(1, EternalLightSkill.getExpirationWarningDurationTicks());
+                float linear = Mth.clamp(1.0F - (expiresAt - gameTime) / warningDuration, 0.0F, 1.0F);
+                progress = linear * linear * (3.0F - 2.0F * linear);
+            } else if (!evergate) {
+                progress = ArclightAwakeningClientState.getProgress(entityPatch, partialTicks);
+            }
+        }
         if (progress <= MIN_VISIBLE_PROGRESS) {
             return;
         }

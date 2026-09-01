@@ -3,6 +3,7 @@ import com.mojang.datafixers.util.Either;
 import com.rave.projectbabylonmaterials.tooltip.DescriptionBoxTooltipData;
 import com.rave.projectbabylonmaterials.tooltip.IconLabelTooltipData;
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
+import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
@@ -29,6 +30,8 @@ public final class WeaponPassiveTooltipEvents {
     }
     @SubscribeEvent
     public static void onGatherTooltipComponents(RenderTooltipEvent.GatherComponents event) {
+        List<Either<net.minecraft.network.chat.FormattedText, net.minecraft.world.inventory.tooltip.TooltipComponent>> elements = event.getTooltipElements();
+        replaceEvergateName(event.getItemStack(), elements);
         if (!Screen.hasControlDown()) {
             return;
         }
@@ -36,10 +39,23 @@ public final class WeaponPassiveTooltipEvents {
         if (data == null) {
             return;
         }
-        List<Either<net.minecraft.network.chat.FormattedText, net.minecraft.world.inventory.tooltip.TooltipComponent>> elements = event.getTooltipElements();
         replaceTitleLine(elements, data);
         replaceDescriptionLines(elements, data);
     }
+
+    private static void replaceEvergateName(net.minecraft.world.item.ItemStack stack,
+                                             List<Either<net.minecraft.network.chat.FormattedText, net.minecraft.world.inventory.tooltip.TooltipComponent>> elements) {
+        if (!ArclightSwordItem.isEvergate(stack)) {
+            return;
+        }
+        for (int i = 0; i < elements.size(); i++) {
+            if (elements.get(i).left().isPresent()) {
+                elements.set(i, Either.right(new EvergateNameTooltipData(stack.getHoverName())));
+                return;
+            }
+        }
+    }
+
     private static boolean containsPassiveTooltip(List<Component> tooltip, WeaponPassiveTooltipData data) {
         String titleLine = data.titleLine().getString();
         String collapsedLine = data.collapsedLine().getString();

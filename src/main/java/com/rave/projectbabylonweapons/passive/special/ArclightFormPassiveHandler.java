@@ -283,16 +283,25 @@ public final class ArclightFormPassiveHandler {
         }
     }
     public static void grantBarrier(ServerPlayer player, float amount, int durationTicks) {
-        addBarrier(player, amount, durationTicks);
+        addBarrier(player, amount, durationTicks, player.getMaxHealth());
+    }
+
+    public static void grantBarrier(ServerPlayer player, float amount, int durationTicks, float capacity) {
+        addBarrier(player, amount, durationTicks, Math.max(player.getMaxHealth(), capacity));
     }
 
     private static void addBarrier(ServerPlayer player, float amount, int durationTicks) {
+        addBarrier(player, amount, durationTicks, player.getMaxHealth());
+    }
+
+    private static void addBarrier(ServerPlayer player, float amount, int durationTicks, float capacity) {
         if (amount <= 0.0F || durationTicks <= 0) {
             return;
         }
 
         BarrierState barrier = BARRIERS.computeIfAbsent(player.getUUID(), ignored -> new BarrierState());
-        barrier.amount = Math.min(player.getMaxHealth(), barrier.amount + amount);
+        barrier.capacity = Math.max(barrier.capacity, capacity);
+        barrier.amount = Math.min(barrier.capacity, barrier.amount + amount);
         barrier.expiresAt = player.level().getGameTime() + durationTicks;
         syncBarrier(player, barrier.amount);
     }
@@ -308,7 +317,7 @@ public final class ArclightFormPassiveHandler {
             return;
         }
 
-        float cappedAmount = Math.min(barrier.amount, player.getMaxHealth());
+        float cappedAmount = Math.min(barrier.amount, Math.max(player.getMaxHealth(), barrier.capacity));
         if (Float.compare(cappedAmount, barrier.amount) != 0) {
             barrier.amount = cappedAmount;
             syncBarrier(player, barrier.amount);
@@ -352,6 +361,7 @@ public final class ArclightFormPassiveHandler {
 
     private static final class BarrierState {
         private float amount;
+        private float capacity;
         private long expiresAt;
     }
 }

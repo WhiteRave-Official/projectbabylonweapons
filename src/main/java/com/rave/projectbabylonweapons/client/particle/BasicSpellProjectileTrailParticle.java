@@ -3,6 +3,7 @@ package com.rave.projectbabylonweapons.client.particle;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.rave.projectbabylonweapons.world.entity.projectile.ArclightMiniProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.BasicSpellProjectileEntity;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -12,6 +13,7 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
@@ -33,8 +35,24 @@ public class BasicSpellProjectileTrailParticle extends TextureSheetParticle {
             .updateInterval(1)
             .texture("epicfight:textures/particle/projectile_trail.png")
             .create();
+    private static final TrailInfo ARCLIGHT_MINI_TRAIL = TrailInfo.builder()
+            .startPos(new Vec3(-0.22D, 0.0D, 0.35D))
+            .endPos(new Vec3(0.22D, 0.0D, 0.35D))
+            .interpolations(4)
+            .lifetime(8)
+            .updateInterval(1)
+            .texture("epicfight:textures/particle/projectile_trail.png")
+            .create();
+    private static final TrailInfo ARCLIGHT_SPEAR_TRAIL = TrailInfo.builder()
+            .startPos(new Vec3(-0.4D, 0.0D, 0.55D))
+            .endPos(new Vec3(0.4D, 0.0D, 0.55D))
+            .interpolations(4)
+            .lifetime(10)
+            .updateInterval(1)
+            .texture("epicfight:textures/particle/projectile_trail.png")
+            .create();
 
-    private final BasicSpellProjectileEntity owner;
+    private final Entity owner;
     private final TrailInfo trailInfo;
     private final List<TrailEdge> trailEdges = Lists.newLinkedList();
     private float lastXRot;
@@ -42,13 +60,19 @@ public class BasicSpellProjectileTrailParticle extends TextureSheetParticle {
     private boolean shouldRemove;
 
     protected BasicSpellProjectileTrailParticle(ClientLevel level, BasicSpellProjectileEntity owner) {
+        this(level, owner, DEFAULT_TRAIL);
+    }
+
+    protected BasicSpellProjectileTrailParticle(ClientLevel level, ArclightMiniProjectileEntity owner) {
+        this(level, owner, owner.isSpear() ? ARCLIGHT_SPEAR_TRAIL : ARCLIGHT_MINI_TRAIL);
+    }
+
+    private BasicSpellProjectileTrailParticle(ClientLevel level, Entity owner, TrailInfo trailInfo) {
         super(level, owner.getX(), owner.getY(), owner.getZ());
         this.owner = owner;
-        this.trailInfo = DEFAULT_TRAIL;
+        this.trailInfo = trailInfo;
         this.hasPhysics = false;
-        this.rCol = owner.getTrailRed();
-        this.gCol = owner.getTrailGreen();
-        this.bCol = owner.getTrailBlue();
+        this.refreshColor();
         float size = (float) Math.max(this.trailInfo.start().length(), this.trailInfo.end().length()) * 2.0F;
         this.setSize(size, size);
     }
@@ -81,7 +105,9 @@ public class BasicSpellProjectileTrailParticle extends TextureSheetParticle {
     }
 
     private boolean canContinue() {
-        return this.owner.isAlive() && !this.owner.isRemoved();
+        return this.owner.isAlive() && !this.owner.isRemoved()
+                && (!(this.owner instanceof ArclightMiniProjectileEntity arclight)
+                || arclight.getState() == ArclightMiniProjectileEntity.STATE_FLYING);
     }
 
     private boolean canCreateNextCurve() {
@@ -93,9 +119,7 @@ public class BasicSpellProjectileTrailParticle extends TextureSheetParticle {
             return;
         }
 
-        this.rCol = this.owner.getTrailRed();
-        this.gCol = this.owner.getTrailGreen();
-        this.bCol = this.owner.getTrailBlue();
+        this.refreshColor();
 
         boolean isFirstTrail = this.trailEdges.isEmpty();
         if (isFirstTrail) {
@@ -243,11 +267,35 @@ public class BasicSpellProjectileTrailParticle extends TextureSheetParticle {
         }
     }
 
+    private void refreshColor() {
+        if (this.owner instanceof BasicSpellProjectileEntity basic) {
+            this.rCol = basic.getTrailRed();
+            this.gCol = basic.getTrailGreen();
+            this.bCol = basic.getTrailBlue();
+        } else {
+            this.rCol = 1.0F;
+            this.gCol = 0.92F;
+            this.bCol = 0.5F;
+        }
+    }
+
     public static class Provider implements ParticleProvider<SimpleParticleType> {
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed) {
             int entityId = (int) x;
             if (!(level.getEntity(entityId) instanceof BasicSpellProjectileEntity projectile)) {
+                return null;
+            }
+            return new BasicSpellProjectileTrailParticle(level, projectile);
+        }
+    }
+
+    public static class ArclightProvider implements ParticleProvider<SimpleParticleType> {
+        @Override
+        public Particle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z,
+                                       double xSpeed, double ySpeed, double zSpeed) {
+            int entityId = (int) x;
+            if (!(level.getEntity(entityId) instanceof ArclightMiniProjectileEntity projectile)) {
                 return null;
             }
             return new BasicSpellProjectileTrailParticle(level, projectile);

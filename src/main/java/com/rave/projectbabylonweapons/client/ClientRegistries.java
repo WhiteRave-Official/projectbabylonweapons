@@ -3,6 +3,8 @@ package com.rave.projectbabylonweapons.client;
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
 import com.rave.projectbabylonweapons.block.renderer.FrozenDebuffIceBlockTileRenderer;
 import com.rave.projectbabylonweapons.client.particle.BasicSpellProjectileTrailParticle;
+import com.rave.projectbabylonweapons.client.tooltip.EvergateNameClientTooltip;
+import com.rave.projectbabylonweapons.tooltip.EvergateNameTooltipData;
 import com.rave.projectbabylonweapons.client.renderer.ArclightMiniProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.ArclightRainPortalRenderer;
 import com.rave.projectbabylonweapons.client.renderer.BasicSpellProjectileRenderer;
@@ -35,6 +37,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.client.event.RegisterParticleProvidersEvent;
+import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import yesman.epicfight.api.client.forgeevent.PatchedRenderersEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -43,6 +46,11 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 
 @EventBusSubscriber(modid = ProjectBabylonWeapons.MODID, bus = Bus.MOD, value = Dist.CLIENT)
 public class ClientRegistries {
+    @SubscribeEvent
+    public static void registerTooltipComponents(RegisterClientTooltipComponentFactoriesEvent event) {
+        event.register(EvergateNameTooltipData.class, EvergateNameClientTooltip::new);
+    }
+
     @SubscribeEvent
     public static void registerItemRenderers(PatchedRenderersEvent.RegisterItemRenderer event) {
         event.addItemRenderer(
@@ -88,6 +96,7 @@ public class ClientRegistries {
     @SubscribeEvent
     public static void registerParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpecial(PBModParticles.BASIC_SPELL_PROJECTILE_TRAIL.get(), new BasicSpellProjectileTrailParticle.Provider());
+        event.registerSpecial(PBModParticles.ARCLIGHT_PROJECTILE_TRAIL.get(), new BasicSpellProjectileTrailParticle.ArclightProvider());
     }
 
     @SubscribeEvent

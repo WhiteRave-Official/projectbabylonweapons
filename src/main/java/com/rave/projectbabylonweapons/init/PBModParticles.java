@@ -13,6 +13,8 @@ public final class PBModParticles {
 
     public static final RegistryObject<SimpleParticleType> BASIC_SPELL_PROJECTILE_TRAIL =
             PARTICLES.register("basic_spell_projectile_trail", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> ARCLIGHT_PROJECTILE_TRAIL =
+            PARTICLES.register("arclight_projectile_trail", () -> new SimpleParticleType(true));
 
     private PBModParticles() {
     }

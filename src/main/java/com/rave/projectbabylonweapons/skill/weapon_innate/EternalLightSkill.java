@@ -9,6 +9,7 @@ import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
 import com.rave.projectbabylonweapons.world.entity.effect.ArclightRainPortalEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.ArclightMiniProjectileEntity;
 import io.netty.buffer.Unpooled;
+import io.redspace.ironsspellbooks.damage.ISSDamageTypes;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -19,6 +20,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -36,7 +38,9 @@ import yesman.epicfight.skill.SkillBuilder;
 import yesman.epicfight.skill.SkillContainer;
 import yesman.epicfight.skill.SkillSlots;
 import yesman.epicfight.skill.weaponinnate.WeaponInnateSkill;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.capabilities.entitypatch.player.PlayerPatch;
+import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
 import yesman.epicfight.world.entity.eventlistener.SkillCastEvent;
 
@@ -210,7 +214,9 @@ public class EternalLightSkill extends WeaponInnateSkill {
     public static void onLivingHurt(LivingHurtEvent event) {
         if (event.getEntity().level().isClientSide
                 || !(event.getSource().getEntity() instanceof ServerPlayer attacker)
-                || event.getAmount() <= 0.0F) {
+                || event.getAmount() <= 0.0F
+                || (event.getSource().is(ISSDamageTypes.HOLY_MAGIC)
+                && event.getSource().getDirectEntity() == attacker)) {
             return;
         }
 
@@ -231,13 +237,15 @@ public class EternalLightSkill extends WeaponInnateSkill {
     private void addDamageBonus(LivingEntity player, int spentCharges) {
         long expiresAt = player.level().getGameTime() + this.damageBonusDurationTicks;
         DAMAGE_BONUSES.compute(player.getUUID(), (id, current) -> new DamageBonusState(
-                (current == null ? 0 : current.spentCharges()) + spentCharges,
+                (current == null || player.level().getGameTime() >= current.expiresAt()
+                        ? 0
+                        : current.spentCharges()) + spentCharges,
                 expiresAt
         ));
     }
 
     private void expireForm(ServerPlayer player, ItemStack weapon) {
-        PlayerPatch<?> playerPatch = EpicFightCapabilities.getEntityPatch(player, PlayerPatch.class);
+        ServerPlayerPatch playerPatch = EpicFightCapabilities.getEntityPatch(player, ServerPlayerPatch.class);
         SkillContainer container = playerPatch == null ? null : playerPatch.getSkill(SkillSlots.WEAPON_INNATE);
         int remainingCharges = container != null && container.getSkill() == this ? container.getStack() : 0;
         if (remainingCharges > 0) {
@@ -264,10 +272,14 @@ public class EternalLightSkill extends WeaponInnateSkill {
                 ItemStack currentWeapon = player.getMainHandItem();
                 if (currentWeapon.getItem() instanceof ArclightSwordItem && !ArclightSwordItem.isEvergate(currentWeapon)) {
                     EpicFightCapabilities.getItemStackCapability(currentWeapon)
-                            .changeWeaponInnateSkill((yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch) playerPatch, currentWeapon);
+                            .changeWeaponInnateSkill(playerPatch, currentWeapon);
                 }
             }));
         }
+    }
+
+    public static int getExpirationWarningDurationTicks() {
+        return current().expirationWarningTicks;
     }
 
     private static EternalLightSkill current() {

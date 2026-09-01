@@ -4,9 +4,12 @@ import com.rave.projectbabylonweapons.gameasset.PBAnimations;
 import com.rave.projectbabylonweapons.gameasset.PBSkills;
 import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
 import com.rave.projectbabylonweapons.handler.WeaponVisualEffectHelper;
+import com.rave.projectbabylonweapons.passive.special.ArclightFormPassiveHandler;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -18,13 +21,27 @@ import yesman.epicfight.world.capabilities.entitypatch.LivingEntityPatch;
 import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import yesman.epicfight.world.capabilities.EpicFightCapabilities;
 import yesman.epicfight.world.entity.eventlistener.PlayerEventListener.EventType;
+import yesman.epicfight.world.effect.EpicFightMobEffects;
 
 import java.util.UUID;
 
 public class ArclightAwakeningSkill extends WeaponInnateSkill {
     private static final UUID CONTACT_UUID = UUID.fromString("c28a0abe-5605-4ccc-a736-338aa1cc9e8f");
+    private float awakeningBarrier = 200.0F;
+    private int awakeningProtectionTicks = 280;
     public ArclightAwakeningSkill(SkillBuilder<? extends WeaponInnateSkill> builder) {
         super(builder);
+    }
+
+    @Override
+    public void setParams(CompoundTag parameters) {
+        super.setParams(parameters);
+        if (parameters.contains("awakening_barrier")) {
+            this.awakeningBarrier = parameters.getFloat("awakening_barrier");
+        }
+        if (parameters.contains("awakening_protection_ticks")) {
+            this.awakeningProtectionTicks = parameters.getInt("awakening_protection_ticks");
+        }
     }
     @Override
     public void onInitiate(SkillContainer container) {
@@ -50,8 +67,15 @@ public class ArclightAwakeningSkill extends WeaponInnateSkill {
     public void executeOnServer(SkillContainer container, FriendlyByteBuf args) {
         super.executeOnServer(container, args);
         container.activate();
+        if (!(container.getExecutor().getOriginal() instanceof ServerPlayer player)) {
+            return;
+        }
+        ArclightFormPassiveHandler.grantBarrier(player, this.awakeningBarrier,
+                this.awakeningProtectionTicks, this.awakeningBarrier);
+        player.addEffect(new MobEffectInstance(EpicFightMobEffects.STUN_IMMUNITY.get(),
+                this.awakeningProtectionTicks, 0, false, true, true));
         container.getExecutor().playAnimationSynchronized(PBAnimations.ARCLIGHT_AWAKENING, 0.0F);
-        WeaponVisualEffectHelper.startArclightAwakening(container.getExecutor().getOriginal());
+        WeaponVisualEffectHelper.startArclightAwakening(player);
     }
 
     @Override

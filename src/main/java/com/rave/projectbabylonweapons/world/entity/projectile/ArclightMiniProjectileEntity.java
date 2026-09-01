@@ -2,6 +2,7 @@ package com.rave.projectbabylonweapons.world.entity.projectile;
 
 import com.rave.projectbabylonweapons.client.PhotonWeaponEffectHelper;
 import com.rave.projectbabylonweapons.init.PBModEntities;
+import com.rave.projectbabylonweapons.init.PBModParticles;
 import io.redspace.ironsspellbooks.damage.ISSDamageTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.damagesource.DamageSource;
@@ -59,6 +60,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
     private int stateTicks;
     private int previousClientState = -1;
     private boolean clientDissolveSpawned;
+    private boolean clientTrailSpawned;
     private final Set<Integer> piercedEntityIds = new HashSet<>();
 
     public ArclightMiniProjectileEntity(EntityType<? extends ArclightMiniProjectileEntity> type, Level level) {
@@ -209,6 +211,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
         }
 
         if (this.level().isClientSide) {
+            this.spawnClientTrailOnce();
             this.spawnFlightVisual(movement);
         } else if (this.stateTicks >= BLOCK_COLLISION_GRACE_TICKS) {
             HitResult hitResult = ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
@@ -406,6 +409,15 @@ public class ArclightMiniProjectileEntity extends Projectile {
             PhotonWeaponEffectHelper.spawnArclightMiniDissolve(this, position);
         }
     }
+    private void spawnClientTrailOnce() {
+        if (this.clientTrailSpawned || !this.isAlive()) {
+            return;
+        }
+        this.level().addParticle(PBModParticles.ARCLIGHT_PROJECTILE_TRAIL.get(),
+                this.getId(), 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
+        this.clientTrailSpawned = true;
+    }
+
     private void setDirection(Vec3 direction) {
         Vec3 normalized = direction.lengthSqr() < 1.0E-6D
                 ? new Vec3(0.0D, 0.0D, 1.0D)

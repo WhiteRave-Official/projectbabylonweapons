@@ -32,6 +32,7 @@
     "entity.project_babylon_weapons.tectonic_falling_block":  "Tectonic Falling Block",
 
     "item.project_babylon_weapons.arclight_sword":  "Arclight Sword",
+    "item.project_babylon_weapons.evergate": "Evergate",
 
     "item.project_babylon_weapons.demon_battleaxe":  "Demon Battleaxe",
     "item.project_babylon_weapons.demon_claws":  "Demon Claws",
@@ -273,8 +274,10 @@
     "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.name":  "Retribution",
     "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line1":  "A successful «Shield Bash» parry grants 1 Dragon Fury charge, up to 2.",
     "tooltip.project_babylon_weapons.passive.small_shield_dragonsteel.line2":  "The next weapon hit consumes all charges, gaining +100% damage and +30% armor negation per charge.",
+    "skill.project_babylon_weapons.arclight_awakening": "Awakening",
+    "skill.project_babylon_weapons.arclight_awakening.tooltip": "Transforms Arclight, unlocking its true form.",
     "skill.project_babylon_weapons.eternal_light": "Eternal Light",
-    "skill.project_babylon_weapons.eternal_light.tooltip": "Stores up to 10 charges. Use the skill while sprinting or airborne to perform empowered attacks.",
+    "skill.project_babylon_weapons.eternal_light.tooltip": "Stores up to 10 charges that can be used to perform empowered attacks. Each charge spent increases damage by 1.5% for 5 seconds. When Evergate expires, each unspent charge grants Barrier equal to 1.5% of maximum health for 10 seconds.",
     "tooltip.project_babylon_weapons.passive.conduit.name": "Conduit",
     "tooltip.project_babylon_weapons.passive.conduit.line1": "Increases mana regeneration by 25%.",
     "tooltip.project_babylon_weapons.passive.conduit.line2": "Each attack consumes 15 mana to deal 15% increased damage.",

@@ -1,4 +1,6 @@
 {
 	"consumption": 300.0,
-	"max_duration": 700
+	"max_duration": 1400,
+	"awakening_barrier": 200.0,
+	"awakening_protection_ticks": 280
 }

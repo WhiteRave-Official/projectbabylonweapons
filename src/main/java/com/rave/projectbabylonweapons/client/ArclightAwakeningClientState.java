@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Mod.EventBusSubscriber(modid = ProjectBabylonWeapons.MODID, bus = Mod.EventBusSubscriber.Bus.FORGE, value = Dist.CLIENT)
 public final class ArclightAwakeningClientState {
     private static final Set<Integer> ACTIVE_ENTITIES = ConcurrentHashMap.newKeySet();
+    private static final Set<Integer> EXPIRING_ENTITIES = ConcurrentHashMap.newKeySet();
 
     private ArclightAwakeningClientState() {
     }
@@ -31,6 +32,22 @@ public final class ArclightAwakeningClientState {
         if (entity != null) {
             ACTIVE_ENTITIES.remove(entity.getId());
         }
+    }
+
+    public static void startExpiration(Entity entity) {
+        if (entity != null) {
+            EXPIRING_ENTITIES.add(entity.getId());
+        }
+    }
+
+    public static void stopExpiration(Entity entity) {
+        if (entity != null) {
+            EXPIRING_ENTITIES.remove(entity.getId());
+        }
+    }
+
+    public static boolean isExpirationActive(LivingEntityPatch<?> entityPatch) {
+        return entityPatch != null && EXPIRING_ENTITIES.contains(entityPatch.getOriginal().getId());
     }
 
     public static float getProgress(LivingEntityPatch<?> entityPatch, float partialTicks) {
@@ -55,5 +72,6 @@ public final class ArclightAwakeningClientState {
     @SubscribeEvent
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
         ACTIVE_ENTITIES.clear();
+        EXPIRING_ENTITIES.clear();
     }
 }
