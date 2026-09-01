@@ -48,14 +48,18 @@ public class ArclightMiniProjectileEntity extends Projectile {
             SynchedEntityData.defineId(ArclightMiniProjectileEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> DATA_PORTAL_VISUAL =
             SynchedEntityData.defineId(ArclightMiniProjectileEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> DATA_EXPLOSIVE =
+            SynchedEntityData.defineId(ArclightMiniProjectileEntity.class, EntityDataSerializers.BOOLEAN);
 
     private static final float SPEED = 2.35F;
     private static final int WAITING_LIFETIME = 60;
     private static final int FLYING_LIFETIME = 50;
     private static final int BLOCK_COLLISION_GRACE_TICKS = 2;
     private static final int EMBEDDED_LIFETIME = 20;
+    private static final double EXPLOSION_RADIUS = 2.0D;
 
     private float damage;
+    private float explosionDamage;
     private boolean areaDamage;
     private int stateTicks;
     private int previousClientState = -1;
@@ -85,6 +89,11 @@ public class ArclightMiniProjectileEntity extends Projectile {
     }
 
     public void configure(LivingEntity owner, Vec3 direction, float damage, boolean portalVisual, boolean areaDamage) {
+        this.configure(owner, direction, damage, portalVisual, areaDamage, 0.0F);
+    }
+
+    public void configure(LivingEntity owner, Vec3 direction, float damage, boolean portalVisual,
+                          boolean areaDamage, float explosionDamage) {
         Vec3 normalized = direction.lengthSqr() < 1.0E-6D
                 ? new Vec3(0.0D, 0.0D, 1.0D)
                 : direction.normalize();
@@ -92,6 +101,8 @@ public class ArclightMiniProjectileEntity extends Projectile {
         this.piercedEntityIds.clear();
         this.damage = Math.max(0.0F, damage);
         this.areaDamage = areaDamage;
+        this.explosionDamage = Math.max(0.0F, explosionDamage);
+        this.entityData.set(DATA_EXPLOSIVE, this.explosionDamage > 0.0F);
         this.setDirection(normalized);
         this.entityData.set(DATA_STATE, STATE_WAITING);
         this.entityData.set(DATA_LAUNCH_DELAY, 0);
@@ -147,6 +158,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
         this.entityData.define(DATA_DIRECTION_Y, 0.0F);
         this.entityData.define(DATA_DIRECTION_Z, 1.0F);
         this.entityData.define(DATA_PORTAL_VISUAL, true);
+        this.entityData.define(DATA_EXPLOSIVE, false);
     }
 
     @Override
@@ -255,7 +267,8 @@ public class ArclightMiniProjectileEntity extends Projectile {
         } else {
             this.damageTarget(result.getEntity(), owner);
         }
-        this.level().broadcastEntityEvent(this, (byte) 4);
+        boolean exploded = this.damageExplosion(result.getLocation(), owner);
+        this.level().broadcastEntityEvent(this, exploded ? (byte) 5 : (byte) 4);
     }
 
     @Override
@@ -264,8 +277,13 @@ public class ArclightMiniProjectileEntity extends Projectile {
             return;
         }
 
-        if (this.areaDamage && this.getOwner() instanceof LivingEntity owner) {
-            this.damageArea(result.getLocation(), owner);
+        if (this.getOwner() instanceof LivingEntity owner) {
+            if (this.areaDamage) {
+                this.damageArea(result.getLocation(), owner);
+            }
+            if (this.damageExplosion(result.getLocation(), owner)) {
+                this.level().broadcastEntityEvent(this, (byte) 5);
+            }
         }
 
         Vec3 direction = this.getFlightDirection();
@@ -286,8 +304,31 @@ public class ArclightMiniProjectileEntity extends Projectile {
         }
     }
 
+    private boolean damageExplosion(Vec3 center, LivingEntity owner) {
+        if (this.explosionDamage <= 0.0F) {
+            return false;
+        }
+        AABB area = new AABB(
+                center.x - EXPLOSION_RADIUS, center.y - EXPLOSION_RADIUS, center.z - EXPLOSION_RADIUS,
+                center.x + EXPLOSION_RADIUS, center.y + EXPLOSION_RADIUS, center.z + EXPLOSION_RADIUS
+        );
+        for (LivingEntity target : this.level().getEntitiesOfClass(LivingEntity.class, area,
+                candidate -> super.canHitEntity(candidate) && candidate != owner && !candidate.isAlliedTo(owner))) {
+            this.damageTarget(target, owner, this.explosionDamage, false);
+        }
+        this.explosionDamage = 0.0F;
+        this.entityData.set(DATA_EXPLOSIVE, false);
+        return true;
+    }
+
     private void damageTarget(Entity target, LivingEntity owner) {
-        this.piercedEntityIds.add(target.getId());
+        this.damageTarget(target, owner, this.damage, true);
+    }
+
+    private void damageTarget(Entity target, LivingEntity owner, float amount, boolean markPierced) {
+        if (markPierced) {
+            this.piercedEntityIds.add(target.getId());
+        }
         Vec3 originalMovement = target.getDeltaMovement();
         int originalInvulnerableTime = target.invulnerableTime;
         target.invulnerableTime = 0;
@@ -298,7 +339,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
                     this,
                     owner
             );
-            target.hurt(holySource, this.damage);
+            target.hurt(holySource, amount);
         } finally {
             target.invulnerableTime = originalInvulnerableTime;
             target.setDeltaMovement(originalMovement);
@@ -309,6 +350,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
     protected void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putFloat("Damage", this.damage);
+        tag.putFloat("ExplosionDamage", this.explosionDamage);
         tag.putBoolean("AreaDamage", this.areaDamage);
         tag.putInt("State", this.getState());
         tag.putInt("LaunchDelay", this.entityData.get(DATA_LAUNCH_DELAY));
@@ -318,23 +360,29 @@ public class ArclightMiniProjectileEntity extends Projectile {
         tag.putDouble("DirectionZ", direction.z);
         tag.putInt("StateTicks", this.stateTicks);
         tag.putBoolean("PortalVisual", this.entityData.get(DATA_PORTAL_VISUAL));
+        tag.putBoolean("Explosive", this.entityData.get(DATA_EXPLOSIVE));
     }
 
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         this.damage = tag.getFloat("Damage");
+        this.explosionDamage = tag.getFloat("ExplosionDamage");
         this.areaDamage = tag.getBoolean("AreaDamage");
         this.entityData.set(DATA_STATE, tag.getInt("State"));
         this.entityData.set(DATA_LAUNCH_DELAY, tag.getInt("LaunchDelay"));
         this.setDirection(new Vec3(tag.getDouble("DirectionX"), tag.getDouble("DirectionY"), tag.getDouble("DirectionZ")));
         this.stateTicks = tag.getInt("StateTicks");
         this.entityData.set(DATA_PORTAL_VISUAL, !tag.contains("PortalVisual") || tag.getBoolean("PortalVisual"));
+        this.entityData.set(DATA_EXPLOSIVE, tag.getBoolean("Explosive") || this.explosionDamage > 0.0F);
     }
 
     @Override
     public void handleEntityEvent(byte eventId) {
-        if (eventId == 4) {
+        if (eventId == 4 || eventId == 5) {
+            if (eventId == 5) {
+                PhotonWeaponEffectHelper.spawnArclightRainExplosion(this, this.position());
+            }
             this.spawnImpactVisual(this.position());
             return;
         }

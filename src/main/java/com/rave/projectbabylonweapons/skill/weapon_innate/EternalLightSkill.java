@@ -58,6 +58,7 @@ public class EternalLightSkill extends WeaponInnateSkill {
     private static final int DASH_COST = 5;
     private static final float MINI_DAMAGE_MULTIPLIER = 0.15F;
     private static final float SPEAR_DAMAGE_MULTIPLIER = 1.0F;
+    private static final float RAIN_EXPLOSION_DAMAGE_MULTIPLIER = 0.35F;
     private static final int AUTO_SEQUENCE_WINDOW_TICKS = 60;
     private static final Map<UUID, List<UUID>> PENDING_MINI_PROJECTILES = new ConcurrentHashMap<>();
     private static final Map<UUID, List<UUID>> PENDING_SPEAR_PROJECTILES = new ConcurrentHashMap<>();
@@ -347,13 +348,15 @@ public class EternalLightSkill extends WeaponInnateSkill {
         clearRainPortals(caster);
         Vec3 forward = flatForward(caster);
         Vec3 areaCenter = caster.position().add(forward.scale(8.0D)).add(0.0D, 7.0D, 0.0D);
-        float damage = (float) caster.getAttributeValue(Attributes.ATTACK_DAMAGE) * MINI_DAMAGE_MULTIPLIER;
+        float attackDamage = (float) caster.getAttributeValue(Attributes.ATTACK_DAMAGE);
+        float damage = attackDamage * MINI_DAMAGE_MULTIPLIER;
+        float explosionDamage = attackDamage * RAIN_EXPLOSION_DAMAGE_MULTIPLIER;
         int portalCount = 6 + caster.getRandom().nextInt(4);
         List<UUID> portals = new ArrayList<>(portalCount);
 
         for (int i = 0; i < portalCount; i++) {
             ArclightRainPortalEntity portal = new ArclightRainPortalEntity(level);
-            portal.configure(caster, areaCenter, forward, damage, 2 + caster.getRandom().nextInt(3));
+            portal.configure(caster, areaCenter, forward, damage, explosionDamage, 3 + caster.getRandom().nextInt(2));
             level.addFreshEntity(portal);
             portals.add(portal.getUUID());
         }

@@ -272,6 +272,10 @@ public final class PhotonWeaponEffectHelper {
         PBMPhotonEffectHelper.spawnArclightMiniDissolve(projectile, position);
     }
 
+    public static void spawnArclightRainExplosion(Entity projectile, Vec3 position) {
+        PBMPhotonEffectHelper.spawnHolyProjectileImpact(projectile, position);
+    }
+
     public static void spawnArclightSpearPortal(Entity projectile, Vec3 direction) {
         PBMPhotonEffectHelper.spawnArclightSpearPortal(projectile, direction);
     }

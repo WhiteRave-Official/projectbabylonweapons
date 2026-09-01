@@ -39,6 +39,8 @@ public class ArclightRainPortalEntity extends Entity {
     private Vec3 areaCenter = Vec3.ZERO;
     private Vec3 areaForward = new Vec3(0.0D, 0.0D, 1.0D);
     private float damage;
+    private float explosionDamage;
+    private int shotsFired;
     private int remainingShots;
     private int actionDelay;
     private int stateTicks;
@@ -52,7 +54,7 @@ public class ArclightRainPortalEntity extends Entity {
         this(PBModEntities.ARCLIGHT_RAIN_PORTAL.get(), level);
     }
 
-    public void configure(LivingEntity owner, Vec3 center, Vec3 forward, float damage, int shots) {
+    public void configure(LivingEntity owner, Vec3 center, Vec3 forward, float damage, float explosionDamage, int shots) {
         Vec3 flatForward = new Vec3(forward.x, 0.0D, forward.z);
         this.ownerUuid = owner.getUUID();
         this.areaCenter = center;
@@ -60,6 +62,7 @@ public class ArclightRainPortalEntity extends Entity {
                 ? new Vec3(0.0D, 0.0D, 1.0D)
                 : flatForward.normalize();
         this.damage = Math.max(0.0F, damage);
+        this.explosionDamage = Math.max(0.0F, explosionDamage);
         this.remainingShots = Math.max(1, shots);
         this.entityData.set(DATA_STATE, STATE_WAITING);
         this.relocateWithinArea();
@@ -159,7 +162,10 @@ public class ArclightRainPortalEntity extends Entity {
 
         ArclightMiniProjectileEntity sword = new ArclightMiniProjectileEntity(level);
         sword.setPos(this.position());
-        sword.configure(owner, SHOT_DIRECTION, this.damage, false, true);
+        this.shotsFired++;
+        boolean explosive = this.shotsFired % 3 == 0;
+        sword.configure(owner, SHOT_DIRECTION, this.damage, false, true,
+                explosive ? this.explosionDamage : 0.0F);
         level.addFreshEntity(sword);
         sword.queueLaunch(0);
     }
@@ -173,8 +179,8 @@ public class ArclightRainPortalEntity extends Entity {
 
     private void relocateWithinArea() {
         Vec3 right = new Vec3(-this.areaForward.z, 0.0D, this.areaForward.x);
-        double sideOffset = (this.random.nextDouble() - 0.5D) * 12.0D;
-        double depthOffset = (this.random.nextDouble() - 0.5D) * 12.0D;
+        double sideOffset = (this.random.nextDouble() - 0.5D) * 8.0D;
+        double depthOffset = (this.random.nextDouble() - 0.5D) * 8.0D;
         double heightOffset = (this.random.nextDouble() - 0.5D) * 3.0D;
         Vec3 position = this.areaCenter
                 .add(right.scale(sideOffset))
@@ -205,6 +211,8 @@ public class ArclightRainPortalEntity extends Entity {
         this.areaCenter = new Vec3(tag.getDouble("AreaX"), tag.getDouble("AreaY"), tag.getDouble("AreaZ"));
         this.areaForward = new Vec3(tag.getDouble("ForwardX"), 0.0D, tag.getDouble("ForwardZ"));
         this.damage = tag.getFloat("Damage");
+        this.explosionDamage = tag.getFloat("ExplosionDamage");
+        this.shotsFired = tag.getInt("ShotsFired");
         this.remainingShots = tag.getInt("RemainingShots");
         this.actionDelay = tag.getInt("ActionDelay");
         this.stateTicks = tag.getInt("StateTicks");
@@ -222,6 +230,8 @@ public class ArclightRainPortalEntity extends Entity {
         tag.putDouble("ForwardX", this.areaForward.x);
         tag.putDouble("ForwardZ", this.areaForward.z);
         tag.putFloat("Damage", this.damage);
+        tag.putFloat("ExplosionDamage", this.explosionDamage);
+        tag.putInt("ShotsFired", this.shotsFired);
         tag.putInt("RemainingShots", this.remainingShots);
         tag.putInt("ActionDelay", this.actionDelay);
         tag.putInt("StateTicks", this.stateTicks);
