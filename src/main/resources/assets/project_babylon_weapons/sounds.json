@@ -49,5 +49,22 @@
     "sounds": [
       "project_babylon_weapons:blizzard"
     ]
+  },
+  "arclight_awakening": {
+    "sounds": [
+      "project_babylon_weapons:awakening"
+    ]
+  },
+  "arclight_sword_shoot": {
+    "sounds": [
+      "project_babylon_weapons:light_sword_shoot_1",
+      "project_babylon_weapons:light_sword_shoot_2",
+      "project_babylon_weapons:light_sword_shoot_3"
+    ]
+  },
+  "arclight_spear_shoot": {
+    "sounds": [
+      "project_babylon_weapons:light_spear_shoot"
+    ]
   }
 }

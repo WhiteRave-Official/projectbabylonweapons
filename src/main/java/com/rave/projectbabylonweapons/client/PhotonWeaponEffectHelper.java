@@ -252,6 +252,10 @@ public final class PhotonWeaponEffectHelper {
         PBMPhotonEffectHelper.spawnArclightMiniPortal(projectile, direction);
     }
 
+    public static void spawnArclightRainPortal(Entity portal, Vec3 direction) {
+        PBMPhotonEffectHelper.spawnArclightRainPortal(portal, direction);
+    }
+
     public static void spawnArclightRainTarget(Entity portal, Vec3 targetPosition) {
         PBMPhotonEffectHelper.spawnArclightRainTarget(portal, targetPosition);
     }
@@ -260,20 +264,36 @@ public final class PhotonWeaponEffectHelper {
         PBMPhotonEffectHelper.spawnArclightMiniLaunch(projectile, direction);
     }
 
+    public static void spawnArclightRainLaunch(Entity projectile, Vec3 direction) {
+        PBMPhotonEffectHelper.spawnArclightRainLaunch(projectile, direction);
+    }
+
     public static void spawnArclightMiniFlight(Entity projectile, Vec3 movement) {
         PBMPhotonEffectHelper.spawnArclightMiniFlight(projectile, movement);
+    }
+
+    public static void spawnArclightRainFlight(Entity projectile, Vec3 movement) {
+        PBMPhotonEffectHelper.spawnArclightRainFlight(projectile, movement);
     }
 
     public static void spawnArclightMiniImpact(Entity projectile, Vec3 hitPos, Vec3 direction) {
         PBMPhotonEffectHelper.spawnArclightMiniImpact(projectile, hitPos, direction);
     }
 
+    public static void spawnArclightRainImpact(Entity projectile, Vec3 hitPos, Vec3 direction) {
+        PBMPhotonEffectHelper.spawnArclightRainImpact(projectile, hitPos, direction);
+    }
+
     public static void spawnArclightMiniDissolve(Entity projectile, Vec3 position) {
         PBMPhotonEffectHelper.spawnArclightMiniDissolve(projectile, position);
     }
 
+    public static void spawnArclightRainDissolve(Entity projectile, Vec3 position) {
+        PBMPhotonEffectHelper.spawnArclightRainDissolve(projectile, position);
+    }
+
     public static void spawnArclightRainExplosion(Entity projectile, Vec3 position) {
-        PBMPhotonEffectHelper.spawnHolyProjectileImpact(projectile, position);
+        PBMPhotonEffectHelper.spawnArclightRainExplosion(projectile, position);
     }
 
     public static void spawnArclightSpearPortal(Entity projectile, Vec3 direction) {

@@ -38,7 +38,7 @@ public final class PBAnimationProperties {
                 PBAnimations.EVERGATE_EXTRA_AUTO_1,
                 PBAnimations.EVERGATE_EXTRA_AUTO_2,
                 PBAnimations.EVERGATE_EXTRA_AUTO_3,
-                PBAnimations.EVERGATE_EXTRA_AUTO_5,
+                PBAnimations.EVERGATE_EXTRA_AUTO_4,
                 PBAnimations.EVERGATE_EXTRA_DASH,
                 PBAnimations.EVERGATE_EXTRA_AIRSLASH
         );

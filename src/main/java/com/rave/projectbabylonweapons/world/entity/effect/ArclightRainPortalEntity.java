@@ -44,6 +44,9 @@ public class ArclightRainPortalEntity extends Entity {
     private int remainingShots;
     private int actionDelay;
     private int stateTicks;
+    private boolean ringPosition;
+    private boolean alwaysExplosive;
+    private double ringRadius;
 
     public ArclightRainPortalEntity(EntityType<? extends ArclightRainPortalEntity> type, Level level) {
         super(type, level);
@@ -68,6 +71,24 @@ public class ArclightRainPortalEntity extends Entity {
         this.relocateWithinArea();
     }
 
+    public void configureRing(LivingEntity owner, Vec3 center, Vec3 forward, double radius, double initialAngle,
+                              float damage, float explosionDamage, int shots) {
+        Vec3 flatForward = new Vec3(forward.x, 0.0D, forward.z);
+        this.ownerUuid = owner.getUUID();
+        this.areaCenter = center;
+        this.areaForward = flatForward.lengthSqr() < 1.0E-6D
+                ? new Vec3(0.0D, 0.0D, 1.0D)
+                : flatForward.normalize();
+        this.damage = Math.max(0.0F, damage);
+        this.explosionDamage = Math.max(0.0F, explosionDamage);
+        this.remainingShots = Math.max(1, shots);
+        this.ringPosition = true;
+        this.alwaysExplosive = true;
+        this.ringRadius = Math.max(0.0D, radius);
+        this.entityData.set(DATA_STATE, STATE_WAITING);
+        this.relocateWithinRing(initialAngle);
+    }
+
     public void activate(int delayTicks) {
         if (!this.level().isClientSide && this.getPortalState() == STATE_WAITING) {
             this.actionDelay = Math.max(0, delayTicks);
@@ -87,7 +108,7 @@ public class ArclightRainPortalEntity extends Entity {
 
         if (this.level().isClientSide) {
             if (this.getPortalState() != STATE_CLOSED && this.tickCount % 3 == 0) {
-                PhotonWeaponEffectHelper.spawnArclightMiniPortal(this, SHOT_DIRECTION);
+                PhotonWeaponEffectHelper.spawnArclightRainPortal(this, SHOT_DIRECTION);
                 PhotonWeaponEffectHelper.spawnArclightRainTarget(this, this.findGroundTarget());
             }
             return;
@@ -150,7 +171,11 @@ public class ArclightRainPortalEntity extends Entity {
             return;
         }
 
-        this.relocateWithinArea();
+        if (this.ringPosition) {
+            this.relocateWithinRing(this.random.nextDouble() * Math.PI * 2.0D);
+        } else {
+            this.relocateWithinArea();
+        }
         this.entityData.set(DATA_STATE, STATE_ACTIVE);
         this.actionDelay = OPENING_DELAY;
     }
@@ -163,7 +188,7 @@ public class ArclightRainPortalEntity extends Entity {
         ArclightMiniProjectileEntity sword = new ArclightMiniProjectileEntity(level);
         sword.setPos(this.position());
         this.shotsFired++;
-        boolean explosive = this.shotsFired % 3 == 0;
+        boolean explosive = this.alwaysExplosive || this.shotsFired % 3 == 0;
         sword.configure(owner, SHOT_DIRECTION, this.damage, false, true,
                 explosive ? this.explosionDamage : 0.0F);
         level.addFreshEntity(sword);
@@ -175,6 +200,15 @@ public class ArclightRainPortalEntity extends Entity {
                 && this.ownerUuid != null
                 && level.getEntity(this.ownerUuid) instanceof LivingEntity owner
                 && owner.isAlive();
+    }
+
+    private void relocateWithinRing(double angle) {
+        Vec3 right = new Vec3(-this.areaForward.z, 0.0D, this.areaForward.x);
+        Vec3 position = this.areaCenter
+                .add(right.scale(Math.cos(angle) * this.ringRadius))
+                .add(this.areaForward.scale(Math.sin(angle) * this.ringRadius))
+                .add(0.0D, (this.random.nextDouble() - 0.5D) * 1.0D, 0.0D);
+        this.setPos(position);
     }
 
     private void relocateWithinArea() {
@@ -216,6 +250,9 @@ public class ArclightRainPortalEntity extends Entity {
         this.remainingShots = tag.getInt("RemainingShots");
         this.actionDelay = tag.getInt("ActionDelay");
         this.stateTicks = tag.getInt("StateTicks");
+        this.ringPosition = tag.getBoolean("RingPosition");
+        this.alwaysExplosive = tag.getBoolean("AlwaysExplosive");
+        this.ringRadius = tag.getDouble("RingRadius");
         this.entityData.set(DATA_STATE, tag.getInt("PortalState"));
     }
 
@@ -235,6 +272,9 @@ public class ArclightRainPortalEntity extends Entity {
         tag.putInt("RemainingShots", this.remainingShots);
         tag.putInt("ActionDelay", this.actionDelay);
         tag.putInt("StateTicks", this.stateTicks);
+        tag.putBoolean("RingPosition", this.ringPosition);
+        tag.putBoolean("AlwaysExplosive", this.alwaysExplosive);
+        tag.putDouble("RingRadius", this.ringRadius);
         tag.putInt("PortalState", this.getPortalState());
     }
 

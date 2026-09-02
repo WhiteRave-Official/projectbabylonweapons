@@ -3,6 +3,7 @@ package com.rave.projectbabylonweapons.world.entity.projectile;
 import com.rave.projectbabylonweapons.client.PhotonWeaponEffectHelper;
 import com.rave.projectbabylonweapons.init.PBModEntities;
 import com.rave.projectbabylonweapons.init.PBModParticles;
+import com.rave.projectbabylonweapons.init.PBWSounds;
 import io.redspace.ironsspellbooks.damage.ISSDamageTypes;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.damagesource.DamageSource;
@@ -13,6 +14,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.util.Mth;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -56,6 +58,7 @@ public class ArclightMiniProjectileEntity extends Projectile {
     private static final int FLYING_LIFETIME = 50;
     private static final int BLOCK_COLLISION_GRACE_TICKS = 2;
     private static final int EMBEDDED_LIFETIME = 20;
+    private static final int RAIN_EMBEDDED_LIFETIME = 10;
     private static final double EXPLOSION_RADIUS = 2.0D;
 
     private float damage;
@@ -213,6 +216,10 @@ public class ArclightMiniProjectileEntity extends Projectile {
         this.stateTicks = 0;
         this.setDeltaMovement(direction.scale(SPEED));
         this.updateRotationFromDirection(direction);
+        float pitch = 0.92F + this.random.nextFloat() * 0.16F;
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(),
+                this.isSpear() ? PBWSounds.ARCLIGHT_SPEAR_SHOOT.get() : PBWSounds.ARCLIGHT_SWORD_SHOOT.get(),
+                SoundSource.PLAYERS, 0.5F, pitch);
     }
 
     private void tickFlying() {
@@ -242,7 +249,8 @@ public class ArclightMiniProjectileEntity extends Projectile {
 
     private void tickEmbedded() {
         this.setDeltaMovement(Vec3.ZERO);
-        if (!this.level().isClientSide && ++this.stateTicks > EMBEDDED_LIFETIME) {
+        int lifetime = this.isRainProjectile() ? RAIN_EMBEDDED_LIFETIME : EMBEDDED_LIFETIME;
+        if (!this.level().isClientSide && ++this.stateTicks > lifetime) {
             this.discard();
         }
     }
@@ -418,6 +426,10 @@ public class ArclightMiniProjectileEntity extends Projectile {
         return this.getType() == PBModEntities.ARCLIGHT_SPEAR_PROJECTILE.get();
     }
 
+    public boolean isRainProjectile() {
+        return !this.entityData.get(DATA_PORTAL_VISUAL);
+    }
+
     private void spawnPortalVisual() {
         if (this.isSpear()) {
             PhotonWeaponEffectHelper.spawnArclightSpearPortal(this, this.getFlightDirection());
@@ -429,6 +441,8 @@ public class ArclightMiniProjectileEntity extends Projectile {
     private void spawnLaunchVisual() {
         if (this.isSpear()) {
             PhotonWeaponEffectHelper.spawnArclightSpearLaunch(this, this.getFlightDirection());
+        } else if (this.isRainProjectile()) {
+            PhotonWeaponEffectHelper.spawnArclightRainLaunch(this, this.getFlightDirection());
         } else {
             PhotonWeaponEffectHelper.spawnArclightMiniLaunch(this, this.getFlightDirection());
         }
@@ -437,6 +451,8 @@ public class ArclightMiniProjectileEntity extends Projectile {
     private void spawnFlightVisual(Vec3 movement) {
         if (this.isSpear()) {
             PhotonWeaponEffectHelper.spawnArclightSpearFlight(this, movement);
+        } else if (this.isRainProjectile()) {
+            PhotonWeaponEffectHelper.spawnArclightRainFlight(this, movement);
         } else {
             PhotonWeaponEffectHelper.spawnArclightMiniFlight(this, movement);
         }
@@ -445,6 +461,8 @@ public class ArclightMiniProjectileEntity extends Projectile {
     private void spawnImpactVisual(Vec3 position) {
         if (this.isSpear()) {
             PhotonWeaponEffectHelper.spawnArclightSpearImpact(this, position, this.getFlightDirection());
+        } else if (this.isRainProjectile()) {
+            PhotonWeaponEffectHelper.spawnArclightRainImpact(this, position, this.getFlightDirection());
         } else {
             PhotonWeaponEffectHelper.spawnArclightMiniImpact(this, position, this.getFlightDirection());
         }
@@ -453,6 +471,8 @@ public class ArclightMiniProjectileEntity extends Projectile {
     private void spawnDissolveVisual(Vec3 position) {
         if (this.isSpear()) {
             PhotonWeaponEffectHelper.spawnArclightSpearDissolve(this, position);
+        } else if (this.isRainProjectile()) {
+            PhotonWeaponEffectHelper.spawnArclightRainDissolve(this, position);
         } else {
             PhotonWeaponEffectHelper.spawnArclightMiniDissolve(this, position);
         }

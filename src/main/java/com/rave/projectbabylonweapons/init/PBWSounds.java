@@ -59,6 +59,24 @@ public class PBWSounds {
         )
     );
 
+    public static final RegistryObject<SoundEvent> ARCLIGHT_AWAKENING = SOUND_EVENTS.register("arclight_awakening",
+        () -> SoundEvent.createVariableRangeEvent(
+            ResourceLocation.fromNamespaceAndPath("project_babylon_weapons", "arclight_awakening")
+        )
+    );
+
+    public static final RegistryObject<SoundEvent> ARCLIGHT_SWORD_SHOOT = SOUND_EVENTS.register("arclight_sword_shoot",
+        () -> SoundEvent.createVariableRangeEvent(
+            ResourceLocation.fromNamespaceAndPath("project_babylon_weapons", "arclight_sword_shoot")
+        )
+    );
+
+    public static final RegistryObject<SoundEvent> ARCLIGHT_SPEAR_SHOOT = SOUND_EVENTS.register("arclight_spear_shoot",
+        () -> SoundEvent.createVariableRangeEvent(
+            ResourceLocation.fromNamespaceAndPath("project_babylon_weapons", "arclight_spear_shoot")
+        )
+    );
+
     public static void register(IEventBus eventBus) {
         SOUND_EVENTS.register(eventBus);
     }

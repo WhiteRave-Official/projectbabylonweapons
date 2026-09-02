@@ -18,6 +18,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -60,10 +61,13 @@ public class EternalLightSkill extends WeaponInnateSkill {
     private static final float SPEAR_DAMAGE_MULTIPLIER = 1.0F;
     private static final float RAIN_EXPLOSION_DAMAGE_MULTIPLIER = 0.35F;
     private static final int AUTO_SEQUENCE_WINDOW_TICKS = 60;
+    private static final int DIAGONAL_SPEAR_LAUNCH_DELAY_TICKS = 2;
     private static final Map<UUID, List<UUID>> PENDING_MINI_PROJECTILES = new ConcurrentHashMap<>();
     private static final Map<UUID, List<UUID>> PENDING_SPEAR_PROJECTILES = new ConcurrentHashMap<>();
+    private static final Map<UUID, List<UUID>> PENDING_DIAGONAL_SPEAR_PROJECTILES = new ConcurrentHashMap<>();
     private static final Map<UUID, AutoSequence> AUTO_SEQUENCES = new ConcurrentHashMap<>();
     private static final Map<UUID, List<UUID>> PENDING_RAIN_PORTALS = new ConcurrentHashMap<>();
+    private static final Map<UUID, List<UUID>> PENDING_AIRSLASH_PORTALS = new ConcurrentHashMap<>();
     private static final Map<UUID, DamageBonusState> DAMAGE_BONUSES = new ConcurrentHashMap<>();
 
     private float damageBonusPerCharge = 0.015F;
@@ -115,6 +119,12 @@ public class EternalLightSkill extends WeaponInnateSkill {
                     } else if (event.getAnimation() == PBAnimations.EVERGATE_EXTRA_AUTO_3
                             && event.getPhaseOrder() == 0) {
                         activateRainPortals(event.getPlayerPatch().getOriginal());
+                    } else if (event.getAnimation() == PBAnimations.EVERGATE_EXTRA_AUTO_4
+                            && event.getPhaseOrder() == 0) {
+                        launchPendingDiagonalSpears(event.getPlayerPatch().getOriginal());
+                    } else if (event.getAnimation() == PBAnimations.EVERGATE_EXTRA_AIRSLASH
+                            && event.getPhaseOrder() == 0) {
+                        activateAirslashPortals(event.getPlayerPatch().getOriginal());
                     }
                 }
         );
@@ -156,7 +166,10 @@ public class EternalLightSkill extends WeaponInnateSkill {
         AttackType type = readAttackType(args);
         switch (type) {
             case DASH -> container.getExecutor().playAnimationSynchronized(PBAnimations.EVERGATE_EXTRA_DASH, 0.0F);
-            case AIRSLASH -> container.getExecutor().playAnimationSynchronized(PBAnimations.EVERGATE_EXTRA_AIRSLASH, 0.0F);
+            case AIRSLASH -> {
+                spawnAirslashPortals(container.getExecutor().getOriginal());
+                container.getExecutor().playAnimationSynchronized(PBAnimations.EVERGATE_EXTRA_AIRSLASH, 0.0F);
+            }
             case AUTO -> executeAutoSequence(container);
         }
     }
@@ -166,7 +179,9 @@ public class EternalLightSkill extends WeaponInnateSkill {
         if (!container.getExecutor().isLogicalClient()) {
             clearPendingProjectiles(container.getExecutor().getOriginal());
             clearPendingSpear(container.getExecutor().getOriginal());
+            clearPendingDiagonalSpears(container.getExecutor().getOriginal());
             clearRainPortals(container.getExecutor().getOriginal());
+            clearAirslashPortals(container.getExecutor().getOriginal());
             AUTO_SEQUENCES.remove(container.getExecutor().getOriginal().getUUID());
             DAMAGE_BONUSES.remove(container.getExecutor().getOriginal().getUUID());
             ArclightAwakeningSkill.resetForm(container);
@@ -262,7 +277,9 @@ public class EternalLightSkill extends WeaponInnateSkill {
         DAMAGE_BONUSES.remove(player.getUUID());
         clearPendingProjectiles(player);
         clearPendingSpear(player);
+        clearPendingDiagonalSpears(player);
         clearRainPortals(player);
+        clearAirslashPortals(player);
         AUTO_SEQUENCES.remove(player.getUUID());
         ArclightSwordItem.reset(weapon);
         syncInventory(player);
@@ -335,9 +352,185 @@ public class EternalLightSkill extends WeaponInnateSkill {
             return;
         }
 
-        spawnRainPortals(caster);
-        container.getExecutor().playAnimationSynchronized(PBAnimations.EVERGATE_EXTRA_AUTO_3, 0.0F);
+        if (sequence.step() == 2) {
+            spawnRainPortals(caster);
+            container.getExecutor().playAnimationSynchronized(PBAnimations.EVERGATE_EXTRA_AUTO_3, 0.0F);
+            AUTO_SEQUENCES.put(caster.getUUID(), new AutoSequence(gameTime, 3));
+            return;
+        }
+
+        spawnDiagonalSpearPortals(caster);
+        container.getExecutor().playAnimationSynchronized(PBAnimations.EVERGATE_EXTRA_AUTO_4, 0.0F);
         AUTO_SEQUENCES.remove(caster.getUUID());
+    }
+
+    private static void spawnDiagonalSpearPortals(LivingEntity caster) {
+        if (!(caster.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        clearPendingDiagonalSpears(caster);
+        Vec3 forward = flatForward(caster);
+        Vec3 right = new Vec3(-forward.z, 0.0D, forward.x);
+        Vec3 fallbackCenter = caster.position().add(forward.scale(5.0D)).add(0.0D, 1.0D, 0.0D);
+        Vec3 areaCenter = findDiagonalSpearTarget(level, caster, forward, right, fallbackCenter);
+        float damage = (float) caster.getAttributeValue(Attributes.ATTACK_DAMAGE) * SPEAR_DAMAGE_MULTIPLIER;
+        int count = 3 + caster.getRandom().nextInt(2);
+        List<UUID> spears = new ArrayList<>(count);
+        double angleStep = Math.PI * 2.0D / count;
+        double angleOffset = caster.getRandom().nextDouble() * Math.PI * 2.0D;
+
+        for (int i = 0; i < count; i++) {
+            double angle = angleOffset + angleStep * i + (caster.getRandom().nextDouble() - 0.5D) * 0.35D;
+            double radius = 3.75D + caster.getRandom().nextDouble() * 0.75D;
+            Vec3 spawnPosition = areaCenter
+                    .add(right.scale(Math.cos(angle) * radius))
+                    .add(forward.scale(Math.sin(angle) * radius))
+                    .add(0.0D, 0.5D + caster.getRandom().nextDouble() * 2.5D, 0.0D);
+            Vec3 targetPosition = areaCenter
+                    .add(right.scale((caster.getRandom().nextDouble() - 0.5D) * 5.0D))
+                    .add(forward.scale((caster.getRandom().nextDouble() - 0.5D) * 5.0D))
+                    .add(0.0D, (caster.getRandom().nextDouble() - 0.5D) * 1.5D, 0.0D);
+            Vec3 direction = targetPosition.subtract(spawnPosition).normalize();
+
+            ArclightMiniProjectileEntity spear = new ArclightMiniProjectileEntity(
+                    com.rave.projectbabylonweapons.init.PBModEntities.ARCLIGHT_SPEAR_PROJECTILE.get(), level);
+            spear.setPos(spawnPosition);
+            spear.configure(caster, direction, damage);
+            level.addFreshEntity(spear);
+            spears.add(spear.getUUID());
+        }
+
+        PENDING_DIAGONAL_SPEAR_PROJECTILES.put(caster.getUUID(), spears);
+    }
+
+    private static void launchPendingDiagonalSpears(LivingEntity caster) {
+        if (!(caster.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        List<UUID> projectileIds = PENDING_DIAGONAL_SPEAR_PROJECTILES.remove(caster.getUUID());
+        if (projectileIds == null) {
+            return;
+        }
+
+        int delay = 0;
+        for (UUID projectileId : projectileIds) {
+            if (level.getEntity(projectileId) instanceof ArclightMiniProjectileEntity spear) {
+                spear.queueLaunch(delay);
+                delay += DIAGONAL_SPEAR_LAUNCH_DELAY_TICKS;
+            }
+        }
+    }
+
+    private static Vec3 findDiagonalSpearTarget(ServerLevel level, LivingEntity caster, Vec3 forward,
+                                                 Vec3 right, Vec3 fallbackCenter) {
+        Mob nearest = null;
+        double nearestDistance = Double.MAX_VALUE;
+
+        for (Mob candidate : level.getEntitiesOfClass(Mob.class, caster.getBoundingBox().inflate(12.0D),
+                mob -> mob.isAlive() && !mob.isAlliedTo(caster))) {
+            Vec3 offset = candidate.position().subtract(caster.position());
+            double forwardDistance = offset.dot(forward);
+            double sideDistance = offset.dot(right);
+            if (forwardDistance < 0.0D || forwardDistance > 12.0D || Math.abs(sideDistance) > 6.0D
+                    || Math.abs(offset.y) > 6.0D) {
+                continue;
+            }
+
+            double distance = caster.distanceToSqr(candidate);
+            if (distance < nearestDistance) {
+                nearest = candidate;
+                nearestDistance = distance;
+            }
+        }
+
+        return nearest == null
+                ? fallbackCenter
+                : nearest.position().add(0.0D, nearest.getBbHeight() * 0.5D, 0.0D);
+    }
+
+    private static void clearPendingDiagonalSpears(LivingEntity caster) {
+        if (!(caster.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        List<UUID> projectileIds = PENDING_DIAGONAL_SPEAR_PROJECTILES.remove(caster.getUUID());
+        if (projectileIds == null) {
+            return;
+        }
+
+        for (UUID projectileId : projectileIds) {
+            if (level.getEntity(projectileId) instanceof ArclightMiniProjectileEntity spear
+                    && spear.getState() <= ArclightMiniProjectileEntity.STATE_QUEUED) {
+                spear.discard();
+            }
+        }
+    }
+
+    private static void spawnAirslashPortals(LivingEntity caster) {
+        if (!(caster.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        clearAirslashPortals(caster);
+        Vec3 forward = flatForward(caster);
+        Vec3 center = caster.position().add(0.0D, 2.1D, 0.0D);
+        float damage = (float) caster.getAttributeValue(Attributes.ATTACK_DAMAGE) * MINI_DAMAGE_MULTIPLIER;
+        float explosionDamage = (float) caster.getAttributeValue(Attributes.ATTACK_DAMAGE)
+                * RAIN_EXPLOSION_DAMAGE_MULTIPLIER;
+        int portalCount = 6;
+        double angleStep = Math.PI * 2.0D / portalCount;
+        double angleOffset = caster.getRandom().nextDouble() * Math.PI * 2.0D;
+        List<UUID> portals = new ArrayList<>(portalCount);
+
+        for (int i = 0; i < portalCount; i++) {
+            double angle = angleOffset + angleStep * i;
+            double radius = 2.5D + caster.getRandom().nextDouble() * 0.65D;
+            ArclightRainPortalEntity portal = new ArclightRainPortalEntity(level);
+            portal.configureRing(caster, center, forward, radius, angle, damage, explosionDamage,
+                    1 + caster.getRandom().nextInt(2));
+            level.addFreshEntity(portal);
+            portals.add(portal.getUUID());
+        }
+
+        PENDING_AIRSLASH_PORTALS.put(caster.getUUID(), portals);
+    }
+
+    private static void activateAirslashPortals(LivingEntity caster) {
+        if (!(caster.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        List<UUID> portalIds = PENDING_AIRSLASH_PORTALS.get(caster.getUUID());
+        if (portalIds == null) {
+            return;
+        }
+
+        int delay = 0;
+        for (UUID portalId : portalIds) {
+            if (level.getEntity(portalId) instanceof ArclightRainPortalEntity portal) {
+                portal.activate(delay);
+                delay += 1;
+            }
+        }
+    }
+
+    private static void clearAirslashPortals(LivingEntity caster) {
+        if (!(caster.level() instanceof ServerLevel level)) {
+            return;
+        }
+
+        List<UUID> portalIds = PENDING_AIRSLASH_PORTALS.remove(caster.getUUID());
+        if (portalIds == null) {
+            return;
+        }
+
+        for (UUID portalId : portalIds) {
+            if (level.getEntity(portalId) instanceof ArclightRainPortalEntity portal) {
+                portal.discard();
+            }
+        }
     }
 
     private static void spawnRainPortals(LivingEntity caster) {

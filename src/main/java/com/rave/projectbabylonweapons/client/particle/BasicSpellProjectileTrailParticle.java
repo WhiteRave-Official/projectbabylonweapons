@@ -43,6 +43,14 @@ public class BasicSpellProjectileTrailParticle extends TextureSheetParticle {
             .updateInterval(1)
             .texture("epicfight:textures/particle/projectile_trail.png")
             .create();
+    private static final TrailInfo ARCLIGHT_RAIN_TRAIL = TrailInfo.builder()
+            .startPos(new Vec3(-0.22D, 0.0D, 0.35D))
+            .endPos(new Vec3(0.22D, 0.0D, 0.35D))
+            .interpolations(3)
+            .lifetime(5)
+            .updateInterval(1)
+            .texture("epicfight:textures/particle/projectile_trail.png")
+            .create();
     private static final TrailInfo ARCLIGHT_SPEAR_TRAIL = TrailInfo.builder()
             .startPos(new Vec3(-0.4D, 0.0D, 0.55D))
             .endPos(new Vec3(0.4D, 0.0D, 0.55D))
@@ -64,7 +72,9 @@ public class BasicSpellProjectileTrailParticle extends TextureSheetParticle {
     }
 
     protected BasicSpellProjectileTrailParticle(ClientLevel level, ArclightMiniProjectileEntity owner) {
-        this(level, owner, owner.isSpear() ? ARCLIGHT_SPEAR_TRAIL : ARCLIGHT_MINI_TRAIL);
+        this(level, owner, owner.isSpear()
+                ? ARCLIGHT_SPEAR_TRAIL
+                : owner.isRainProjectile() ? ARCLIGHT_RAIN_TRAIL : ARCLIGHT_MINI_TRAIL);
     }
 
     private BasicSpellProjectileTrailParticle(ClientLevel level, Entity owner, TrailInfo trailInfo) {

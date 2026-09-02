@@ -4,10 +4,12 @@ import com.rave.projectbabylonweapons.gameasset.PBAnimations;
 import com.rave.projectbabylonweapons.gameasset.PBSkills;
 import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
 import com.rave.projectbabylonweapons.handler.WeaponVisualEffectHelper;
+import com.rave.projectbabylonweapons.init.PBWSounds;
 import com.rave.projectbabylonweapons.passive.special.ArclightFormPassiveHandler;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
@@ -74,6 +76,8 @@ public class ArclightAwakeningSkill extends WeaponInnateSkill {
                 this.awakeningProtectionTicks, this.awakeningBarrier);
         player.addEffect(new MobEffectInstance(EpicFightMobEffects.STUN_IMMUNITY.get(),
                 this.awakeningProtectionTicks, 0, false, true, true));
+        player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
+                PBWSounds.ARCLIGHT_AWAKENING.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
         container.getExecutor().playAnimationSynchronized(PBAnimations.ARCLIGHT_AWAKENING, 0.0F);
         WeaponVisualEffectHelper.startArclightAwakening(player);
     }
