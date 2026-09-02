@@ -21,6 +21,7 @@ import com.rave.projectbabylonweapons.world.entity.projectile.HolySpellProjectil
 import com.rave.projectbabylonweapons.world.entity.projectile.IceSpellProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.ManaBubbleProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.SickleProjectileEntity;
+import com.rave.projectbabylonweapons.world.entity.summon.ArclightSummonedWeaponEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.registries.DeferredRegister;
@@ -140,6 +141,14 @@ public class PBModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build("arclight_spear_projectile"));
+    public static final RegistryObject<EntityType<ArclightSummonedWeaponEntity>> ARCLIGHT_SUMMONED_WEAPON =
+            ENTITIES.register("arclight_summoned_weapon", () ->
+                    EntityType.Builder.<ArclightSummonedWeaponEntity>of(ArclightSummonedWeaponEntity::new, MobCategory.MISC)
+                            .sized(0.8F, 0.8F)
+                            .clientTrackingRange(64)
+                            .updateInterval(1)
+                            .build("arclight_summoned_weapon"));
+
     public static final RegistryObject<EntityType<GlacierIceSpikeEntity>> GLACIER_ICE_SPIKE =
             ENTITIES.register("glacier_ice_spike", () ->
                     EntityType.Builder.<GlacierIceSpikeEntity>of(GlacierIceSpikeEntity::new, MobCategory.MISC)

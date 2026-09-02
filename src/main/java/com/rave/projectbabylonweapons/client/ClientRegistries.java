@@ -6,6 +6,7 @@ import com.rave.projectbabylonweapons.client.particle.BasicSpellProjectileTrailP
 import com.rave.projectbabylonweapons.client.tooltip.EvergateNameClientTooltip;
 import com.rave.projectbabylonweapons.tooltip.EvergateNameTooltipData;
 import com.rave.projectbabylonweapons.client.renderer.ArclightMiniProjectileRenderer;
+import com.rave.projectbabylonweapons.client.renderer.ArclightSummonedWeaponRenderer;
 import com.rave.projectbabylonweapons.client.renderer.ArclightRainPortalRenderer;
 import com.rave.projectbabylonweapons.client.renderer.BasicSpellProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.item.ArclightAwakeningItemRenderer;
@@ -71,6 +72,7 @@ public class ClientRegistries {
         event.registerEntityRenderer(PBModEntities.ARCLIGHT_RAIN_PORTAL.get(), ArclightRainPortalRenderer::new);
         event.registerEntityRenderer(PBModEntities.ARCLIGHT_MINI_PROJECTILE.get(), ArclightMiniProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.ARCLIGHT_SPEAR_PROJECTILE.get(), ArclightMiniProjectileRenderer::new);
+        event.registerEntityRenderer(PBModEntities.ARCLIGHT_SUMMONED_WEAPON.get(), ArclightSummonedWeaponRenderer::new);
         event.registerEntityRenderer(PBModEntities.BASIC_SPELL_PROJECTILE.get(), BasicSpellProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.GOLDEN_SPELL_PROJECTILE.get(), GoldenSpellProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.DIAMOND_SPELL_PROJECTILE.get(), DiamondSpellProjectileRenderer::new);

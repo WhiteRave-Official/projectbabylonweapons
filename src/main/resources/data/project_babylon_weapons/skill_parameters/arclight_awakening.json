@@ -1,6 +1,19 @@
 {
-	"consumption": 300.0,
-	"max_duration": 1400,
-	"awakening_barrier": 200.0,
-	"awakening_protection_ticks": 280
+  "consumption": 300.0,
+  "max_duration": 1400,
+  "awakening_barrier": 200.0,
+  "awakening_protection_ticks": 280,
+  "summon_cost": 150.0,
+  "summon_lifetime_ticks": 1200,
+  "summon_target_radius": 8.0,
+  "summon_target_search_interval": 9,
+  "summon_windup_ticks": 12,
+  "summon_attack_ticks": 10,
+  "summon_return_ticks": 16,
+  "summon_sword_cooldown_ticks": 30,
+  "summon_spear_cooldown_ticks": 40,
+  "summon_sword_normal_damage": 0.15,
+  "summon_sword_dash_damage": 0.20,
+  "summon_spear_normal_damage": 0.25,
+  "summon_spear_spin_damage": 0.20
 }
