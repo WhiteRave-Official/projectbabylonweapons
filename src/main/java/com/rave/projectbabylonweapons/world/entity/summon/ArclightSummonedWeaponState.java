@@ -5,7 +5,8 @@ public enum ArclightSummonedWeaponState {
     WINDUP,
     ATTACK,
     RETURN,
-    COOLDOWN;
+    COOLDOWN,
+    ROAMING;
 
     public static ArclightSummonedWeaponState byId(int id) {
         ArclightSummonedWeaponState[] values = values();

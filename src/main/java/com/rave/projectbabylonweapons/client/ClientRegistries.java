@@ -7,6 +7,7 @@ import com.rave.projectbabylonweapons.client.tooltip.EvergateNameClientTooltip;
 import com.rave.projectbabylonweapons.tooltip.EvergateNameTooltipData;
 import com.rave.projectbabylonweapons.client.renderer.ArclightMiniProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.ArclightSummonedWeaponRenderer;
+import com.rave.projectbabylonweapons.client.renderer.PatchedArclightSummonedWeaponRenderer;
 import com.rave.projectbabylonweapons.client.renderer.ArclightRainPortalRenderer;
 import com.rave.projectbabylonweapons.client.renderer.BasicSpellProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.item.ArclightAwakeningItemRenderer;
@@ -58,6 +59,12 @@ public class ClientRegistries {
                 ResourceLocation.fromNamespaceAndPath(ProjectBabylonWeapons.MODID, "arclight_awakening"),
                 ArclightAwakeningItemRenderer::new
         );
+    }
+
+    @SubscribeEvent
+    public static void registerPatchedRenderers(PatchedRenderersEvent.Add event) {
+        event.addPatchedEntityRenderer(PBModEntities.ARCLIGHT_SUMMONED_WEAPON.get(),
+                entityType -> new PatchedArclightSummonedWeaponRenderer(event.getContext(), entityType));
     }
 
     @SubscribeEvent

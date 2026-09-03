@@ -1,6 +1,7 @@
 package com.rave.projectbabylonweapons.gameasset;
 
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
+import com.rave.projectbabylonweapons.summon.arclight.epicfight.ArclightSummonAnimations;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,6 +42,7 @@ public class PBAnimations {
     public static AnimationManager.AnimationAccessor<MovementAnimation> SICKLE_RUN;
 
     public static AnimationManager.AnimationAccessor<StaticAnimation> SIT_DOWN;
+
     public static AnimationManager.AnimationAccessor<StaticAnimation> SIT_DOWN_IDLE;
     public static AnimationManager.AnimationAccessor<StaticAnimation> STAND_UP;
 
@@ -60,8 +62,10 @@ public class PBAnimations {
 
     //ARCLIGHT
     public static AnimationManager.AnimationAccessor<StaticAnimation> ARCLIGHT_IDLE;
-    public static AnimationManager.AnimationAccessor<StaticAnimation> ARCLIGHT_WALK;
+    public static AnimationManager.AnimationAccessor<MovementAnimation> ARCLIGHT_WALK;
     public static AnimationManager.AnimationAccessor<StaticAnimation> ARCLIGHT_RUN;
+    public static AnimationManager.AnimationAccessor<StaticAnimation> ARCLIGHT_GUARD;
+    public static AnimationManager.AnimationAccessor<GuardAnimation> ARCLIGHT_GUARD_HIT;
     public static AnimationManager.AnimationAccessor<AttackAnimation> ARCLIGHT_AUTO_1;
     public static AnimationManager.AnimationAccessor<AttackAnimation> ARCLIGHT_AUTO_2;
     public static AnimationManager.AnimationAccessor<AttackAnimation> ARCLIGHT_AUTO_3;
@@ -70,6 +74,9 @@ public class PBAnimations {
     public static AnimationManager.AnimationAccessor<AttackAnimation> ARCLIGHT_AIRSlASH;
 
     public static AnimationManager.AnimationAccessor<StaticAnimation> EVERGATE_IDLE;
+    public static AnimationManager.AnimationAccessor<MovementAnimation> EVERGATE_WALK;
+    public static AnimationManager.AnimationAccessor<StaticAnimation> EVERGATE_GUARD;
+    public static AnimationManager.AnimationAccessor<GuardAnimation> EVERGATE_GUARD_HIT;
     public static AnimationManager.AnimationAccessor<AttackAnimation> EVERGATE_AUTO_1;
     public static AnimationManager.AnimationAccessor<AttackAnimation> EVERGATE_AUTO_2;
     public static AnimationManager.AnimationAccessor<AttackAnimation> EVERGATE_AUTO_3;
@@ -124,6 +131,7 @@ public class PBAnimations {
 
 
     public static void buildAnimations(AnimationManager.AnimationBuilder builder) {
+        ArclightSummonAnimations.build(builder);
 
 //SICKLE
         SICKLE_DUAL_IDLE = builder.nextAccessor("biped/living/sickle_dual_idle", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
@@ -158,8 +166,11 @@ public class PBAnimations {
 //ARCLIGHT
         ARCLIGHT_IDLE = builder.nextAccessor("biped/living/arclight_idle", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
 
-        ARCLIGHT_WALK = builder.nextAccessor("biped/living/arclight_walk", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
+        ARCLIGHT_WALK = builder.nextAccessor("biped/living/arclight_walk", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
         ARCLIGHT_RUN = builder.nextAccessor("biped/living/arclight_run", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
+
+        ARCLIGHT_GUARD = builder.nextAccessor("biped/living/arclight_guard", (accessor) -> new StaticAnimation(0.25F, true, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 0.4F));
+        ARCLIGHT_GUARD_HIT = builder.nextAccessor("biped/living/arclight_guard_hit", (accessor) -> new GuardAnimation(0.15F, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 0.4F));
 
         ARCLIGHT_AUTO_1 = builder.nextAccessor("biped/combat/arclight_auto_1", (accessor) ->  new AttackAnimation(0.25F,  0.25F,  0.3F,  0.8F, 1.0F, (Collider)null, ((HumanoidArmature)Armatures.BIPED.get()).toolR, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 0.9F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(PBAnimationProperties.IGNORE_ENTITY_COLLISION, true).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 0.6F));
         ARCLIGHT_AUTO_2 = builder.nextAccessor("biped/combat/arclight_auto_2", (accessor) ->  new AttackAnimation(0.20F,  0.25F,  0.3F,  0.8F, 1.0F, (Collider)null, ((HumanoidArmature)Armatures.BIPED.get()).toolR, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 0.9F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(PBAnimationProperties.IGNORE_ENTITY_COLLISION, true).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 0.5F));
@@ -173,6 +184,11 @@ public class PBAnimations {
         ARCLIGHT_AIRSlASH = builder.nextAccessor("biped/combat/arclight_airslash", (accessor) ->  new AttackAnimation(0.1F,  0.28F,  0.3F,  0.8F, 1.0F, (Collider)null, ((HumanoidArmature)Armatures.BIPED.get()).toolR, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.2F)).newTimePair(0.0F, 0.85F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(PBAnimationProperties.IGNORE_ENTITY_COLLISION, true).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.3F));
 //EVERGATE
         EVERGATE_IDLE = builder.nextAccessor("biped/living/evergate_idle", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
+
+        EVERGATE_WALK = builder.nextAccessor("biped/living/evergate_walk", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
+
+        EVERGATE_GUARD = builder.nextAccessor("biped/living/evergate_guard", (accessor) -> new StaticAnimation(0.25F,true, accessor, Armatures.BIPED));
+        EVERGATE_GUARD_HIT = builder.nextAccessor("biped/living/evergate_guard_hit", (accessor) -> new GuardAnimation(0.15F, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 0.4F));
 
         EVERGATE_AUTO_1 = builder.nextAccessor("biped/combat/evergate_auto_1", (accessor) -> (AttackAnimation) (new AttackAnimation(0.25F, accessor, Armatures.BIPED, new AttackAnimation.Phase[]{
                 new AttackAnimation.Phase(0.0F, 0.15F, 0.9F, 1.1F, 1.2F, 1.2F, InteractionHand.MAIN_HAND, ((HumanoidArmature) Armatures.BIPED.get()).toolR, PBColliderPresets.EVERGATE),

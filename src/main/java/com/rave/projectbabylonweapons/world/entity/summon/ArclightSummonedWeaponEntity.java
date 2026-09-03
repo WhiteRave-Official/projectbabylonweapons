@@ -1,5 +1,6 @@
 package com.rave.projectbabylonweapons.world.entity.summon;
 
+import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
 import com.rave.projectbabylonweapons.client.PhotonWeaponEffectHelper;
 import com.rave.projectbabylonweapons.item.special.ArclightSwordItem;
 import com.rave.projectbabylonweapons.gameasset.PBSkills;
@@ -21,10 +22,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -33,7 +34,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class ArclightSummonedWeaponEntity extends Entity {
+public class ArclightSummonedWeaponEntity extends Mob {
     private static final EntityDataAccessor<Integer> DATA_OWNER_ID = SynchedEntityData.defineId(
             ArclightSummonedWeaponEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_WEAPON_TYPE = SynchedEntityData.defineId(
@@ -57,18 +58,25 @@ public class ArclightSummonedWeaponEntity extends Entity {
     private AttackType lastAttack = AttackType.NONE;
     private Vec3 attackOrigin = Vec3.ZERO;
     private Vec3 attackTarget = Vec3.ZERO;
+    private Vec3 roamingDestination = Vec3.ZERO;
+    private int roamingDestinationTicks;
     private final Set<Integer> hitEntityIds = new HashSet<>();
     private Balance balance = Balance.defaults();
     private int previousClientState = -1;
     private boolean clientDissolved;
+    private int lastRenderDebugTick = Integer.MIN_VALUE;
 
     public ArclightSummonedWeaponEntity(EntityType<? extends ArclightSummonedWeaponEntity> type, Level level) {
         super(type, level);
+        this.setNoAi(true);
+        this.setNoGravity(true);
+        this.setInvulnerable(true);
         this.noPhysics = true;
     }
 
     @Override
     protected void defineSynchedData() {
+        super.defineSynchedData();
         this.entityData.define(DATA_OWNER_ID, -1);
         this.entityData.define(DATA_WEAPON_TYPE, ArclightSummonedWeaponType.SWORD.ordinal());
         this.entityData.define(DATA_STATE, ArclightSummonedWeaponState.ORBIT.ordinal());
@@ -87,6 +95,8 @@ public class ArclightSummonedWeaponEntity extends Entity {
         this.lifetimeTicks = balance.lifetimeTicks();
         this.entityData.set(DATA_LIFETIME, this.lifetimeTicks);
         this.nextTargetSearchTick = formationIndex * Math.max(1, balance.targetSearchInterval() / 2);
+        ProjectBabylonWeapons.LOGGER.info("[ArclightWeaponDebug] configured side=server id={} owner={} type={} index={} position={} lifetime={}",
+                this.getId(), owner.getGameProfile().getName(), type, formationIndex, this.position(), this.lifetimeTicks);
     }
 
     @Override
@@ -119,6 +129,13 @@ public class ArclightSummonedWeaponEntity extends Entity {
             this.entityData.set(DATA_LIFETIME, this.lifetimeTicks);
         }
         ArclightSummonAttackController.tick(this, owner);
+        if ((this.tickCount % 20) == 0) {
+            LivingEntity target = this.getTarget();
+            ProjectBabylonWeapons.LOGGER.info("[ArclightWeaponDebug] movement side=server id={} type={} state={} attack={} stateTicks={} cooldown={} position={} velocity={} targetId={} targetPosition={}",
+                    this.getId(), this.getWeaponType(), this.getCombatState(), this.getAttackType(),
+                    this.stateTicks, this.cooldownTicks, this.position(), this.getDeltaMovement(),
+                    target == null ? -1 : target.getId(), target == null ? null : target.position());
+        }
     }
 
     private void tickClientVisuals() {
@@ -141,15 +158,7 @@ public class ArclightSummonedWeaponEntity extends Entity {
             this.previousClientState = state;
         }
 
-        if (state == ArclightSummonedWeaponState.ATTACK.ordinal() && (this.tickCount & 1) == 0) {
-            if (this.isSpear()) {
-                PhotonWeaponEffectHelper.spawnArclightSpearFlight(this, this.getDeltaMovement());
-            } else {
-                PhotonWeaponEffectHelper.spawnArclightMiniFlight(this, this.getDeltaMovement());
-            }
-        } else if (state == ArclightSummonedWeaponState.ORBIT.ordinal() && this.tickCount % 12 == 0) {
-            PhotonWeaponEffectHelper.spawnArclightMiniFlight(this, this.getLookDirection().scale(0.02D));
-        }
+
     }
 
     private static boolean hasAwakeningSkill(ServerPlayer owner) {
@@ -231,28 +240,7 @@ public class ArclightSummonedWeaponEntity extends Entity {
         return Vec3.directionFromRotation(this.getXRot(), this.getYRot());
     }
 
-    public void damageAlongSweep(LivingEntity owner, Vec3 previousPosition, Vec3 currentPosition) {
-        Vec3 direction = currentPosition.subtract(previousPosition);
-        if (direction.lengthSqr() < 1.0E-6D) {
-            direction = this.getLookDirection();
-        } else {
-            direction = direction.normalize();
-        }
-        ArclightSummonCollider collider = this.getWeaponType().collider();
-        Vec3 start = previousPosition.subtract(direction.scale(collider.halfLength()));
-        Vec3 end = currentPosition.add(direction.scale(collider.halfLength()));
-        AABB swept = new AABB(start, end).inflate(
-                collider.halfWidth(), collider.halfHeight(), collider.halfWidth());
-        for (LivingEntity target : this.level().getEntitiesOfClass(LivingEntity.class, swept,
-                candidate -> candidate != owner && candidate.isAlive()
-                        && !owner.isAlliedTo(candidate) && !candidate.isAlliedTo(owner)
-                        && !this.hitEntityIds.contains(candidate.getId()))) {
-            this.hitEntityIds.add(target.getId());
-            this.damageTarget(owner, target);
-        }
-    }
-
-    private void damageTarget(LivingEntity owner, LivingEntity target) {
+    private float damageTarget(LivingEntity owner, LivingEntity target) {
         float baseDamage = (float) owner.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
         float multiplier = switch (this.getAttackType()) {
             case DASH -> this.balance.swordDashDamage();
@@ -262,13 +250,34 @@ public class ArclightSummonedWeaponEntity extends Entity {
         DamageSource source = new DamageSource(
                 this.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE)
                         .getHolderOrThrow(ISSDamageTypes.HOLY_MAGIC), this, owner);
-        target.hurt(source, baseDamage * multiplier);
+        float damage = baseDamage * multiplier;
+        return target.hurt(source, damage) ? damage : 0.0F;
     }
 
+    public void finishAnimatedAttack() {
+        if (!this.level().isClientSide && this.getCombatState() == ArclightSummonedWeaponState.ATTACK) {
+            this.setCombatState(ArclightSummonedWeaponState.RETURN);
+        }
+    }
+
+    public float damageTargetFromEpicFight(LivingEntity target) {
+        ServerPlayer owner = this.resolveOwner();
+        if (owner == null || target == owner || owner.isAlliedTo(target) || target.isAlliedTo(owner)
+                || !this.hitEntityIds.add(target.getId())) {
+            return 0.0F;
+        }
+        float damage = this.damageTarget(owner, target);
+        ProjectBabylonWeapons.LOGGER.info("[ArclightWeaponDebug] collider_hit side=server weaponId={} type={} attack={} targetId={} target={} damage={} position={}",
+                this.getId(), this.getWeaponType(), this.getAttackType(), target.getId(),
+                target.getName().getString(), damage, this.position());
+        return damage;
+    }
     public void dismiss(boolean dissolve) {
         if (this.level().isClientSide) {
             return;
         }
+        ProjectBabylonWeapons.LOGGER.info("[ArclightWeaponDebug] dismiss side=server id={} type={} state={} attack={} dissolve={} lifetime={}",
+                this.getId(), this.getWeaponType(), this.getCombatState(), this.getAttackType(), dissolve, this.lifetimeTicks);
         if (dissolve) {
             this.level().broadcastEntityEvent(this, (byte) 60);
         }
@@ -306,7 +315,8 @@ public class ArclightSummonedWeaponEntity extends Entity {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
         if (this.ownerUuid != null) tag.putUUID("Owner", this.ownerUuid);
         tag.putInt("WeaponType", this.entityData.get(DATA_WEAPON_TYPE));
         tag.putInt("CombatState", this.entityData.get(DATA_STATE));
@@ -321,7 +331,8 @@ public class ArclightSummonedWeaponEntity extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
         if (tag.hasUUID("Owner")) this.ownerUuid = tag.getUUID("Owner");
         this.entityData.set(DATA_WEAPON_TYPE, tag.getInt("WeaponType"));
         this.entityData.set(DATA_STATE, tag.getInt("CombatState"));
@@ -344,11 +355,30 @@ public class ArclightSummonedWeaponEntity extends Entity {
     public ArclightSummonedWeaponType getWeaponType() { return ArclightSummonedWeaponType.byId(this.entityData.get(DATA_WEAPON_TYPE)); }
     public boolean isSpear() { return this.getWeaponType() == ArclightSummonedWeaponType.SPEAR; }
     public ArclightSummonedWeaponState getCombatState() { return ArclightSummonedWeaponState.byId(this.entityData.get(DATA_STATE)); }
-    public void setCombatState(ArclightSummonedWeaponState state) { this.entityData.set(DATA_STATE, state.ordinal()); this.stateTicks = 0; }
+    public void setCombatState(ArclightSummonedWeaponState state) {
+        ArclightSummonedWeaponState previous = this.getCombatState();
+        this.entityData.set(DATA_STATE, state.ordinal());
+        this.stateTicks = 0;
+        if (!this.level().isClientSide && previous != state) {
+            ProjectBabylonWeapons.LOGGER.info("[ArclightWeaponDebug] state side=server id={} type={} {}->{} attack={} position={} target={}",
+                    this.getId(), this.getWeaponType(), previous, state, this.getAttackType(), this.position(),
+                    this.entityData.get(DATA_TARGET_ID));
+        }
+    }
     public AttackType getAttackType() { return AttackType.byId(this.entityData.get(DATA_ATTACK)); }
     public void setAttackType(AttackType attack) { this.entityData.set(DATA_ATTACK, attack.ordinal()); }
     public LivingEntity getTarget() { Entity e = this.level().getEntity(this.entityData.get(DATA_TARGET_ID)); return e instanceof LivingEntity living ? living : null; }
-    public void setTarget(@Nullable LivingEntity target) { this.entityData.set(DATA_TARGET_ID, target == null ? -1 : target.getId()); }
+    public void setTarget(@Nullable LivingEntity target) {
+        int previousId = this.entityData.get(DATA_TARGET_ID);
+        int targetId = target == null ? -1 : target.getId();
+        this.entityData.set(DATA_TARGET_ID, targetId);
+        if (!this.level().isClientSide && previousId != targetId) {
+            ProjectBabylonWeapons.LOGGER.info("[ArclightWeaponDebug] target side=server id={} type={} previous={} current={} name={} position={}",
+                    this.getId(), this.getWeaponType(), previousId, targetId,
+                    target == null ? "none" : target.getName().getString(),
+                    target == null ? null : target.position());
+        }
+    }
     public int getFormationIndex() { return this.entityData.get(DATA_FORMATION_INDEX); }
     public UUID getOwnerUuid() { return this.ownerUuid; }
     public int getStateTicks() { return this.stateTicks; }
@@ -364,9 +394,44 @@ public class ArclightSummonedWeaponEntity extends Entity {
     public void setAttackOrigin(Vec3 origin) { this.attackOrigin = origin; }
     public Vec3 getAttackTarget() { return this.attackTarget; }
     public void setAttackTarget(Vec3 target) { this.attackTarget = target; }
+    public Vec3 getRoamingDestination() {
+        return this.roamingDestination;
+    }
+
+    public void setRoamingDestination(Vec3 destination, int ticks) {
+        this.roamingDestination = destination;
+        this.roamingDestinationTicks = Math.max(1, ticks);
+    }
+
+    public boolean needsRoamingDestination(Vec3 anchor) {
+        return this.roamingDestinationTicks <= 0
+                || this.position().distanceToSqr(this.roamingDestination) < 0.3D
+                || this.roamingDestination.distanceToSqr(anchor) > 8.0D * 8.0D;
+    }
+
+    public void tickRoamingDestination() {
+        if (this.roamingDestinationTicks > 0) {
+            this.roamingDestinationTicks--;
+        }
+    }
+
+    public void levelHoverPitch() {
+        float leveledPitch = Mth.rotLerp(0.28F, this.getXRot(), 0.0F);
+        this.setXRot(Math.abs(leveledPitch) < 0.5F ? 0.0F : leveledPitch);
+        this.xRotO = this.getXRot();
+    }
+    public boolean markRenderDebugTick() {
+        if (this.tickCount == this.lastRenderDebugTick || (this.tickCount % 20) != 0) {
+            return false;
+        }
+        this.lastRenderDebugTick = this.tickCount;
+        return true;
+    }
+
     public void clearHitEntities() { this.hitEntityIds.clear(); }
     public Balance getBalance() { return this.balance; }
     public int nextRandomInt(int bound) { return this.random.nextInt(bound); }
+    public double nextRandomDouble() { return this.random.nextDouble(); }
 
     public enum AttackType {
         NONE, STAB, VERTICAL, HORIZONTAL, DASH, SPIN;

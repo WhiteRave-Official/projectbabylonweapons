@@ -113,7 +113,7 @@ public class PBWeaponCapabilityPresets {
     };
 
     public static final Function<Item, CapabilityItem.Builder> ARCLIGHT = (item) -> {
-        WeaponCapability.Builder builder = WeaponCapability.builder()
+        WeaponCapability.Builder builder = ArclightWeaponCapability.builder()
                 .category(PBWeaponCategories.ARCLIGHT)
                 .styleProvider(playerpatch -> ArclightSwordItem.isEvergate(playerpatch.getOriginal().getMainHandItem()) ? PBArclightStyles.EVERGATE : CapabilityItem.Styles.TWO_HAND)
                 .collider(PBColliderPresets.ARCLIGHT)
@@ -163,21 +163,23 @@ public class PBWeaponCapabilityPresets {
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.SWIM, PBAnimations.ARCLIGHT_IDLE)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FLOAT, PBAnimations.ARCLIGHT_IDLE)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FALL, PBAnimations.ARCLIGHT_IDLE)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.BLOCK, PBAnimations.ARCLIGHT_GUARD)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.IDLE, PBAnimations.EVERGATE_IDLE)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.KNEEL, Animations.BIPED_KNEEL)
-                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.WALK, PBAnimations.ARCLIGHT_WALK)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.WALK, PBAnimations.EVERGATE_WALK)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.CHASE, Animations.BIPED_WALK)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.RUN, PBAnimations.ARCLIGHT_RUN)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.SNEAK, Animations.BIPED_SNEAK)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.SWIM, PBAnimations.ARCLIGHT_IDLE)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.FLOAT, PBAnimations.ARCLIGHT_IDLE)
-                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.FALL, PBAnimations.ARCLIGHT_IDLE);
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.FALL, PBAnimations.ARCLIGHT_IDLE)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.BLOCK, PBAnimations.EVERGATE_GUARD);
 
         return builder;
     };
 
     public static final Function<Item, CapabilityItem.Builder> EVERGATE = (item) -> {
-        WeaponCapability.Builder builder = WeaponCapability.builder()
+        WeaponCapability.Builder builder = ArclightWeaponCapability.builder()
                 .category(PBWeaponCategories.EVERGATE)
                 .styleProvider((playerpatch) -> CapabilityItem.Styles.TWO_HAND)
                 .collider(PBColliderPresets.EVERGATE)
@@ -221,7 +223,8 @@ public class PBWeaponCapabilityPresets {
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.SNEAK, Animations.BIPED_SNEAK)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.SWIM, PBAnimations.ARCLIGHT_IDLE)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FLOAT, PBAnimations.ARCLIGHT_IDLE)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FALL, PBAnimations.ARCLIGHT_IDLE);
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FALL, PBAnimations.ARCLIGHT_IDLE)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.BLOCK, PBAnimations.EVERGATE_GUARD);
 
         return builder;
     };

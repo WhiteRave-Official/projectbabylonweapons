@@ -1,5 +1,7 @@
 package com.rave.projectbabylonweapons.summon.arclight;
 
+import com.rave.projectbabylonweapons.world.entity.summon.ArclightSummonedWeaponEntity;
+
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
@@ -20,7 +22,8 @@ public final class ArclightSummonTargeting {
     }
 
     public static boolean isValid(LivingEntity owner, LivingEntity target, double radius) {
-        if (target == null || target == owner || !target.isAlive() || target.isRemoved()) {
+        if (target == null || target == owner || target instanceof ArclightSummonedWeaponEntity
+                || !target.isAlive() || target.isRemoved()) {
             return false;
         }
         if (target instanceof Player player && player.isSpectator()) {

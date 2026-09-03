@@ -1,11 +1,13 @@
 package com.rave.projectbabylonweapons.summon.arclight;
 
+import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
 import com.rave.projectbabylonweapons.world.entity.summon.ArclightSummonedWeaponEntity;
 import com.rave.projectbabylonweapons.world.entity.summon.ArclightSummonedWeaponState;
 import com.rave.projectbabylonweapons.world.entity.summon.ArclightSummonedWeaponType;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import yesman.epicfight.world.capabilities.EpicFightCapabilities;
+import com.rave.projectbabylonweapons.summon.arclight.epicfight.ArclightSummonedWeaponPatch;
 
 public final class ArclightSummonAttackController {
     private static final double TELEPORT_DISTANCE_SQR = 32.0D * 32.0D;
@@ -15,6 +17,8 @@ public final class ArclightSummonAttackController {
 
     public static void tick(ArclightSummonedWeaponEntity weapon, LivingEntity owner) {
         if (weapon.distanceToSqr(owner) > TELEPORT_DISTANCE_SQR) {
+            ProjectBabylonWeapons.LOGGER.info("[ArclightWeaponDebug] teleport_to_owner side=server id={} distanceSqr={} position={} ownerPosition={}",
+                    weapon.getId(), weapon.distanceToSqr(owner), weapon.position(), owner.position());
             weapon.setPos(weapon.getIdlePosition(owner, null));
             weapon.setCombatState(ArclightSummonedWeaponState.ORBIT);
             weapon.setTarget(null);
@@ -27,6 +31,7 @@ public final class ArclightSummonAttackController {
             case ATTACK -> tickAttack(weapon, owner);
             case RETURN -> tickRecovery(weapon, owner);
             case COOLDOWN -> tickCooldown(weapon, owner);
+            case ROAMING -> tickRoaming(weapon, owner);
         }
         weapon.incrementStateTicks();
     }
@@ -34,9 +39,9 @@ public final class ArclightSummonAttackController {
     private static void tickOrbit(ArclightSummonedWeaponEntity weapon, LivingEntity owner) {
         LivingEntity target = validTarget(weapon, owner);
         if (target == null) {
-            weapon.moveToward(weapon.getIdlePosition(owner, null), 0.14D, 0.45D);
+            followOwnerFreely(weapon, owner);
         } else {
-            weapon.setDeltaMovement(weapon.getDeltaMovement().scale(0.8D));
+            coast(weapon);
         }
         if (weapon.getCooldownTicks() > 0 || weapon.tickCount < weapon.getNextTargetSearchTick()) {
             return;
@@ -69,112 +74,121 @@ public final class ArclightSummonAttackController {
         weapon.setAttackTarget(target.getBoundingBox().getCenter());
         weapon.clearHitEntities();
         weapon.setCombatState(ArclightSummonedWeaponState.WINDUP);
+        ProjectBabylonWeapons.LOGGER.info("[ArclightWeaponDebug] attack_selected side=server id={} type={} attack={} targetId={} origin={} lockedTarget={}",
+                weapon.getId(), weapon.getWeaponType(), attack, target.getId(),
+                weapon.getAttackOrigin(), weapon.getAttackTarget());
     }
 
     private static void tickWindup(ArclightSummonedWeaponEntity weapon, LivingEntity owner) {
         Vec3 center = weapon.getAttackTarget();
         Vec3 forward = horizontalDirection(weapon.getAttackOrigin(), center);
         Vec3 side = new Vec3(-forward.z, 0.0D, forward.x);
-        double sideSign = weapon.getFormationIndex() == 0 ? -1.0D : 1.0D;
         double lengthScale = weapon.isSpear() ? 1.25D : 1.0D;
         Vec3 windup = switch (weapon.getAttackType()) {
             case STAB -> center.subtract(forward.scale(2.5D * lengthScale)).add(0.0D, 0.15D, 0.0D);
-            case VERTICAL -> center.subtract(forward.scale(0.65D))
-                    .add(0.0D, weapon.isSpear() ? 3.6D : 3.0D, 0.0D);
-            case HORIZONTAL -> center.add(side.scale(sideSign * 2.45D * lengthScale))
+            case VERTICAL -> center.subtract(forward.scale(0.45D))
+                    .add(0.0D, weapon.isSpear() ? 3.0D : 2.5D, 0.0D);
+            case HORIZONTAL -> center.add(side.scale(1.55D * lengthScale))
                     .add(0.0D, 0.45D, 0.0D);
             case DASH -> center.subtract(forward.scale(3.8D * lengthScale)).add(0.0D, 0.25D, 0.0D);
-            case SPIN -> center.add(side.scale(sideSign * 2.8D)).add(0.0D, 0.5D, 0.0D);
+            case SPIN -> center.add(side.scale(2.15D)).add(0.0D, 0.5D, 0.0D);
             default -> weapon.getIdlePosition(owner, null);
         };
 
         weapon.moveToward(windup, 0.42D, weapon.isSpear() ? 1.25D : 1.05D, center);
-        int windupDuration = weapon.getBalance().windupTicks() + (weapon.isSpear() ? 3 : 0);
+        int windupDuration = weapon.getBalance().windupTicks();
         if (weapon.getStateTicks() + 1 >= windupDuration) {
             weapon.setAttackOrigin(weapon.position());
+            weapon.setDeltaMovement(Vec3.ZERO);
             weapon.setCombatState(ArclightSummonedWeaponState.ATTACK);
+            ArclightSummonedWeaponPatch patch = EpicFightCapabilities.getEntityPatch(
+                    weapon, ArclightSummonedWeaponPatch.class);
+            if (patch != null) {
+                patch.playAttack(weapon.getAttackType());
+            } else {
+                weapon.finishAnimatedAttack();
+            }
         }
     }
 
     private static void tickAttack(ArclightSummonedWeaponEntity weapon, LivingEntity owner) {
-        Vec3 targetPosition = weapon.getAttackTarget();
-        int duration = Math.max(1, weapon.getBalance().attackTicks()
-                + (weapon.isSpear() ? 2 : 0)
-                + (weapon.getAttackType() == ArclightSummonedWeaponEntity.AttackType.SPIN ? 6 : 0));
-        float progress = Mth.clamp((weapon.getStateTicks() + 1.0F) / duration, 0.0F, 1.0F);
-        Vec3 previous = weapon.position();
-        Vec3 next = attackPosition(weapon, targetPosition, progress);
-        weapon.setPositionAndMovement(next, previous);
-        weapon.damageAlongSweep(owner, previous, next);
-
-        if (progress >= 1.0F) {
-            weapon.setCombatState(ArclightSummonedWeaponState.RETURN);
+        weapon.setDeltaMovement(Vec3.ZERO);
+        // ON_END is authoritative; the limit only protects against a malformed animation asset.
+        if (weapon.getStateTicks() > 80) {
+            weapon.finishAnimatedAttack();
         }
-    }
-
-    private static Vec3 attackPosition(ArclightSummonedWeaponEntity weapon, Vec3 target, float progress) {
-        Vec3 origin = weapon.getAttackOrigin();
-        Vec3 toTarget = target.subtract(origin);
-        Vec3 direction = toTarget.lengthSqr() < 1.0E-6D ? weapon.getLookDirection() : toTarget.normalize();
-        return switch (weapon.getAttackType()) {
-            case STAB -> lerp(origin, target.add(direction.scale(weapon.isSpear() ? 1.6D : 1.0D)), smoothStep(progress));
-            case VERTICAL -> {
-                Vec3 end = target.add(direction.scale(0.75D)).add(0.0D, -0.8D, 0.0D);
-                yield lerp(origin, end, smoothStep(progress));
-            }
-            case HORIZONTAL -> horizontalArc(weapon, origin, target, progress, Math.PI);
-            case DASH -> lerp(origin, target.add(direction.scale(weapon.isSpear() ? 3.0D : 2.3D)), smoothStep(progress));
-            case SPIN -> horizontalArc(weapon, origin, target, progress, Math.PI * 1.35D);
-            default -> target;
-        };
-    }
-
-    private static Vec3 horizontalArc(ArclightSummonedWeaponEntity weapon, Vec3 origin, Vec3 target,
-                                      float progress, double arc) {
-        Vec3 radial = origin.subtract(target).multiply(1.0D, 0.0D, 1.0D);
-        if (radial.lengthSqr() < 1.0E-6D) {
-            radial = new Vec3(1.0D, 0.0D, 0.0D);
-        }
-        double radius = Math.max(weapon.isSpear() ? 2.5D : 1.8D, radial.length());
-        radial = radial.normalize().scale(radius);
-        double sideSign = weapon.getFormationIndex() == 0 ? -1.0D : 1.0D;
-        Vec3 rotated = rotateY(radial, arc * progress * sideSign);
-        double y = Mth.lerp(progress, origin.y, target.y + 0.35D);
-        return new Vec3(target.x + rotated.x, y, target.z + rotated.z);
     }
 
     private static void tickRecovery(ArclightSummonedWeaponEntity weapon, LivingEntity owner) {
-        Vec3 previous = weapon.position();
-        Vec3 movement = weapon.getDeltaMovement().scale(0.78D);
-        weapon.setPositionAndMovement(previous.add(movement), previous);
-        if (weapon.getStateTicks() + 1 >= weapon.getBalance().returnTicks()
-                || movement.lengthSqr() < 2.5E-4D) {
+        moveRoaming(weapon, owner);
+
+        if (weapon.getStateTicks() + 1 >= weapon.getBalance().returnTicks()) {
             int cooldown = weapon.getWeaponType() == ArclightSummonedWeaponType.SPEAR
                     ? weapon.getBalance().spearCooldownTicks()
                     : weapon.getBalance().swordCooldownTicks();
-            weapon.setDeltaMovement(Vec3.ZERO);
             weapon.setCooldownTicks(cooldown);
             weapon.setAttackType(ArclightSummonedWeaponEntity.AttackType.NONE);
-            weapon.setCombatState(ArclightSummonedWeaponState.COOLDOWN);
+            weapon.setCombatState(ArclightSummonedWeaponState.ROAMING);
         }
     }
-
     private static void tickCooldown(ArclightSummonedWeaponEntity weapon, LivingEntity owner) {
-        LivingEntity target = validTarget(weapon, owner);
-        if (target == null) {
-            weapon.moveToward(weapon.getIdlePosition(owner, null), 0.1D, 0.35D);
-        } else {
-            weapon.setDeltaMovement(Vec3.ZERO);
-        }
+        // Preserve old saved entities that may still load with the legacy cooldown state.
+        weapon.setCombatState(ArclightSummonedWeaponState.ROAMING);
+        tickRoaming(weapon, owner);
+    }
+
+    private static void tickRoaming(ArclightSummonedWeaponEntity weapon, LivingEntity owner) {
+        moveRoaming(weapon, owner);
         if (weapon.getCooldownTicks() <= 0) {
             weapon.setCombatState(ArclightSummonedWeaponState.ORBIT);
         }
     }
 
-    private static void abortAttack(ArclightSummonedWeaponEntity weapon) {
-        weapon.setTarget(null);
-        weapon.setAttackType(ArclightSummonedWeaponEntity.AttackType.NONE);
-        weapon.setCombatState(ArclightSummonedWeaponState.RETURN);
+    private static void moveRoaming(ArclightSummonedWeaponEntity weapon, LivingEntity owner) {
+        LivingEntity target = validTarget(weapon, owner);
+        if (target == null && weapon.tickCount >= weapon.getNextTargetSearchTick()) {
+            target = ArclightSummonTargeting.findTarget(owner, weapon.getBalance().targetRadius());
+            weapon.setTarget(target);
+            weapon.setNextTargetSearchTick(weapon.tickCount + weapon.getBalance().targetSearchInterval());
+        }
+
+        Vec3 anchor = target == null
+                ? owner.position().add(0.0D, owner.getBbHeight() * 0.7D, 0.0D)
+                : target.getBoundingBox().getCenter();
+        if (weapon.needsRoamingDestination(anchor)) {
+            double angle = weapon.nextRandomDouble() * Math.PI * 2.0D;
+            double radius = target == null
+                    ? 1.6D + weapon.nextRandomDouble() * 1.4D
+                    : 1.8D + weapon.nextRandomDouble() * 1.8D;
+            double slotOffset = weapon.isSpear() ? 0.0D : weapon.getFormationIndex() * Math.PI;
+            double height = target == null
+                    ? -0.25D + weapon.nextRandomDouble() * 1.2D
+                    : 0.15D + weapon.nextRandomDouble() * Math.max(1.0D, target.getBbHeight());
+            weapon.setRoamingDestination(anchor.add(
+                    Math.cos(angle + slotOffset) * radius,
+                    height,
+                    Math.sin(angle + slotOffset) * radius
+            ), 60 + weapon.nextRandomInt(41));
+        }
+
+        weapon.moveToward(weapon.getRoamingDestination(), 0.018D,
+                weapon.isSpear() ? 0.095D : 0.08D);
+        weapon.levelHoverPitch();
+        weapon.tickRoamingDestination();
+    }
+    private static void followOwnerFreely(ArclightSummonedWeaponEntity weapon, LivingEntity owner) {
+        Vec3 anchor = owner.position().add(0.0D, owner.getBbHeight() * 0.7D, 0.0D);
+        double followRadius = weapon.isSpear() ? 4.0D : 3.25D;
+        if (weapon.position().distanceToSqr(anchor) > followRadius * followRadius) {
+            weapon.moveToward(anchor, 0.055D, weapon.isSpear() ? 0.34D : 0.28D);
+        } else {
+            coast(weapon);
+        }
+    }
+
+    private static void coast(ArclightSummonedWeaponEntity weapon) {
+        weapon.setDeltaMovement(weapon.getDeltaMovement().scale(0.86D));
+        weapon.levelHoverPitch();
     }
 
     private static Vec3 horizontalDirection(Vec3 from, Vec3 to) {
@@ -182,18 +196,4 @@ public final class ArclightSummonAttackController {
         return direction.lengthSqr() < 1.0E-6D ? new Vec3(0.0D, 0.0D, 1.0D) : direction.normalize();
     }
 
-    private static Vec3 rotateY(Vec3 vector, double angle) {
-        double sin = Math.sin(angle);
-        double cos = Math.cos(angle);
-        return new Vec3(vector.x * cos - vector.z * sin, vector.y,
-                vector.x * sin + vector.z * cos);
-    }
-
-    private static Vec3 lerp(Vec3 start, Vec3 end, float progress) {
-        return start.add(end.subtract(start).scale(progress));
-    }
-
-    private static float smoothStep(float value) {
-        return value * value * (3.0F - 2.0F * value);
-    }
 }
