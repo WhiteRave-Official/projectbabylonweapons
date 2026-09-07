@@ -1,29 +1,25 @@
 package com.rave.projectbabylonweapons.client.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
+import com.rave.projectbabylonweapons.client.model.ArclightSummonedWeaponMeshes;
 import com.rave.projectbabylonweapons.client.model.EmptyEntityModel;
 import com.rave.projectbabylonweapons.summon.arclight.epicfight.ArclightSummonedWeaponPatch;
 import com.rave.projectbabylonweapons.world.entity.summon.ArclightSummonedWeaponEntity;
-import com.rave.projectbabylonweapons.world.entity.summon.ArclightSummonedWeaponState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.EntityType;
 import yesman.epicfight.api.asset.AssetAccessor;
 import yesman.epicfight.api.client.model.Mesh;
 import yesman.epicfight.api.client.model.Meshes;
+import yesman.epicfight.api.client.model.SkinnedMesh;
 import yesman.epicfight.api.model.Armature;
-import yesman.epicfight.api.utils.EntitySnapshot;
-import yesman.epicfight.api.utils.math.MathUtils;
 import yesman.epicfight.api.utils.math.OpenMatrix4f;
 import yesman.epicfight.client.mesh.HumanoidMesh;
 import yesman.epicfight.client.renderer.EpicFightRenderTypes;
@@ -49,27 +45,20 @@ public class PatchedArclightSummonedWeaponRenderer extends PatchedLivingEntityRe
     public void render(ArclightSummonedWeaponEntity entity, ArclightSummonedWeaponPatch patch,
                        ArclightSummonedWeaponRenderer renderer, MultiBufferSource bufferSource,
                        PoseStack poseStack, int packedLight, float partialTick) {
-
         Minecraft minecraft = Minecraft.getInstance();
-        BakedModel model = minecraft.getModelManager().getModel(
+        BakedModel sourceModel = minecraft.getModelManager().getModel(
                 entity.isSpear() ? ArclightSummonedWeaponRenderer.SPEAR_MODEL
                         : ArclightSummonedWeaponRenderer.MINI_MODEL);
-        ItemStack renderStack = ItemStack.EMPTY;
+        SkinnedMesh mesh = entity.isSpear()
+                ? ArclightSummonedWeaponMeshes.spear(sourceModel)
+                : ArclightSummonedWeaponMeshes.sword(sourceModel);
         Armature armature = patch.getArmature();
 
         poseStack.pushPose();
         this.mulPoseStack(poseStack, armature, entity, patch, partialTick);
         this.setArmaturePose(patch, armature, partialTick);
         OpenMatrix4f[] poseMatrices = armature.getPoseMatrices();
-        OpenMatrix4f weaponPose = poseMatrices[armature.searchJointByName("Weapon").getId()];
-        MathUtils.mulStack(poseStack, weaponPose);
-        // Baked item models point along +Y, while the animated weapon and collider point along -Z.
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0F));
-        poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
-        // Roaming weapons hover flat; attack animations roll the blade onto its cutting edge.
-        if (entity.getCombatState() == ArclightSummonedWeaponState.ATTACK) {
-            poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
-        }
+
         if (entity.markRenderDebugTick()) {
             var animationPlayer = patch.getAnimator().getPlayerFor(null);
             ProjectBabylonWeapons.LOGGER.info("[ArclightWeaponDebug] render side=client id={} type={} state={} attack={} position={} animation={} elapsed={} weaponPose={}",
@@ -77,51 +66,47 @@ public class PatchedArclightSummonedWeaponRenderer extends PatchedLivingEntityRe
                     entity.position(),
                     animationPlayer == null ? "none" : animationPlayer.getRealAnimation(),
                     animationPlayer == null ? -1.0F : animationPlayer.getElapsedTime(),
-                    weaponPose);
+                    poseMatrices[armature.searchJointByName("Weapon").getId()]);
         }
 
         float formation = Mth.clamp((entity.tickCount + partialTick) / FORMATION_TICKS, 0.0F, 1.0F);
         float modelScale = entity.isSpear() ? SPEAR_MODEL_SCALE : MINI_MODEL_SCALE;
         float formationScale = modelScale * Mth.lerp(formation, 0.35F, 1.0F);
-        renderBaseModel(minecraft.getItemRenderer(), model, renderStack, poseStack, bufferSource, formationScale);
+
+        poseStack.pushPose();
+        poseStack.scale(formationScale, formationScale, formationScale);
+        renderBaseMesh(mesh, armature, poseMatrices, poseStack, bufferSource);
+        poseStack.popPose();
 
         if (formation < 1.0F) {
-            renderFormationGlow(model, renderStack, poseStack, bufferSource,
+            renderFormationGlow(mesh, armature, poseMatrices, poseStack, bufferSource,
                     formationScale * GLOW_SCALE, Mth.sin(formation * Mth.PI));
         }
         poseStack.popPose();
     }
 
-    private static void renderBaseModel(ItemRenderer itemRenderer, BakedModel model, ItemStack stack,
-                                        PoseStack poseStack, MultiBufferSource bufferSource, float scale) {
-        poseStack.pushPose();
-        poseStack.scale(scale, scale, scale);
-        poseStack.translate(-0.5D, -0.5D, -0.5D);
-        for (RenderType renderType : model.getRenderTypes(stack, false)) {
-            VertexConsumer consumer = ItemRenderer.getFoilBufferDirect(bufferSource, renderType, true, false);
-            itemRenderer.renderModelLists(model, stack, FULL_BRIGHT, OverlayTexture.NO_OVERLAY, poseStack, consumer);
-        }
-        poseStack.popPose();
+    private static void renderBaseMesh(SkinnedMesh mesh, Armature armature, OpenMatrix4f[] poses,
+                                       PoseStack poseStack, MultiBufferSource bufferSource) {
+        mesh.drawPosed(poseStack,
+                bufferSource.getBuffer(RenderType.entityTranslucent(TextureAtlas.LOCATION_BLOCKS)),
+                Mesh.DrawingFunction.NEW_ENTITY, FULL_BRIGHT,
+                1.0F, 1.0F, 1.0F, 1.0F, OverlayTexture.NO_OVERLAY, armature, poses);
     }
 
-    private static void renderFormationGlow(BakedModel model, ItemStack stack, PoseStack poseStack,
-                                             MultiBufferSource bufferSource, float scale, float alpha) {
+    private static void renderFormationGlow(SkinnedMesh mesh, Armature armature, OpenMatrix4f[] poses,
+                                             PoseStack poseStack, MultiBufferSource bufferSource,
+                                             float scale, float alpha) {
         poseStack.pushPose();
         poseStack.scale(scale, scale, scale);
-        poseStack.translate(-0.5D, -0.5D, -0.5D);
-        for (BakedModel pass : model.getRenderPasses(stack, true)) {
-            EntitySnapshot.renderModelLists(pass, stack, FULL_BRIGHT, 0, 1.0F, poseStack,
-                    bufferSource.getBuffer(EpicFightRenderTypes.itemAfterimageStencil()),
-                    Mesh.DrawingFunction.POSITION_TEX);
-        }
+        mesh.drawPosed(poseStack, bufferSource.getBuffer(EpicFightRenderTypes.itemAfterimageStencil()),
+                Mesh.DrawingFunction.POSITION_TEX, FULL_BRIGHT,
+                1.0F, 1.0F, 1.0F, 1.0F, 0, armature, poses);
         if (bufferSource instanceof MultiBufferSource.BufferSource source) {
             source.endBatch(EpicFightRenderTypes.itemAfterimageStencil());
         }
-        for (BakedModel pass : model.getRenderPasses(stack, true)) {
-            EntitySnapshot.renderModelLists(pass, stack, FULL_BRIGHT, 0, alpha, poseStack,
-                    bufferSource.getBuffer(EpicFightRenderTypes.itemAfterimageWhite()),
-                    Mesh.DrawingFunction.POSITION_TEX_COLOR_LIGHTMAP);
-        }
+        mesh.drawPosed(poseStack, bufferSource.getBuffer(EpicFightRenderTypes.itemAfterimageWhite()),
+                Mesh.DrawingFunction.POSITION_TEX_COLOR_LIGHTMAP, FULL_BRIGHT,
+                1.0F, 1.0F, 1.0F, alpha, 0, armature, poses);
         if (bufferSource instanceof MultiBufferSource.BufferSource source) {
             source.endBatch(EpicFightRenderTypes.itemAfterimageWhite());
         }
@@ -130,7 +115,7 @@ public class PatchedArclightSummonedWeaponRenderer extends PatchedLivingEntityRe
 
     @Override
     public AssetAccessor<HumanoidMesh> getDefaultMesh() {
-        // The baked weapon is rendered manually; this satisfies the patched renderer contract only.
+        // Rendering uses the dedicated rigid weapon mesh above.
         return Meshes.BIPED;
     }
 }
