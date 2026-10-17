@@ -155,20 +155,20 @@ public class PBWeaponCapabilityPresets {
                 .innateSkill(CapabilityItem.Styles.TWO_HAND, itemstack -> PBSkills.ARCLIGHT_AWAKENING)
                 .innateSkill(PBArclightStyles.EVERGATE, itemstack -> PBSkills.ETERNAL_LIGHT)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.IDLE, PBAnimations.ARCLIGHT_IDLE)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.KNEEL, Animations.BIPED_KNEEL)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.KNEEL, PBAnimations.ARCLIGHT_KNEEL)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.WALK, PBAnimations.ARCLIGHT_WALK)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.CHASE, Animations.BIPED_WALK)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.RUN, PBAnimations.ARCLIGHT_RUN)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.SNEAK, Animations.BIPED_SNEAK)
+                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.SNEAK, PBAnimations.ARCLIGHT_SNEAK)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.SWIM, PBAnimations.ARCLIGHT_IDLE)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FLOAT, PBAnimations.ARCLIGHT_IDLE)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FALL, PBAnimations.ARCLIGHT_IDLE)
                 .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.BLOCK, PBAnimations.ARCLIGHT_GUARD)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.IDLE, PBAnimations.EVERGATE_IDLE)
-                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.KNEEL, Animations.BIPED_KNEEL)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.KNEEL, PBAnimations.ARCLIGHT_KNEEL)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.WALK, PBAnimations.EVERGATE_WALK)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.CHASE, Animations.BIPED_WALK)
-                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.RUN, PBAnimations.ARCLIGHT_RUN)
+                .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.RUN, PBAnimations.EVERGATE_RUN)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.SNEAK, Animations.BIPED_SNEAK)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.SWIM, PBAnimations.ARCLIGHT_IDLE)
                 .livingMotionModifier(PBArclightStyles.EVERGATE, LivingMotions.FLOAT, PBAnimations.ARCLIGHT_IDLE)
@@ -177,58 +177,6 @@ public class PBWeaponCapabilityPresets {
 
         return builder;
     };
-
-    public static final Function<Item, CapabilityItem.Builder> EVERGATE = (item) -> {
-        WeaponCapability.Builder builder = ArclightWeaponCapability.builder()
-                .category(PBWeaponCategories.EVERGATE)
-                .styleProvider((playerpatch) -> CapabilityItem.Styles.TWO_HAND)
-                .collider(PBColliderPresets.EVERGATE)
-                .canBePlacedOffhand(true)
-                .weaponCombinationPredicator((entitypatch) ->
-                        EpicFightCapabilities.getItemStackCapability(((LivingEntity) entitypatch.getOriginal()).getOffhandItem()).getWeaponCategory() == PBWeaponCategories.ARCLIGHT
-                );
-
-        if (item instanceof TieredItem tieredItem) {
-            if (tieredItem.getTier() == Tiers.WOOD) {
-                builder.hitSound(EpicFightSounds.BLUNT_HIT.get())
-                        .hitParticle(EpicFightParticles.HIT_BLUNT.get());
-            } else {
-                builder.hitSound(EpicFightSounds.BLADE_HIT.get())
-                        .hitParticle(EpicFightParticles.HIT_BLADE.get());
-            }
-        } else {
-            builder.hitSound(EpicFightSounds.BLADE_HIT.get())
-                    .hitParticle(EpicFightParticles.HIT_BLADE.get());
-        }
-
-        builder
-                .newStyleCombo(CapabilityItem.Styles.TWO_HAND, new AnimationManager.AnimationAccessor[]{
-                        PBAnimations.EVERGATE_AUTO_1,
-                        PBAnimations.EVERGATE_AUTO_2,
-                        PBAnimations.EVERGATE_AUTO_3,
-                        PBAnimations.EVERGATE_AUTO_4,
-                        PBAnimations.EVERGATE_AUTO_5,
-                        PBAnimations.EVERGATE_DASH,
-                        PBAnimations.EVERGATE_AIRSLASH
-                })
-                .newStyleCombo(CapabilityItem.Styles.MOUNT, new AnimationManager.AnimationAccessor[]{
-                        Animations.SWORD_MOUNT_ATTACK
-                })
-                .innateSkill(CapabilityItem.Styles.TWO_HAND, (itemstack) -> PBSkills.THE_HARVEST)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.IDLE, PBAnimations.EVERGATE_IDLE)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.KNEEL, Animations.BIPED_KNEEL)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.WALK, PBAnimations.ARCLIGHT_WALK)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.CHASE, Animations.BIPED_WALK)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.RUN, PBAnimations.ARCLIGHT_RUN)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.SNEAK, Animations.BIPED_SNEAK)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.SWIM, PBAnimations.ARCLIGHT_IDLE)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FLOAT, PBAnimations.ARCLIGHT_IDLE)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.FALL, PBAnimations.ARCLIGHT_IDLE)
-                .livingMotionModifier(CapabilityItem.Styles.TWO_HAND, LivingMotions.BLOCK, PBAnimations.EVERGATE_GUARD);
-
-        return builder;
-    };
-
     public static final Function<Item, CapabilityItem.Builder> PB_WAND = (item) -> {
         WeaponCapability.Builder builder = WeaponCapability.builder()
                 .category(PBWeaponCategories.PB_WAND)

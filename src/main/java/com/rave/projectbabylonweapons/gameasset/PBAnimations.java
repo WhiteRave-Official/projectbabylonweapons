@@ -41,10 +41,6 @@ public class PBAnimations {
     public static AnimationManager.AnimationAccessor<MovementAnimation> SICKLE_WALK;
     public static AnimationManager.AnimationAccessor<MovementAnimation> SICKLE_RUN;
 
-    public static AnimationManager.AnimationAccessor<StaticAnimation> SIT_DOWN;
-
-    public static AnimationManager.AnimationAccessor<StaticAnimation> SIT_DOWN_IDLE;
-    public static AnimationManager.AnimationAccessor<StaticAnimation> STAND_UP;
 
     public static AnimationManager.AnimationAccessor<AttackAnimation> SICKLE_DUAL_AUTO_1;
     public static AnimationManager.AnimationAccessor<AttackAnimation> SICKLE_DUAL_AUTO_2;
@@ -62,7 +58,9 @@ public class PBAnimations {
 
     //ARCLIGHT
     public static AnimationManager.AnimationAccessor<StaticAnimation> ARCLIGHT_IDLE;
+    public static AnimationManager.AnimationAccessor<MovementAnimation> ARCLIGHT_KNEEL;
     public static AnimationManager.AnimationAccessor<MovementAnimation> ARCLIGHT_WALK;
+    public static AnimationManager.AnimationAccessor<MovementAnimation> ARCLIGHT_SNEAK;
     public static AnimationManager.AnimationAccessor<StaticAnimation> ARCLIGHT_RUN;
     public static AnimationManager.AnimationAccessor<StaticAnimation> ARCLIGHT_GUARD;
     public static AnimationManager.AnimationAccessor<GuardAnimation> ARCLIGHT_GUARD_HIT;
@@ -75,6 +73,7 @@ public class PBAnimations {
 
     public static AnimationManager.AnimationAccessor<StaticAnimation> EVERGATE_IDLE;
     public static AnimationManager.AnimationAccessor<MovementAnimation> EVERGATE_WALK;
+    public static AnimationManager.AnimationAccessor<MovementAnimation> EVERGATE_RUN;
     public static AnimationManager.AnimationAccessor<StaticAnimation> EVERGATE_GUARD;
     public static AnimationManager.AnimationAccessor<GuardAnimation> EVERGATE_GUARD_HIT;
     public static AnimationManager.AnimationAccessor<AttackAnimation> EVERGATE_AUTO_1;
@@ -125,9 +124,21 @@ public class PBAnimations {
 
     public static AnimationManager.AnimationAccessor<AttackAnimation> SUMMON;
 
+    public static AnimationManager.AnimationAccessor<AttackAnimation> LIGHT_BREACH;
+
     public static AnimationManager.AnimationAccessor<AttackAnimation> ARCLIGHT_AWAKENING;
 
     public static AnimationManager.AnimationAccessor<AttackAnimation> REBIRTH;
+
+    //OTHER
+    public static AnimationManager.AnimationAccessor<StaticAnimation> SIT_DOWN;
+    public static AnimationManager.AnimationAccessor<StaticAnimation> SIT_DOWN_IDLE;
+    public static AnimationManager.AnimationAccessor<StaticAnimation> STAND_UP;
+
+    public static AnimationManager.AnimationAccessor<StaticAnimation> AXE_SWING;
+    public static AnimationManager.AnimationAccessor<StaticAnimation> PICKAXE_SWING;
+    public static AnimationManager.AnimationAccessor<StaticAnimation> SHOVEL_SWING;
+    public static AnimationManager.AnimationAccessor<StaticAnimation> HOE_SWING;
 
 
     public static void buildAnimations(AnimationManager.AnimationBuilder builder) {
@@ -141,8 +152,13 @@ public class PBAnimations {
 
         SIT_DOWN = builder.nextAccessor("biped/living/sit_down", (accessor) -> new StaticAnimation(false, accessor, Armatures.BIPED));
         SIT_DOWN_IDLE = builder.nextAccessor("biped/living/sit_down_idle", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
-
         STAND_UP = builder.nextAccessor("biped/living/stand_up", (accessor) -> new StaticAnimation(false, accessor, Armatures.BIPED));
+
+        AXE_SWING = builder.nextAccessor("biped/living/axe_swing", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
+        PICKAXE_SWING = builder.nextAccessor("biped/living/pickaxe_swing", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
+        SHOVEL_SWING = builder.nextAccessor("biped/living/shovel_swing", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
+        HOE_SWING = builder.nextAccessor("biped/living/hoe_swing", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
+
 
         SICKLE_ONEHAND_AUTO_1 = builder.nextAccessor("biped/combat/sickle_onehand_auto_1", (accessor) ->  new AttackAnimation(0.15F,  0.15F,  0.1F,  0.4F, 7.667F, (Collider)null, ((HumanoidArmature)Armatures.BIPED.get()).toolR, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 0.4F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.3F));
         SICKLE_ONEHAND_AUTO_2 = builder.nextAccessor("biped/combat/sickle_onehand_auto_2", (accessor) ->  new AttackAnimation(0.15F,  0.15F,  0.1F,  0.25F, 7.667F, (Collider)null, ((HumanoidArmature)Armatures.BIPED.get()).toolR, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 0.45F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.3F));
@@ -167,6 +183,8 @@ public class PBAnimations {
         ARCLIGHT_IDLE = builder.nextAccessor("biped/living/arclight_idle", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
 
         ARCLIGHT_WALK = builder.nextAccessor("biped/living/arclight_walk", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
+        ARCLIGHT_SNEAK = builder.nextAccessor("biped/living/arclight_sneak", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
+        ARCLIGHT_KNEEL = builder.nextAccessor("biped/living/arclight_kneel", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
         ARCLIGHT_RUN = builder.nextAccessor("biped/living/arclight_run", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
 
         ARCLIGHT_GUARD = builder.nextAccessor("biped/living/arclight_guard", (accessor) -> new StaticAnimation(0.25F, true, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 0.4F));
@@ -186,6 +204,7 @@ public class PBAnimations {
         EVERGATE_IDLE = builder.nextAccessor("biped/living/evergate_idle", (accessor) -> new StaticAnimation(true, accessor, Armatures.BIPED));
 
         EVERGATE_WALK = builder.nextAccessor("biped/living/evergate_walk", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
+        EVERGATE_RUN = builder.nextAccessor("biped/living/evergate_run", (accessor) -> new MovementAnimation(true, accessor, Armatures.BIPED));
 
         EVERGATE_GUARD = builder.nextAccessor("biped/living/evergate_guard", (accessor) -> new StaticAnimation(0.25F,true, accessor, Armatures.BIPED));
         EVERGATE_GUARD_HIT = builder.nextAccessor("biped/living/evergate_guard_hit", (accessor) -> new GuardAnimation(0.15F, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 0.4F));
@@ -315,6 +334,8 @@ public class PBAnimations {
                 .addEvents(new AnimationEvent[]{AnimationEvent.InTimeEvent.create(11.5f, PBReusableEvents.BIG_GROUNDSLAM, AnimationEvent.Side.CLIENT).params(new Vec3f(0.0f, -0.24f, -2.0f))})
         );
         SUMMON = builder.nextAccessor("biped/skill/summon", (accessor) ->  new AttackAnimation(0.20F,  1.25F,  2.0F,  2.20F, 2.6F, ColliderPreset.FIST, ((HumanoidArmature)Armatures.BIPED.get()).toolL, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 2.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.1F));
+        LIGHT_BREACH = builder.nextAccessor("biped/skill/light_breach", (accessor) ->  new AttackAnimation(0.20F,  1.25F,  2.0F,  2.20F, 2.6F, ColliderPreset.FIST, ((HumanoidArmature)Armatures.BIPED.get()).toolL, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 2.25F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.5F));
+
         GLACIER = builder.nextAccessor("biped/skill/glacier", (accessor) ->  new AttackAnimation(0.35F,  0.15F,  1.7F,  1.9F, 2.0F, PBColliderPresets.BEAST_ROAR_FIRST, ((HumanoidArmature)Armatures.BIPED.get()).rootJoint, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 1.5F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.1F));
         MANA_BUBBLE = builder.nextAccessor("biped/skill/mana_bubble", (accessor) ->  new AttackAnimation(0.35F,  0.15F,  1.2F,  1.8F, 2.0F, PBColliderPresets.BEAST_ROAR_FIRST, ((HumanoidArmature)Armatures.BIPED.get()).rootJoint, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 1.5F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.1F));
         FIRE_STORM = builder.nextAccessor("biped/skill/fire_storm", (accessor) ->  new AttackAnimation(0.35F,  0.15F,  1.2F,  1.8F, 2.0F, PBColliderPresets.BEAST_ROAR_FIRST, ((HumanoidArmature)Armatures.BIPED.get()).rootJoint, accessor, Armatures.BIPED).addProperty(AnimationProperty.AttackPhaseProperty.DAMAGE_MODIFIER, ValueModifier.multiplier(1.0F)).newTimePair(0.0F, 1.5F).addStateRemoveOld(EntityState.CAN_BASIC_ATTACK, false).addProperty(AnimationProperty.AttackAnimationProperty.BASIS_ATTACK_SPEED, 1.1F));
