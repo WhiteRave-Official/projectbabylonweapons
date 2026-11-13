@@ -1,6 +1,7 @@
 package com.rave.projectbabylonweapons.passive.bastion;
 
 import com.rave.projectbabylonmaterials.init.PBMEffects;
+import com.rave.projectbabylonweapons.event.SternSlamParametersEvent;
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
 import com.rave.projectbabylonweapons.handler.WeaponVisualEffectHelper;
 import com.rave.projectbabylonweapons.world.entity.effect.GlacierIceSpikeEntity;
@@ -68,7 +69,7 @@ public final class BastionPassiveHandler {
 
         BastionCurseBalance.Profile curse = BastionCurseBalance.resolve(shieldStack);
         if (curse != null) {
-            applyEnemiesEffect(caster, new MobEffectInstance(PBMEffects.FEAR_DEBUFF.get(), curse.fearDurationTicks(), 0, false, true, true));
+            applyEnemiesEffect(caster, new MobEffectInstance(PBMEffects.FEAR_DEBUFF.get(), SternSlamParametersEvent.duration(caster, curse.fearDurationTicks()), 0, false, true, true));
             return;
         }
 
@@ -81,13 +82,13 @@ public final class BastionPassiveHandler {
 
         BastionWarSignalBalance.Profile warSignal = BastionWarSignalBalance.resolve(shieldStack);
         if (warSignal != null) {
-            applyAlliedPlayersEffect(caster, new MobEffectInstance(PBMEffects.ASH_MEMORY.get(), warSignal.ashMemoryDurationTicks(), 0, false, true, true));
+            applyAlliedPlayersEffect(caster, new MobEffectInstance(PBMEffects.ASH_MEMORY.get(), SternSlamParametersEvent.duration(caster, warSignal.ashMemoryDurationTicks()), 0, false, true, true));
             return;
         }
 
         BastionHeavensGiftBalance.Profile heavensGift = BastionHeavensGiftBalance.resolve(shieldStack);
         if (heavensGift != null) {
-            applyAlliedPlayersEffect(caster, new MobEffectInstance(PBMEffects.HOLY_SIGIL.get(), heavensGift.holySigilDurationTicks(), 0, false, true, true));
+            applyAlliedPlayersEffect(caster, new MobEffectInstance(PBMEffects.HOLY_SIGIL.get(), SternSlamParametersEvent.duration(caster, heavensGift.holySigilDurationTicks()), 0, false, true, true));
             startHeavensGiftAura(serverLevel, caster, heavensGift);
             return;
         }
@@ -149,10 +150,10 @@ public final class BastionPassiveHandler {
 
             state.nextRefreshGameTime = state.level.getGameTime() + state.profile.refreshIntervalTicks();
             MobEffect chilledEffect = MobEffectRegistry.CHILLED.get();
-            MobEffectInstance chilled = new MobEffectInstance(chilledEffect, state.profile.chillDurationTicks(), 0, false, true, true);
-            MobEffectInstance magicalResistance = new MobEffectInstance(PBMEffects.MAGICAL_RESISTANCE.get(), state.profile.magicalResistanceDurationTicks(), 0, false, true, true);
+            MobEffectInstance chilled = new MobEffectInstance(chilledEffect, SternSlamParametersEvent.duration(caster, state.profile.chillDurationTicks()), 0, false, true, true);
+            MobEffectInstance magicalResistance = new MobEffectInstance(PBMEffects.MAGICAL_RESISTANCE.get(), SternSlamParametersEvent.duration(caster, state.profile.magicalResistanceDurationTicks()), 0, false, true, true);
             for (LivingEntity target : getNearbyEnemies(caster, state.profile.radiusBlocks(), AREA_VERTICAL)) {
-                target.addEffect(new MobEffectInstance(chilled));
+                target.addEffect(new MobEffectInstance(chilled), caster);
             }
             applyAlliedPlayersEffect(caster, magicalResistance, state.profile.radiusBlocks());
         }
@@ -180,11 +181,11 @@ public final class BastionPassiveHandler {
             }
 
             state.nextRefreshGameTime = state.level.getGameTime() + state.profile.refreshIntervalTicks();
-            MobEffectInstance provoke = new MobEffectInstance(PBMEffects.PROVOKE_DEBUFF.get(), state.profile.provokeDurationTicks(), 0, false, true, true);
-            MobEffectInstance critResistance = new MobEffectInstance(PBMEffects.CRIT_RESISTANCE.get(), state.profile.critResistanceDurationTicks(), 0, false, true, true);
+            MobEffectInstance provoke = new MobEffectInstance(PBMEffects.PROVOKE_DEBUFF.get(), SternSlamParametersEvent.duration(caster, state.profile.provokeDurationTicks()), 0, false, true, true);
+            MobEffectInstance critResistance = new MobEffectInstance(PBMEffects.CRIT_RESISTANCE.get(), SternSlamParametersEvent.duration(caster, state.profile.critResistanceDurationTicks()), 0, false, true, true);
             for (LivingEntity target : getNearbyEnemies(caster, state.profile.radiusBlocks(), AREA_VERTICAL)) {
                 target.setLastHurtByMob(caster);
-                target.addEffect(new MobEffectInstance(provoke));
+                target.addEffect(new MobEffectInstance(provoke), caster);
             }
             applyAlliedPlayersEffect(caster, critResistance, state.profile.radiusBlocks());
         }
@@ -225,7 +226,7 @@ public final class BastionPassiveHandler {
 
 
     private static void applyCrushing(ServerLevel level, LivingEntity caster, BastionCrushingBalance.Profile profile) {
-        MobEffectInstance weakness = new MobEffectInstance(MobEffects.WEAKNESS, profile.weaknessDurationTicks(), 0, false, true, true);
+        MobEffectInstance weakness = new MobEffectInstance(MobEffects.WEAKNESS, SternSlamParametersEvent.duration(caster, profile.weaknessDurationTicks()), 0, false, true, true);
         Vec3 origin = caster.position();
         for (LivingEntity target : getNearbyEnemies(caster, AREA_RADIUS, AREA_VERTICAL)) {
             Vec3 away = target.position().subtract(origin);
@@ -233,7 +234,7 @@ public final class BastionPassiveHandler {
             Vec3 push = horizontalAway.lengthSqr() > 1.0E-6D ? horizontalAway.normalize().scale(profile.horizontalPush()) : Vec3.ZERO;
             target.setDeltaMovement(push.x, profile.knockupVelocity(), push.z);
             target.hurtMarked = true;
-            target.addEffect(new MobEffectInstance(weakness));
+            target.addEffect(new MobEffectInstance(weakness), caster);
         }
 
         spawnCrushingBlocks(level, caster, profile.blockRingCount());
@@ -244,7 +245,7 @@ public final class BastionPassiveHandler {
         Vec3 origin = caster.position();
         int rings = Math.max(1, ringCount);
         for (int ring = 1; ring <= rings; ring++) {
-            double radius = (AREA_RADIUS / rings) * ring;
+            double radius = (SternSlamParametersEvent.radius(caster, AREA_RADIUS) / rings) * ring;
             int segments = Math.max(10, Mth.ceil(radius * 4.0D));
             for (int i = 0; i < segments; i++) {
                 double angle = (Math.PI * 2.0D * i) / segments;
@@ -269,8 +270,8 @@ public final class BastionPassiveHandler {
 
     private static void spawnPermafrostSpikeBurst(ServerLevel level, LivingEntity caster, BastionPermafrostBalance.Profile profile) {
         Vec3 origin = caster.position();
-        double outerRingRadius = Math.max(PERMAFROST_SPIKE_MIN_RADIUS, profile.radiusBlocks() * PERMAFROST_OUTER_SPIKE_RADIUS_MULTIPLIER);
-        double innerRingRadius = Math.max(1.35D, profile.radiusBlocks() * PERMAFROST_INNER_SPIKE_RADIUS_MULTIPLIER);
+        double outerRingRadius = Math.max(PERMAFROST_SPIKE_MIN_RADIUS, SternSlamParametersEvent.radius(caster, profile.radiusBlocks()) * PERMAFROST_OUTER_SPIKE_RADIUS_MULTIPLIER);
+        double innerRingRadius = Math.max(1.35D, SternSlamParametersEvent.radius(caster, profile.radiusBlocks()) * PERMAFROST_INNER_SPIKE_RADIUS_MULTIPLIER);
         if (innerRingRadius >= outerRingRadius - 0.35D) {
             innerRingRadius = Math.max(1.35D, outerRingRadius - 0.8D);
         }
@@ -360,7 +361,7 @@ public final class BastionPassiveHandler {
 
         ACTIVE_FROST_AURAS.remove(serverPlayer.getUUID());
         WeaponVisualEffectHelper.stopBastionFrostAura(serverPlayer);
-        ACTIVE_FROST_AURAS.put(serverPlayer.getUUID(), new FrostAuraState(serverPlayer.getUUID(), level, level.getGameTime() + profile.auraDurationTicks(), level.getGameTime(), profile, serverPlayer));
+        ACTIVE_FROST_AURAS.put(serverPlayer.getUUID(), new FrostAuraState(serverPlayer.getUUID(), level, level.getGameTime() + SternSlamParametersEvent.duration(caster, profile.auraDurationTicks()), level.getGameTime(), profile, serverPlayer));
         WeaponVisualEffectHelper.startBastionFrostAura(serverPlayer);
     }
 
@@ -371,7 +372,7 @@ public final class BastionPassiveHandler {
 
         ACTIVE_RULE_AURAS.remove(serverPlayer.getUUID());
         WeaponVisualEffectHelper.stopBastionRuleAura(serverPlayer);
-        ACTIVE_RULE_AURAS.put(serverPlayer.getUUID(), new RuleAuraState(serverPlayer.getUUID(), level, level.getGameTime() + profile.auraDurationTicks(), level.getGameTime(), profile, serverPlayer));
+        ACTIVE_RULE_AURAS.put(serverPlayer.getUUID(), new RuleAuraState(serverPlayer.getUUID(), level, level.getGameTime() + SternSlamParametersEvent.duration(caster, profile.auraDurationTicks()), level.getGameTime(), profile, serverPlayer));
         WeaponVisualEffectHelper.startBastionRuleAura(serverPlayer);
     }
 
@@ -382,7 +383,7 @@ public final class BastionPassiveHandler {
 
         ACTIVE_HEAVENS_GIFT_AURAS.remove(serverPlayer.getUUID());
         WeaponVisualEffectHelper.stopBastionHeavensGiftAura(serverPlayer);
-        ACTIVE_HEAVENS_GIFT_AURAS.put(serverPlayer.getUUID(), new HeavensGiftAuraState(serverPlayer.getUUID(), level, level.getGameTime() + profile.auraDurationTicks(), level.getGameTime(), profile, serverPlayer));
+        ACTIVE_HEAVENS_GIFT_AURAS.put(serverPlayer.getUUID(), new HeavensGiftAuraState(serverPlayer.getUUID(), level, level.getGameTime() + SternSlamParametersEvent.duration(caster, profile.auraDurationTicks()), level.getGameTime(), profile, serverPlayer));
         WeaponVisualEffectHelper.startBastionHeavensGiftAura(serverPlayer);
     }
 
@@ -395,11 +396,12 @@ public final class BastionPassiveHandler {
         }
 
         for (ServerPlayer target : getAlliedPlayers(serverPlayer, radius)) {
-            target.addEffect(new MobEffectInstance(effect));
+            target.addEffect(new MobEffectInstance(effect), caster);
         }
     }
 
     private static List<ServerPlayer> getAlliedPlayers(ServerPlayer caster, double radius) {
+        radius = SternSlamParametersEvent.radius(caster, radius);
         List<ServerPlayer> targets = new ArrayList<>();
         targets.add(caster);
         AABB area = caster.getBoundingBox().inflate(radius, AREA_VERTICAL, radius);
@@ -409,11 +411,12 @@ public final class BastionPassiveHandler {
 
     private static void applyEnemiesEffect(LivingEntity caster, MobEffectInstance effect) {
         for (LivingEntity target : getNearbyEnemies(caster, AREA_RADIUS, AREA_VERTICAL)) {
-            target.addEffect(new MobEffectInstance(effect));
+            target.addEffect(new MobEffectInstance(effect), caster);
         }
     }
 
     private static List<LivingEntity> getNearbyEnemies(LivingEntity caster, double radius, double vertical) {
+        radius = SternSlamParametersEvent.radius(caster, radius);
         AABB area = caster.getBoundingBox().inflate(radius, vertical, radius);
         return caster.level().getEntitiesOfClass(LivingEntity.class, area, entity -> entity.isAlive() && entity != caster && !entity.isAlliedTo(caster) && !(entity instanceof Player player && player.isSpectator()));
     }

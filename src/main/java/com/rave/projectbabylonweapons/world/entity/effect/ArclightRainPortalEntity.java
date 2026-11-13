@@ -153,7 +153,7 @@ public class ArclightRainPortalEntity extends Entity {
         this.level().broadcastEntityEvent(this, (byte) 4);
         this.entityData.set(DATA_STATE, STATE_CLOSED);
         if (this.remainingShots <= 0) {
-            // Keep the controller alive briefly so clients receive the closing burst before removal.
+
             this.actionDelay = 2;
             return;
         }

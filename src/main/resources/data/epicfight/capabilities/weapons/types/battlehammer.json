@@ -16,13 +16,14 @@
   "hit_sound": "epicfight:entity.hit.blunt_hard",
   "livingmotion_modifier": {
     "common": {
-      "idle": "project_babylon_weapons:biped/living/hold_battlehammer",
-      "kneel": "project_babylon_weapons:biped/living/hold_battlehammer",
-      "fall": "project_babylon_weapons:biped/living/hold_battlehammer",
-      "sneak": "project_babylon_weapons:biped/living/hold_battlehammer",
-      "swim": "project_babylon_weapons:biped/living/hold_battlehammer",
-      "run": "project_babylon_weapons:biped/living/hold_battlehammer",
-      "walk": "project_babylon_weapons:biped/living/hold_battlehammer"
+      "idle": "project_babylon_weapons:biped/living/battlehammer_idle",
+      "kneel": "project_babylon_weapons:biped/living/battlehammer_idle",
+      "fall": "project_babylon_weapons:biped/living/battlehammer_idle",
+      "block": "epicfight:biped/skill/guard_spear",
+      "sneak": "project_babylon_weapons:biped/living/battlehammer_idle",
+      "swim": "project_babylon_weapons:biped/living/battlehammer_idle",
+      "run": "project_babylon_weapons:biped/living/battlehammer_idle",
+      "walk": "project_babylon_weapons:biped/living/battlehammer_idle"
     }
   },
   "swing_sound": "epicfight:entity.weapon.whoosh_hard",
@@ -32,10 +33,10 @@
   },
   "combos": {
     "common": [
-      "wom:biped/combat/solar_auto_1",
-      "wom:biped/combat/solar_auto_2",
-      "wom:biped/combat/solar_auto_3",
-      "wom:biped/combat/torment_auto_4",
+      "project_babylon_weapons:biped/combat/battlehammer_auto_1",
+      "project_babylon_weapons:biped/combat/battlehammer_auto_2",
+      "project_babylon_weapons:biped/combat/battlehammer_auto_3",
+      "project_babylon_weapons:biped/combat/battlehammer_auto_4",
       "project_babylon_weapons:biped/combat/battlehammer_dash",
       "wom:biped/skill/torment_berserk_airslam"
     ]

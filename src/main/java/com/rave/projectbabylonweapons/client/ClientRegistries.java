@@ -1,13 +1,14 @@
 package com.rave.projectbabylonweapons.client;
 
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
+import com.rave.projectbabylonweapons.client.renderer.NatureTurretRenderer;
+import com.rave.projectbabylonweapons.client.renderer.ThornProjectileRenderer;
 import com.rave.projectbabylonweapons.block.renderer.FrozenDebuffIceBlockTileRenderer;
 import com.rave.projectbabylonweapons.client.particle.BasicSpellProjectileTrailParticle;
 import com.rave.projectbabylonweapons.client.tooltip.EvergateNameClientTooltip;
 import com.rave.projectbabylonweapons.tooltip.EvergateNameTooltipData;
 import com.rave.projectbabylonweapons.client.renderer.ArclightMiniProjectileRenderer;
-import com.rave.projectbabylonweapons.client.renderer.ArclightSummonedWeaponRenderer;
-import com.rave.projectbabylonweapons.client.renderer.PatchedArclightSummonedWeaponRenderer;
+import net.minecraft.client.renderer.entity.NoopRenderer;
 import com.rave.projectbabylonweapons.client.renderer.ArclightRainPortalRenderer;
 import com.rave.projectbabylonweapons.client.renderer.BasicSpellProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.item.ArclightAwakeningItemRenderer;
@@ -22,6 +23,7 @@ import com.rave.projectbabylonweapons.client.renderer.FireMagicalSealRenderer;
 import com.rave.projectbabylonweapons.client.renderer.FireSpellProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.FireStormEntityRenderer;
 import com.rave.projectbabylonweapons.client.renderer.GlacierIceSpikeRenderer;
+import com.rave.projectbabylonweapons.client.renderer.IceSpikeRenderer;
 import com.rave.projectbabylonweapons.client.renderer.HolyMagicalSealRenderer;
 import com.rave.projectbabylonweapons.client.renderer.HolySpellProjectileRenderer;
 import com.rave.projectbabylonweapons.client.renderer.IceSpellProjectileRenderer;
@@ -61,25 +63,26 @@ public class ClientRegistries {
         );
     }
 
-    @SubscribeEvent
-    public static void registerPatchedRenderers(PatchedRenderersEvent.Add event) {
-        event.addPatchedEntityRenderer(PBModEntities.ARCLIGHT_SUMMONED_WEAPON.get(),
-                entityType -> new PatchedArclightSummonedWeaponRenderer(event.getContext(), entityType));
-    }
 
     @SubscribeEvent
     public static void registerAdditionalModels(ModelEvent.RegisterAdditional event) {
         event.register(ArclightMiniProjectileRenderer.MINI_MODEL);
         event.register(ArclightMiniProjectileRenderer.SPEAR_MODEL);
+        event.register(IceSpikeRenderer.SMALL_MODEL);
+        event.register(IceSpikeRenderer.MEDIUM_MODEL);
+        event.register(IceSpikeRenderer.BIG_MODEL);
     }
 
     @SubscribeEvent
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        event.registerEntityRenderer(PBModEntities.BITER.get(), NatureTurretRenderer::new);
+        event.registerEntityRenderer(PBModEntities.THORN.get(), NatureTurretRenderer::new);
+        event.registerEntityRenderer(PBModEntities.THORN_PROJECTILE.get(), ThornProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.SICKLE_PROJECTILE.get(), SickleChainRenderer::new);
         event.registerEntityRenderer(PBModEntities.ARCLIGHT_RAIN_PORTAL.get(), ArclightRainPortalRenderer::new);
         event.registerEntityRenderer(PBModEntities.ARCLIGHT_MINI_PROJECTILE.get(), ArclightMiniProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.ARCLIGHT_SPEAR_PROJECTILE.get(), ArclightMiniProjectileRenderer::new);
-        event.registerEntityRenderer(PBModEntities.ARCLIGHT_SUMMONED_WEAPON.get(), ArclightSummonedWeaponRenderer::new);
+        event.registerEntityRenderer(PBModEntities.LIGHT_BREACH.get(), NoopRenderer::new);
         event.registerEntityRenderer(PBModEntities.BASIC_SPELL_PROJECTILE.get(), BasicSpellProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.GOLDEN_SPELL_PROJECTILE.get(), GoldenSpellProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.DIAMOND_SPELL_PROJECTILE.get(), DiamondSpellProjectileRenderer::new);
@@ -95,6 +98,7 @@ public class ClientRegistries {
         event.registerEntityRenderer(PBModEntities.DRAGON_DESCEND_PROJECTILE.get(), DragonDescendProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.DRAGONSTEEL_WYRM_ECHO_PROJECTILE.get(), DragonsteelWyrmEchoProjectileRenderer::new);
         event.registerEntityRenderer(PBModEntities.GLACIER_ICE_SPIKE.get(), GlacierIceSpikeRenderer::new);
+        event.registerEntityRenderer(PBModEntities.ICE_SPIKE.get(), IceSpikeRenderer::new);
         event.registerEntityRenderer(PBModEntities.HOLY_MAGICAL_SEAL.get(), HolyMagicalSealRenderer::new);
         event.registerEntityRenderer(PBModEntities.FIRE_MAGICAL_SEAL.get(), FireMagicalSealRenderer::new);
         event.registerEntityRenderer(PBModEntities.FIRE_STORM.get(), FireStormEntityRenderer::new);

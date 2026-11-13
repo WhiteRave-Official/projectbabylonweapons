@@ -31,7 +31,7 @@ public class DiamondBattleWandItemRenderer extends PBCullingGeoItemRenderer<Diam
 
     @Override
     public RenderType getRenderType(DiamondBattleWandItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(this.getTextureLocation(animatable));
+        return PBWItemTextureRenderTypes.get(this.getTextureLocation(animatable), bufferSource);
     }
 
     @Override

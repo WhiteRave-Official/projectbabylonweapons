@@ -145,7 +145,7 @@ public class EpicFightIntegration {
                     FEAR_ANIMATION_LISTENER
             );
         } catch (Exception e) {
-            // No-op: listeners may already be removed.
+
         }
     }
 }

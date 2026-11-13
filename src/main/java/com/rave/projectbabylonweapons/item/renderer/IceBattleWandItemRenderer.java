@@ -31,7 +31,7 @@ public class IceBattleWandItemRenderer extends PBCullingGeoItemRenderer<IceBattl
 
     @Override
     public RenderType getRenderType(IceBattleWandItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(this.getTextureLocation(animatable));
+        return PBWItemTextureRenderTypes.get(this.getTextureLocation(animatable), bufferSource);
     }
 
     @Override

@@ -35,11 +35,13 @@ public class UppercutSkill extends SimpleWeaponInnateSkill {
         private final ResourceKey<Level> dimension;
         private final long applyAtGameTime;
         private final long expireAtGameTime;
+        private final UUID ownerId;
 
-        private PendingKnockup(ResourceKey<Level> dimension, long applyAtGameTime) {
+        private PendingKnockup(ResourceKey<Level> dimension, long applyAtGameTime, UUID ownerId) {
             this.dimension = dimension;
             this.applyAtGameTime = applyAtGameTime;
             this.expireAtGameTime = applyAtGameTime + PENDING_TIMEOUT_TICKS;
+            this.ownerId = ownerId;
         }
     }
 
@@ -69,18 +71,18 @@ public class UppercutSkill extends SimpleWeaponInnateSkill {
                         return;
                     }
 
-                    queueKnockupAndFear(target);
+                    queueKnockupAndFear(target, container.getExecutor().getOriginal());
                 }
         );
     }
 
-    private static void queueKnockupAndFear(LivingEntity target) {
+    private static void queueKnockupAndFear(LivingEntity target, LivingEntity owner) {
         if (target.level().isClientSide() || !(target.level() instanceof ServerLevel serverLevel)) {
             return;
         }
 
         long applyAt = serverLevel.getGameTime() + KNOCKUP_DELAY_TICKS;
-        PENDING_KNOCKUPS.put(target.getUUID(), new PendingKnockup(serverLevel.dimension(), applyAt));
+        PENDING_KNOCKUPS.put(target.getUUID(), new PendingKnockup(serverLevel.dimension(), applyAt, owner.getUUID()));
     }
 
     @SubscribeEvent
@@ -110,7 +112,9 @@ public class UppercutSkill extends SimpleWeaponInnateSkill {
 
             Entity entity = level.getEntity(targetId);
             if (entity instanceof LivingEntity target && target.isAlive()) {
-                applyKnockupAndFear(target);
+                Entity owner = server.getPlayerList().getPlayer(pending.ownerId);
+                if (owner == null) owner = level.getEntity(pending.ownerId);
+                applyKnockupAndFear(target, owner);
             }
 
             if (gameTime >= pending.applyAtGameTime || gameTime > pending.expireAtGameTime || entity == null) {
@@ -119,7 +123,7 @@ public class UppercutSkill extends SimpleWeaponInnateSkill {
         }
     }
 
-    private static void applyKnockupAndFear(LivingEntity target) {
+    private static void applyKnockupAndFear(LivingEntity target, Entity owner) {
         target.setOnGround(false);
         target.setDeltaMovement(target.getDeltaMovement().x, KNOCKUP_VELOCITY, target.getDeltaMovement().z);
         target.hurtMarked = true;
@@ -131,7 +135,7 @@ public class UppercutSkill extends SimpleWeaponInnateSkill {
                 false,
                 true,
                 true
-        ));
+        ), owner);
     }
 
     @Override

@@ -100,7 +100,7 @@ public final class IceFrostTouchPassive {
         MobEffectInstance chilledInstance = target.getEffect(chilledEffect);
         if (chilledInstance == null) {
             if (rollChance(owner, profile.chillIProcChance())) {
-                target.addEffect(new MobEffectInstance(chilledEffect, profile.chillIDurationTicks(), IceFrostTouchBalance.CHILL_I_AMPLIFIER));
+                target.addEffect(new MobEffectInstance(chilledEffect, profile.chillIDurationTicks(), IceFrostTouchBalance.CHILL_I_AMPLIFIER), owner);
             }
             return;
         }
@@ -108,14 +108,14 @@ public final class IceFrostTouchPassive {
         int amplifier = chilledInstance.getAmplifier();
         if (amplifier <= IceFrostTouchBalance.CHILL_I_AMPLIFIER) {
             if (rollChance(owner, profile.chillIIProcChance())) {
-                target.addEffect(new MobEffectInstance(chilledEffect, profile.chillIIDurationTicks(), IceFrostTouchBalance.CHILL_II_AMPLIFIER));
+                target.addEffect(new MobEffectInstance(chilledEffect, profile.chillIIDurationTicks(), IceFrostTouchBalance.CHILL_II_AMPLIFIER), owner);
             }
             return;
         }
 
         if (amplifier == IceFrostTouchBalance.CHILL_II_AMPLIFIER) {
             if (rollChance(owner, profile.chillIIIProcChance())) {
-                target.addEffect(new MobEffectInstance(chilledEffect, profile.chillIIIDurationTicks(), IceFrostTouchBalance.CHILL_III_AMPLIFIER));
+                target.addEffect(new MobEffectInstance(chilledEffect, profile.chillIIIDurationTicks(), IceFrostTouchBalance.CHILL_III_AMPLIFIER), owner);
             }
             return;
         }
@@ -127,7 +127,7 @@ public final class IceFrostTouchPassive {
         target.removeEffect(chilledEffect);
         AABB area = target.getBoundingBox().inflate(profile.freezeRadiusBlocks(), 1.0D, profile.freezeRadiusBlocks());
         for (LivingEntity victim : owner.level().getEntitiesOfClass(LivingEntity.class, area, entity -> entity.isAlive() && entity != owner)) {
-            victim.addEffect(new MobEffectInstance(PBMEffects.FROZEN.get(), profile.frozenDurationTicks()));
+            victim.addEffect(new MobEffectInstance(PBMEffects.FROZEN.get(), profile.frozenDurationTicks()), owner);
         }
     }
 

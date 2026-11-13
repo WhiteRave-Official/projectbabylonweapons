@@ -2,6 +2,7 @@ package com.rave.projectbabylonweapons.skill.weapon_innate;
 
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
 import com.rave.projectbabylonweapons.gameasset.PBAnimations;
+import com.rave.projectbabylonweapons.event.TectonicWaveParametersEvent;
 import com.rave.projectbabylonmaterials.init.PBMEffects;
 import com.rave.projectbabylonweapons.init.PBWSounds;
 import com.rave.projectbabylonweapons.world.entity.effect.TectonicFallingBlockEntity;
@@ -69,15 +70,24 @@ public class TectonicSkill extends SimpleWeaponInnateSkill {
         private long nextRingGameTime;
         private final Set<BlockPos> spawnedPositions = new HashSet<>();
         private final Set<UUID> hitTargets = new HashSet<>();
+        private final float damageMultiplier;
+        private final int rangePerTarget;
+        private final int maxExtensions;
+        private int extensions;
 
-        private WaveState(ServerLevel level, Vec3 origin, Vec3 forward, long triggerGameTime) {
+        private WaveState(ServerLevel level, Vec3 origin, Vec3 forward, long triggerGameTime, TectonicWaveParametersEvent parameters) {
             this.level = level;
             this.origin = origin;
             this.forward = forward;
             this.right = new Vec3(-forward.z, 0.0D, forward.x).normalize();
             this.triggerGameTime = triggerGameTime;
             this.nextRingGameTime = triggerGameTime;
+            this.damageMultiplier = parameters.damageMultiplier();
+            this.rangePerTarget = parameters.rangePerTarget();
+            this.maxExtensions = parameters.maxExtensions();
         }
+
+        private int range() { return (int) WAVE_RANGE + extensions * rangePerTarget; }
     }
 
     public TectonicSkill(SimpleWeaponInnateSkill.Builder builder) {
@@ -143,7 +153,7 @@ public class TectonicSkill extends SimpleWeaponInnateSkill {
             waveState.currentRing++;
             waveState.nextRingGameTime = gameTime + RING_DELAY_TICKS;
 
-            if (waveState.currentRing > (int) WAVE_RANGE) {
+            if (waveState.currentRing > waveState.range()) {
                 iterator.remove();
             }
         }
@@ -182,14 +192,14 @@ public class TectonicSkill extends SimpleWeaponInnateSkill {
         }
 
         long triggerTime = serverLevel.getGameTime() + WAVE_START_DELAY_TICKS;
-        ACTIVE_WAVES.put(caster.getUUID(), new WaveState(serverLevel, origin, flatForward, triggerTime));
+        ACTIVE_WAVES.put(caster.getUUID(), new WaveState(serverLevel, origin, flatForward, triggerTime, TectonicWaveParametersEvent.resolve(caster)));
         serverLevel.playSound(null, origin.x, origin.y, origin.z, PBWSounds.RUMBLING_GROUND.get(), SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
     private static void processWaveRing(LivingEntity caster, ServerLevel serverLevel, WaveState waveState, int distanceRing) {
         DamageSource waveDamageSource = createWaveDamageSource(caster);
         float baseAttackDamage = (float) caster.getAttributeValue(Attributes.ATTACK_DAMAGE);
-        float waveDamage = Math.max(1.0F, baseAttackDamage * WAVE_DAMAGE_MULTIPLIER);
+        float waveDamage = Math.max(1.0F, baseAttackDamage * WAVE_DAMAGE_MULTIPLIER) * waveState.damageMultiplier;
         double minDistance = Math.max(0.0D, distanceRing - RING_THICKNESS);
         double maxDistance = distanceRing + RING_THICKNESS;
 
@@ -215,9 +225,10 @@ public class TectonicSkill extends SimpleWeaponInnateSkill {
             }
 
             int originalInvulnerableTime = target.invulnerableTime;
+            boolean damaged;
             target.invulnerableTime = 0;
             try {
-                target.hurt(waveDamageSource, waveDamage);
+                damaged = target.hurt(waveDamageSource, waveDamage);
             } finally {
                 target.invulnerableTime = originalInvulnerableTime;
             }
@@ -230,8 +241,9 @@ public class TectonicSkill extends SimpleWeaponInnateSkill {
 
             target.setDeltaMovement(push.x, KNOCKUP_VELOCITY, push.z);
             target.hurtMarked = true;
-            target.addEffect(new MobEffectInstance(PBMEffects.CONCUSSED.get(), CONCUSSED_DURATION_TICKS, 0, false, true, true));
+            target.addEffect(new MobEffectInstance(PBMEffects.CONCUSSED.get(), CONCUSSED_DURATION_TICKS, 0, false, true, true), caster);
             waveState.hitTargets.add(target.getUUID());
+            if (damaged && waveState.extensions < waveState.maxExtensions) waveState.extensions++;
         }
 
         spawnWaveBlockRing(serverLevel, waveState, distanceRing);
@@ -245,7 +257,7 @@ public class TectonicSkill extends SimpleWeaponInnateSkill {
     }
 
     private static boolean isInsideWaveCone(double along, Vec3 horizontalToTarget, WaveState waveState) {
-        if (along <= 0.05D || along > WAVE_RANGE) {
+        if (along <= 0.05D || along > waveState.range()) {
             return false;
         }
 

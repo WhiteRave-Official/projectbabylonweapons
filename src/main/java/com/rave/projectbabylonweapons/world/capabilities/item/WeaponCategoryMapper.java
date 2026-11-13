@@ -1,5 +1,7 @@
 package com.rave.projectbabylonweapons.world.capabilities.item;
 
+import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
+
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +20,7 @@ public class WeaponCategoryMapper {
             Method applyMethod = mappedCategory.getClass().getMethod("apply", Item.class);
             return (CapabilityItem.Builder) applyMethod.invoke(mappedCategory, item);
         } catch (Exception e) {
-            e.printStackTrace();
+            ProjectBabylonWeapons.LOGGER.debug("Unable to resolve weapon category {}", mappedCategory, e);
             return null;
         }
     }

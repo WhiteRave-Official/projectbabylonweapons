@@ -20,7 +20,7 @@ public class CreativeTabRegistry {
                     .title(Component.translatable("creativetab.projectbabylonweapons.weapons"))
                     .displayItems((params, output) -> {
 
-                        //IRON
+
                         output.accept(PBModItems.IRON_CLAWS.get());
                         output.accept(PBModItems.IRON_DAGGER.get());
                         output.accept(PBModItems.IRON_SICKLE.get());
@@ -42,7 +42,7 @@ public class CreativeTabRegistry {
                         output.accept(PBModItems.IRON_SMALL_SHIELD.get());
                         output.accept(PBModItems.IRON_BASTION_SHIELD.get());
 
-                        //GOLDEN
+
                         output.accept(PBModItems.GOLDEN_CLAWS.get());
                         output.accept(PBModItems.GOLDEN_DAGGER.get());
                         output.accept(PBModItems.GOLDEN_SICKLE.get());
@@ -65,7 +65,7 @@ public class CreativeTabRegistry {
                         output.accept(PBModItems.GOLDEN_SMALL_SHIELD.get());
                         output.accept(PBModItems.GOLDEN_BASTION_SHIELD.get());
 
-                        //DIAMOND
+
                         output.accept(PBModItems.DIAMOND_CLAWS.get());
                         output.accept(PBModItems.DIAMOND_DAGGER.get());
                         output.accept(PBModItems.DIAMOND_SICKLE.get());
@@ -89,7 +89,7 @@ public class CreativeTabRegistry {
                         output.accept(PBModItems.DIAMOND_SMALL_SHIELD.get());
 
 
-                        //NETHERITE
+
                         output.accept(PBModItems.NETHERITE_CLAWS.get());
                         output.accept(PBModItems.NETHERITE_DAGGER.get());
                         output.accept(PBModItems.NETHERITE_SICKLE.get());
@@ -112,7 +112,7 @@ public class CreativeTabRegistry {
                         output.accept(PBModItems.NETHERITE_SMALL_SHIELD.get());
                         output.accept(PBModItems.NETHERITE_BASTION_SHIELD.get());
 
-                        //ICE
+
                         output.accept(PBModItems.ICE_CLAWS.get());
                         output.accept(PBModItems.ICE_DAGGER.get());
                         output.accept(PBModItems.ICE_SICKLE.get());
@@ -138,7 +138,7 @@ public class CreativeTabRegistry {
                         output.accept(PBModItems.ICE_HOE.get());
 
 
-                        //DRAGONSTEEL
+
                         output.accept(PBModItems.DRAGONSTEEL_CLAWS.get());
                         output.accept(PBModItems.DRAGONSTEEL_DAGGER.get());
                         output.accept(PBModItems.DRAGONSTEEL_SICKLE.get());
@@ -159,7 +159,7 @@ public class CreativeTabRegistry {
                         output.accept(PBModItems.DRAGONSTEEL_BASTION_SHIELD.get());
 
 
-                        //ETHEREAL
+
                         output.accept(PBModItems.ETHEREAL_CLAWS.get());
                         output.accept(PBModItems.ETHEREAL_DAGGER.get());
                         output.accept(PBModItems.ETHEREAL_SICKLE.get());
@@ -179,13 +179,13 @@ public class CreativeTabRegistry {
                         output.accept(PBModItems.ETHEREAL_BASTION_SHIELD.get());
 
 
-                        //DEMON
+
                         output.accept(PBModItems.DEMON_CLAWS.get());
                         output.accept(PBModItems.DEMON_BATTLEAXE.get());
                         output.accept(PBModItems.DEMON_TACHI.get());
 
 
-                        //SPECIAL
+
                         output.accept(PBModItems.ARCLIGHT_SWORD.get());
 
 

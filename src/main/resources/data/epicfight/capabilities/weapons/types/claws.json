@@ -14,13 +14,14 @@
   },
   "livingmotion_modifier": {
     "one_hand": {
-      "idle": "wom:biped/living/enderblaster_onehand_idle",
-      "walk": "wom:biped/living/enderblaster_twohand_walk",
+      "idle": "epicfight_dd:biped/living/hookclaws_idle",
+      "walk": "epicfight_dd:biped/living/hookclaws_walk",
       "run": "epicfight:biped/living/run"
     },
     "ochs": {
-      "idle": "wom:biped/living/enderblaster_twohand_idle",
-      "walk": "wom:biped/living/enderblaster_twohand_walk",
+      "idle": "epicfight_dd:biped/living/hookclaws_onehand_idle",
+      "walk": "epicfight_dd:biped/living/hookclaws_walk",
+      "block": "epicfight:biped/skill/guard_dualsword",
       "run": "epicfight:biped/living/run"
     }
   },
@@ -49,20 +50,16 @@
   },
   "combos": {
     "one_hand": [
-      "wom:biped/combat/enderblaster_onehand_auto_1",
-      "wom:biped/combat/enderblaster_onehand_auto_2",
-      "wom:biped/combat/enderblaster_onehand_auto_3",
-      "wom:biped/combat/enderblaster_onehand_auto_4",
+      "epicfight_dd:biped/combat/hookclaws_onehand_auto1",
+      "epicfight_dd:biped/combat/hookclaws_onehand_auto2",
       "wom:biped/combat/enderblaster_twohand_dash",
       "wom:biped/combat/enderblaster_onehand_jumpkick"
     ],
     "ochs": [
-      "wom:biped/combat/enderblaster_twohand_auto_1",
-      "wom:biped/combat/enderblaster_twohand_auto_2",
-      "wom:biped/combat/enderblaster_twohand_auto_3",
-      "wom:biped/skill/kick_1",
-      "wom:biped/skill/kick_2",
-      "wom:biped/combat/enderblaster_twohand_auto_4",
+      "epicfight_dd:biped/combat/hookclaws_auto1",
+      "epicfight_dd:biped/combat/hookclaws_auto2",
+      "epicfight_dd:biped/combat/hookclaws_auto3",
+      "epicfight_dd:biped/combat/hookclaws_auto4",
       "wom:biped/combat/enderblaster_onehand_dash",
       "wom:biped/combat/enderblaster_twohand_tishnaw"
     ]
@@ -70,7 +67,7 @@
   "category": "sword",
   "innate_skills": {
     "one_hand": "project_babylon_weapons:uppercut",
-    "ochs": "project_babylon_weapons:beast_roar"
+    "ochs": "epicfight_dd:beast_eye"
   },
   "usable_in_offhand": true
 }

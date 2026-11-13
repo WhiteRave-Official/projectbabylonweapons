@@ -5,7 +5,8 @@ import com.rave.projectbabylonweapons.client.input.PBKeyMappings;
 import com.rave.projectbabylonweapons.network.PBNetworkManager;
 import com.rave.projectbabylonweapons.network.CPPullOwnerToTarget;
 import com.rave.projectbabylonweapons.network.CPPullTargetToOwner;
-import com.rave.projectbabylonweapons.skill.weapon_innate.SickleThrowSkill;
+import com.rave.projectbabylonweapons.client.input.SickleInputState;
+import com.rave.projectbabylonweapons.world.entity.projectile.SickleProjectileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -29,19 +30,17 @@ public class ClientSetup {
         if (event.phase != TickEvent.Phase.END) return;
 
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null) return;
-
-        boolean hasProjectile = SickleThrowSkill.hasActiveProjectile(mc.player.getUUID());
-        if (!hasProjectile) return;
-
-
-        while (PBKeyMappings.PULL_OWNER_TO_TARGET.consumeClick()) {
-            PBNetworkManager.sendToServer(new CPPullOwnerToTarget());
-        }
-
-
-        while (PBKeyMappings.PULL_TARGET_TO_OWNER.consumeClick()) {
-            PBNetworkManager.sendToServer(new CPPullTargetToOwner());
-        }
+        boolean pullOwner = false;
+        boolean pullTarget = false;
+        while (PBKeyMappings.PULL_OWNER_TO_TARGET.consumeClick()) pullOwner = true;
+        while (PBKeyMappings.PULL_TARGET_TO_OWNER.consumeClick()) pullTarget = true;
+        int id = SickleInputState.projectile();
+        boolean ready = mc.player != null && mc.level != null && mc.screen == null
+                && mc.level.getEntity(id) instanceof SickleProjectileEntity projectile
+                && !projectile.isRemoved() && projectile.isTethered();
+        boolean released = !PBKeyMappings.PULL_OWNER_TO_TARGET.isDown() && !PBKeyMappings.PULL_TARGET_TO_OWNER.isDown();
+        if (!SickleInputState.GATE.accept(id, ready, released, pullOwner || pullTarget)) return;
+        if (pullOwner) PBNetworkManager.sendToServer(new CPPullOwnerToTarget(id));
+        else PBNetworkManager.sendToServer(new CPPullTargetToOwner(id));
     }
 }

@@ -1,6 +1,7 @@
 package com.rave.projectbabylonweapons.skill.weapon_innate;
 
 import com.rave.projectbabylonmaterials.init.PBMEffects;
+import com.rave.projectbabylonweapons.event.SternSlamParametersEvent;
 import com.rave.projectbabylonweapons.gameasset.PBAnimations;
 import com.rave.projectbabylonweapons.passive.bastion.BastionPassiveHandler;
 import net.minecraft.client.KeyMapping;
@@ -111,14 +112,14 @@ public class SternSlamSkill extends WeaponInnateSkill {
             return;
         }
 
-        MobEffectInstance buff = new MobEffectInstance(PBMEffects.PHYSICAL_RESISTANCE.get(), BUFF_DURATION_TICKS, 0, false, true, true);
+        MobEffectInstance buff = new MobEffectInstance(PBMEffects.PHYSICAL_RESISTANCE.get(), SternSlamParametersEvent.duration(caster, BUFF_DURATION_TICKS), 0, false, true, true);
         caster.addEffect(new MobEffectInstance(buff));
 
         if (!(caster instanceof ServerPlayer serverPlayer)) {
             return;
         }
 
-        AABB area = serverPlayer.getBoundingBox().inflate(BUFF_RADIUS, BUFF_VERTICAL, BUFF_RADIUS);
+        AABB area = serverPlayer.getBoundingBox().inflate(SternSlamParametersEvent.radius(caster, BUFF_RADIUS), BUFF_VERTICAL, BUFF_RADIUS);
         List<ServerPlayer> nearbyPlayers = serverLevel.getEntitiesOfClass(ServerPlayer.class, area,
                 target -> target.isAlive() && !target.isSpectator() && target != serverPlayer);
 

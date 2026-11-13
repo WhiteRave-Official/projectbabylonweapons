@@ -1,6 +1,8 @@
 package com.rave.projectbabylonweapons.skill.weapon_innate;
 
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
+import com.rave.projectbabylonweapons.event.SickleThrowParametersEvent;
+import net.minecraftforge.common.MinecraftForge;
 import com.rave.projectbabylonweapons.gameasset.PBAnimations;
 import com.rave.projectbabylonweapons.handler.FearHandler;
 import com.rave.projectbabylonweapons.network.PBNetworkManager;
@@ -49,7 +51,7 @@ public class SickleThrowSkill extends WeaponInnateSkill implements ChargeableSki
     private static final Map<UUID, LockedItem> LOCKED_ITEMS = new ConcurrentHashMap<>();
     private static final Map<UUID, Integer> ACTIVE_PROJECTILES = new ConcurrentHashMap<>();
 
-    // Charging flag used by camera offset logic
+
     private static final Map<UUID, Boolean> CHARGING_PLAYERS = new ConcurrentHashMap<>();
 
     private static final class LockedItem {
@@ -79,22 +81,22 @@ public class SickleThrowSkill extends WeaponInnateSkill implements ChargeableSki
 
     @Override
     public int getAllowedMaxChargingTicks() {
-        return 40; // Maximum hold duration
+        return 40;
     }
 
     @Override
     public int getMaxChargingTicks() {
-        return 40; // 20 ticks (~1s) for max throw distance (10 blocks)
+        return 40;
     }
 
     @Override
     public int getMinChargingTicks() {
-        return 6; // 6 ticks (~0.3s) for min throw distance (6 blocks)
+        return 6;
     }
 
     @Override
     public void startHolding(SkillContainer container) {
-        // Mark player as charging for camera offset handling
+
         UUID playerUUID = container.getExecutor().getOriginal().getUUID();
         CHARGING_PLAYERS.put(playerUUID, true);
         applyChargingSlow(container);
@@ -110,7 +112,7 @@ public class SickleThrowSkill extends WeaponInnateSkill implements ChargeableSki
 
     @Override
     public void resetHolding(SkillContainer container) {
-        // Clear charging flag
+
         UUID playerUUID = container.getExecutor().getOriginal().getUUID();
         CHARGING_PLAYERS.remove(playerUUID);
         removeChargingSlow(container);
@@ -133,7 +135,7 @@ public class SickleThrowSkill extends WeaponInnateSkill implements ChargeableSki
         ServerPlayerPatch playerPatch = container.getServerExecutor();
         ServerPlayer player = (ServerPlayer) playerPatch.getOriginal();
 
-        // Standard sickle throw
+
         ItemStack held = player.getItemInHand(InteractionHand.MAIN_HAND);
         if (held.isEmpty()) {
             LockedItem locked = LOCKED_ITEMS.get(player.getUUID());
@@ -144,21 +146,22 @@ public class SickleThrowSkill extends WeaponInnateSkill implements ChargeableSki
             }
         }
 
-        lockMainHand(player);
-
-
-        SickleProjectileEntity existing = getActiveProjectile(player);
-        if (existing != null) {
-            existing.discard();
+        SickleThrowParametersEvent parameters = parameters(container);
+        if (SickleThrowChains.count(player) >= parameters.maxProjectiles()) return;
+        if (parameters.maxProjectiles() > 1) {
+            releaseLock(player);
+        } else {
+            lockMainHand(player);
         }
 
-        // Calculate throw distance from charge amount (6-10 blocks)
         float chargeAmount = playerPatch.getAccumulatedChargeAmount();
         float chargeRatio = Math.min(chargeAmount / (float)getMaxChargingTicks(), 1.0f);
-        double throwDistance = MIN_CHAIN_DISTANCE + (MAX_CHAIN_DISTANCE - MIN_CHAIN_DISTANCE) * chargeRatio;
+        double throwDistance = MIN_CHAIN_DISTANCE + (parameters.maxDistance() - MIN_CHAIN_DISTANCE) * chargeRatio;
 
         SickleProjectileEntity projectile = new SickleProjectileEntity(player.level(), player);
         projectile.setItemStack(held);
+        projectile.setProjectileDamage(parameters.damage());
+        projectile.setChainDistance(parameters.maxDistance());
         projectile.setMaxThrowDistance(throwDistance);
 
         Vec3 eyePos = player.getEyePosition(1.0f);
@@ -168,14 +171,29 @@ public class SickleThrowSkill extends WeaponInnateSkill implements ChargeableSki
         float yaw = player.getViewYRot(1.0f);
         projectile.shootFromRotation(player, pitch, yaw, 0.0f, 1.2f, 1.0f);
 
-        player.level().addFreshEntity(projectile);
-        setActiveProjectile(player, projectile.getId());
+        if (!player.level().addFreshEntity(projectile)) {
+            if (SickleThrowChains.count(player) == 0) releaseLock(player);
+            return;
+        }
+        SickleThrowChains.add(player, projectile);
         playerPatch.playAnimationSynchronized(PBAnimations.SICKLE_THROW, 0.0f);
     }
 
     @Override
     public void holdTick(SkillContainer container) {
         ChargeableSkill.super.holdTick(container);
+    }
+
+    private SickleThrowParametersEvent parameters(SkillContainer container) {
+        var event = new SickleThrowParametersEvent(container, MAX_CHAIN_DISTANCE, getMaxStack());
+        MinecraftForge.EVENT_BUS.post(event);
+        return event;
+    }
+
+    @Override
+    public boolean canExecute(SkillContainer container) {
+        return super.canExecute(container) && (!(container.getExecutor().getOriginal() instanceof ServerPlayer player)
+                || SickleThrowChains.count(player) < parameters(container).maxProjectiles());
     }
 
     private static void applyChargingSlow(SkillContainer container) {
@@ -262,29 +280,17 @@ public class SickleThrowSkill extends WeaponInnateSkill implements ChargeableSki
         }
     }
 
-    public static void setClientActiveProjectile(UUID playerId, int entityId) {
-        if (entityId < 0) {
-            ACTIVE_PROJECTILES.remove(playerId);
-        } else {
-            ACTIVE_PROJECTILES.put(playerId, entityId);
-        }
-    }
-
     public static void setTetherMovementLock(UUID playerUUID, boolean locked) {
         FearHandler.setSickleMovementLock(playerUUID, locked, "sickle_tether");
     }
 
-    // Public method for camera handler
+
     public static boolean isCharging(UUID playerUUID) {
         return CHARGING_PLAYERS.getOrDefault(playerUUID, false);
     }
 
-    // Public method for ClientSetup to check active projectile
-    public static boolean hasActiveProjectile(UUID playerUUID) {
-        return ACTIVE_PROJECTILES.containsKey(playerUUID);
-    }
 
-    // Public method for pull packet handlers
+
     public static SickleProjectileEntity getActiveProjectilePublic(ServerPlayer player) {
         return getActiveProjectile(player);
     }
@@ -298,15 +304,7 @@ public class SickleThrowSkill extends WeaponInnateSkill implements ChargeableSki
     }
 
     private static SickleProjectileEntity getActiveProjectile(ServerPlayer player) {
-        Integer id = ACTIVE_PROJECTILES.get(player.getUUID());
-        if (id == null) {
-            return null;
-        }
-        if (player.level().getEntity(id) instanceof SickleProjectileEntity projectile) {
-            return projectile;
-        }
-        ACTIVE_PROJECTILES.remove(player.getUUID());
-        return null;
+        return SickleThrowChains.anchor(player);
     }
 
     @SubscribeEvent
@@ -327,12 +325,7 @@ public class SickleThrowSkill extends WeaponInnateSkill implements ChargeableSki
             return;
         }
         CHARGING_PLAYERS.remove(serverPlayer.getUUID());
-        SickleProjectileEntity projectile = getActiveProjectile(serverPlayer);
-        if (projectile != null) {
-            projectile.discard();
-        } else {
-            clearActiveProjectile(serverPlayer);
-        }
+        SickleThrowChains.discardAll(serverPlayer);
     }
 
     @SubscribeEvent
@@ -341,11 +334,21 @@ public class SickleThrowSkill extends WeaponInnateSkill implements ChargeableSki
             return;
         }
         CHARGING_PLAYERS.remove(serverPlayer.getUUID());
-        SickleProjectileEntity projectile = getActiveProjectile(serverPlayer);
-        if (projectile != null) {
-            projectile.discard();
-        } else {
-            clearActiveProjectile(serverPlayer);
+        SickleThrowChains.discardAll(serverPlayer);
+    }
+    @SubscribeEvent
+    public static void changedDimension(PlayerEvent.PlayerChangedDimensionEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            CHARGING_PLAYERS.remove(player.getUUID());
+            SickleThrowChains.discardAll(player);
         }
+    }
+
+    @SubscribeEvent
+    public static void stopped(net.minecraftforge.event.server.ServerStoppedEvent event) {
+        SickleThrowChains.reset();
+        ACTIVE_PROJECTILES.clear();
+        CHARGING_PLAYERS.clear();
+        LOCKED_ITEMS.clear();
     }
 }

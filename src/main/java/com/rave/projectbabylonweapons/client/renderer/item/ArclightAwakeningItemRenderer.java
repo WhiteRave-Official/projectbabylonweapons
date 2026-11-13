@@ -36,6 +36,10 @@ public final class ArclightAwakeningItemRenderer extends RenderItemBase {
     private static final Map<BakedModel, ModelPivot> PIVOT_CACHE =
             Collections.synchronizedMap(new IdentityHashMap<>());
 
+    public static void clearCache() {
+        PIVOT_CACHE.clear();
+    }
+
     public ArclightAwakeningItemRenderer(JsonElement jsonElement) {
         super(jsonElement);
     }

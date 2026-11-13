@@ -6,13 +6,13 @@ import net.minecraft.world.item.Tiers;
 
 public class IronSickleItem extends SwordItem {
 
-    // Итог: урон 4.0, скорость 3.4, прочность 3460.
+
     public static final int DURABILITY = 720;
-    public static final int ATTACK_DAMAGE_MOD = 3;     // +3.0 → 1.0 базовое = 4.0
-    public static final float ATTACK_SPEED_MOD = -3.0F; // 4.0 - 0.6 = 3.4
+    public static final int ATTACK_DAMAGE_MOD = 3;
+    public static final float ATTACK_SPEED_MOD = -3.0F;
 
     public IronSickleItem(Properties props) {
-        // ВАЖНО: без stacksTo(...). Только durability(...)
+
         super(Tiers.WOOD, ATTACK_DAMAGE_MOD, ATTACK_SPEED_MOD, props.durability(DURABILITY));
     }
 }

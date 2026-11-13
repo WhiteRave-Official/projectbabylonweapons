@@ -1,6 +1,10 @@
 package com.rave.projectbabylonweapons.skill.weapon_innate;
 
 import com.rave.projectbabylonweapons.gameasset.PBAnimations;
+import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
+import com.rave.projectbabylonweapons.event.HarvestHealingEvent;
+import com.rave.projectbabylonweapons.event.HarvestHealedEvent;
+import net.minecraftforge.common.MinecraftForge;
 import com.rave.projectbabylonmaterials.init.PBMEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
@@ -35,6 +39,7 @@ public class TheHarvestSkill extends SimpleWeaponInnateSkill {
                     if (!eventAnim.toString().equals(PBAnimations.THE_HARVEST.registryName().toString())) {
                         return;
                     }
+                    if (container.getExecutor().getOriginal().level().isClientSide()) return;
 
                     LivingEntity target = event.getTarget();
                     if (target == null || !target.isAlive()) {
@@ -42,9 +47,19 @@ public class TheHarvestSkill extends SimpleWeaponInnateSkill {
                     }
 
 
-                    float healAmount = event.getAttackDamage() * 0.18f;
+                    var healing = new HarvestHealingEvent(container.getExecutor().getOriginal(), .18F);
+                    MinecraftForge.EVENT_BUS.post(healing);
+                    float healAmount = event.getAttackDamage() * healing.ratio();
                     if (healAmount > 0) {
-                        container.getExecutor().getOriginal().heal(healAmount);
+                        LivingEntity owner = container.getExecutor().getOriginal();
+                        float before = owner.getHealth();
+                        owner.heal(healAmount);
+                        float received = Math.max(0, owner.getHealth() - before);
+                        ProjectBabylonWeapons.LOGGER.debug("HARVEST_HEAL owner={} target={} damage={} ratio={} requested={} before={} after={} received={}",
+                                owner.getUUID(), target.getUUID(), event.getAttackDamage(), healing.ratio(), healAmount, before, owner.getHealth(), received);
+                        if (!owner.level().isClientSide() && received > 0) {
+                            MinecraftForge.EVENT_BUS.post(new HarvestHealedEvent(owner, received));
+                        }
                     }
 
 
@@ -55,7 +70,7 @@ public class TheHarvestSkill extends SimpleWeaponInnateSkill {
                             false,
                             true,
                             true
-                    ));
+                    ), container.getExecutor().getOriginal());
                 }
         );
     }

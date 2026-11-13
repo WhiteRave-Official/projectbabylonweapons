@@ -7,6 +7,9 @@ import com.rave.projectbabylonmaterials.init.PBMEffects;
 import com.rave.projectbabylonweapons.init.PBModEntities;
 import com.rave.projectbabylonweapons.init.PBWSounds;
 import com.rave.projectbabylonweapons.skill.weapon_innate.SickleThrowSkill;
+import com.rave.projectbabylonweapons.skill.weapon_innate.SickleThrowChains;
+import com.rave.projectbabylonweapons.event.SicklePullStartedEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -59,7 +62,9 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
     private int tetherTicksRemaining;
     private boolean returning;
     private int returningTicks;
-    private double maxThrowDistance = SickleThrowSkill.MAX_CHAIN_DISTANCE; // Default max throw distance
+    private double maxThrowDistance = SickleThrowSkill.MAX_CHAIN_DISTANCE;
+    private double chainDistance = SickleThrowSkill.MAX_CHAIN_DISTANCE;
+    private float projectileDamage = SickleThrowSkill.PROJECTILE_DAMAGE;
 
     public SickleProjectileEntity(EntityType<? extends SickleProjectileEntity> type, Level level) {
         super(type, level);
@@ -68,7 +73,7 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
     public SickleProjectileEntity(Level level, LivingEntity owner) {
         this(PBModEntities.SICKLE_PROJECTILE.get(), level);
         this.setOwner(owner);
-        // Position is set via shootFromRotation in skill logic
+
     }
 
     public SickleProjectileEntity(PlayMessages.SpawnEntity packet, Level level) {
@@ -131,11 +136,19 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
     }
 
     public void setMaxThrowDistance(double distance) {
-        this.maxThrowDistance = Math.min(distance, SickleThrowSkill.MAX_CHAIN_DISTANCE);
+        this.maxThrowDistance = Math.max(1, Math.min(distance, this.chainDistance));
+    }
+
+    public void setChainDistance(double distance) {
+        if (Double.isFinite(distance)) this.chainDistance = Math.max(1, distance);
     }
 
     public double getMaxThrowDistance() {
         return this.maxThrowDistance;
+    }
+
+    public void setProjectileDamage(float damage) {
+        if (Float.isFinite(damage)) this.projectileDamage = Math.max(0, damage);
     }
 
     public boolean isTethered() {
@@ -166,7 +179,7 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
             this.entityData.set(DATA_OWNER_ID, owner.getId());
         }
 
-        // Tether mode: sickle is attached to target
+
         if (this.isTethered()) {
             if (this.tetherTarget == null || !this.tetherTarget.isAlive()) {
                 endTether();
@@ -179,24 +192,24 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
                 return;
             }
 
-            // Keep sickle on target
+
             Vec3 targetPos = this.tetherTarget.position().add(0.0, this.tetherTarget.getBbHeight() * 0.6, 0.0);
             this.setPos(targetPos.x, targetPos.y, targetPos.z);
             this.setDeltaMovement(Vec3.ZERO);
 
-            // Limit chain distance
+
             Vec3 ownerPos = owner.position();
             Vec3 toTarget = targetPos.subtract(ownerPos);
             double tetherDistance = toTarget.length();
-            if (tetherDistance > SickleThrowSkill.MAX_TETHER_DISTANCE) {
+            if (tetherDistance > this.chainDistance + 1) {
                 endTether();
                 return;
             }
-            if (tetherDistance > SickleThrowSkill.MAX_CHAIN_DISTANCE) {
-                Vec3 clamped = ownerPos.add(toTarget.normalize().scale(SickleThrowSkill.MAX_CHAIN_DISTANCE));
+            if (tetherDistance > this.chainDistance) {
+                Vec3 clamped = ownerPos.add(toTarget.normalize().scale(this.chainDistance));
                 Vec3 pull = clamped.subtract(this.tetherTarget.position());
 
-                // Horizontal pull
+
                 Vec3 pullXZ = new Vec3(pull.x, 0.0, pull.z);
                 double pullLength = pullXZ.length();
                 if (pullLength > 0.001) {
@@ -205,7 +218,7 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
                     this.tetherTarget.setDeltaMovement(current.x + pullVelocity.x, current.y, current.z + pullVelocity.z);
                 }
 
-                // Vertical correction: soft pull on Y axis
+
                 double pullY = pull.y;
                 if (Math.abs(pullY) > 0.001) {
                     Vec3 current = this.tetherTarget.getDeltaMovement();
@@ -216,7 +229,7 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
             return;
         }
 
-        // Return mode: sickle flies back to owner
+
         if (this.returning) {
             this.returningTicks++;
             Vec3 ownerEye = owner.getEyePosition(1.0f);
@@ -234,7 +247,7 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
             return;
         }
 
-        // Flight mode: check max throw distance
+
         double distance = this.distanceTo(owner);
         if (distance >= this.maxThrowDistance) {
             startReturning();
@@ -254,7 +267,7 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
 
         LivingEntity owner = this.getOwner() instanceof LivingEntity living ? living : null;
 
-        // Deal damage
+
         DamageSource baseSource = this.damageSources().thrown(this, owner);
         if (target.isDamageSourceBlocked(baseSource)) {
             this.level().playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.SHIELD_BLOCK, SoundSource.PLAYERS, 1.0F, 0.9F + this.random.nextFloat() * 0.2F);
@@ -265,21 +278,22 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
         EpicFightDamageSource epicSource = EpicFightDamageSources.fromVanillaDamageSource(baseSource)
                 .addRuntimeTag(EpicFightDamageTypeTags.WEAPON_INNATE)
                 .setUsedItem(this.getItem());
-        target.hurt(epicSource, SickleThrowSkill.PROJECTILE_DAMAGE);
+        target.hurt(epicSource, this.projectileDamage);
 
-        // Apply effects
-        target.addEffect(new MobEffectInstance(PBMEffects.MARKED.get(), SickleThrowSkill.TETHER_DURATION_TICKS, 0, false, true, true));
-        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, SickleThrowSkill.TETHER_DURATION_TICKS, 0, false, true, true)); // Slow effect during tether
-        target.addEffect(new MobEffectInstance(PBMEffects.CHAINED.get(), SickleThrowSkill.TETHER_DURATION_TICKS, 0, false, true, true));
 
-        // Activate tether
+        target.addEffect(new MobEffectInstance(PBMEffects.MARKED.get(), SickleThrowSkill.TETHER_DURATION_TICKS, 0, false, true, true), owner);
+        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, SickleThrowSkill.TETHER_DURATION_TICKS, 0, false, true, true), owner);
+        target.addEffect(new MobEffectInstance(PBMEffects.CHAINED.get(), SickleThrowSkill.TETHER_DURATION_TICKS, 0, false, true, true), owner);
+
+
         this.tetherTarget = target;
         this.tetherTicksRemaining = SickleThrowSkill.TETHER_DURATION_TICKS;
         this.entityData.set(DATA_TETHERED, true);
+        SickleThrowChains.bind(this, target);
         this.setDeltaMovement(Vec3.ZERO);
         playSickleFeedbackOnOwnerAndTarget(PBWSounds.CHAIN_UP.get(), owner, target);
 
-        // Р›РѕС‡РёРј С†РµР»СЊ (РµСЃР»Рё РёРіСЂРѕРє), Р° РЅРµ РІР»Р°РґРµР»СЊС†Р°
+
         if (target instanceof ServerPlayer targetPlayer) {
             SickleThrowSkill.setTetherMovementLock(targetPlayer.getUUID(), true);
         }
@@ -309,7 +323,10 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
 
         Vec3 dir = this.tetherTarget.position().subtract(owner.position());
         if (dir.length() > 0.01) {
-            owner.setDeltaMovement(dir.normalize().scale(2.6));
+            owner.setDeltaMovement(dir.normalize().scale(1.2));
+            owner.hurtMarked = true;
+            owner.hasImpulse = true;
+            MinecraftForge.EVENT_BUS.post(new SicklePullStartedEvent(owner, this.tetherTarget, true));
         }
 
         endTether();
@@ -330,6 +347,7 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
             this.tetherTarget.setDeltaMovement(dir.normalize().scale(2.2));
             this.tetherTarget.hurtMarked = true;
             this.tetherTarget.hasImpulse = true;
+            MinecraftForge.EVENT_BUS.post(new SicklePullStartedEvent(owner, this.tetherTarget, false));
         }
 
         endTether();
@@ -338,10 +356,11 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
     private void endTether() {
         LivingEntity owner = this.getOwner() instanceof LivingEntity living ? living : null;
         playSickleFeedbackOnOwnerAndTarget(PBWSounds.CHAIN_DOWN.get(), owner, this.tetherTarget);
-        clearChainedEffect(this.tetherTarget);
-        // Р­С„С„РµРєС‚С‹ РёСЃС‚РµРєР°СЋС‚ СЃР°РјРё РїРѕ С‚Р°Р№РјРµСЂСѓ
-        // Р Р°Р·Р»РѕС‡РёРІР°РµРј С†РµР»СЊ (РµСЃР»Рё РёРіСЂРѕРє)
-        if (this.tetherTarget instanceof ServerPlayer targetPlayer) {
+        boolean lastChain = this.tetherTarget != null && SickleThrowChains.unbind(this, this.tetherTarget);
+        if (lastChain) clearChainedEffect(this.tetherTarget);
+
+
+        if (lastChain && this.tetherTarget instanceof ServerPlayer targetPlayer) {
             SickleThrowSkill.setTetherMovementLock(targetPlayer.getUUID(), false);
         }
         this.tetherTarget = null;
@@ -352,16 +371,18 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
     @Override
     public void remove(RemovalReason reason) {
         if (!this.level().isClientSide && this.isTethered()) {
-            clearChainedEffect(this.tetherTarget);
-            if (this.tetherTarget instanceof ServerPlayer targetPlayer) {
+            boolean lastChain = this.tetherTarget != null && SickleThrowChains.unbind(this, this.tetherTarget);
+            if (lastChain) clearChainedEffect(this.tetherTarget);
+            if (lastChain && this.tetherTarget instanceof ServerPlayer targetPlayer) {
                 SickleThrowSkill.setTetherMovementLock(targetPlayer.getUUID(), false);
             }
             this.tetherTarget = null;
             this.entityData.set(DATA_TETHERED, false);
         }
+        Entity removalOwner = this.getOwner();
         super.remove(reason);
-        if (!this.level().isClientSide && this.getOwner() instanceof ServerPlayer serverPlayer) {
-            SickleThrowSkill.clearActiveProjectile(serverPlayer);
+        if (!this.level().isClientSide && removalOwner instanceof ServerPlayer serverPlayer) {
+            SickleThrowChains.removed(serverPlayer, this);
         }
     }
 
@@ -372,12 +393,12 @@ public class SickleProjectileEntity extends ThrowableItemProjectile implements P
 
     @Override
     public float getPickRadius() {
-        return 0.3f; // Vanilla-like hitbox
+        return 0.3f;
     }
 
     @Override
     protected float getGravity() {
-        return 0.0f; // No gravity
+        return 0.0f;
     }
 
     private void startReturning() {

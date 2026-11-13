@@ -12,6 +12,6 @@ public class PBGeoShieldItemRenderer extends PBCullingGeoItemRenderer<PBGeoShiel
 
     @Override
     public RenderType getRenderType(PBGeoShieldItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(getTextureLocation(animatable));
+        return PBWItemTextureRenderTypes.get(getTextureLocation(animatable), bufferSource);
     }
 }

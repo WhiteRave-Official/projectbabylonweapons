@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 import software.bernie.geckolib.cache.object.GeoCube;
+import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.cache.object.GeoQuad;
 import software.bernie.geckolib.cache.object.GeoVertex;
 import software.bernie.geckolib.util.RenderUtils;
@@ -15,6 +16,25 @@ import java.util.Map;
 public final class PBWGeoCubeOcclusionCullingHelper {
     private static final float EPSILON = 0.001F;
     private static final Map<GeoCube, Bounds> BOUNDS_CACHE = new IdentityHashMap<>();
+    private static final Map<GeoBone, Map<GeoCube, GeoQuad[]>> VISIBLE_CACHE = new IdentityHashMap<>();
+
+    public static void clearCache() {
+        VISIBLE_CACHE.clear();
+        BOUNDS_CACHE.clear();
+    }
+
+    public static GeoQuad[] visibleQuads(GeoBone bone, GeoCube cube) {
+        var cubes = VISIBLE_CACHE.computeIfAbsent(bone, key -> new IdentityHashMap<>());
+        GeoQuad[] cached = cubes.get(cube);
+        if (cached != null) return cached;
+        var visible = new java.util.ArrayList<GeoQuad>(cube.quads().length);
+        for (GeoQuad quad : cube.quads()) {
+            if (quad != null && !isQuadOccludedBySiblingCube(cube, quad, bone.getCubes())) visible.add(quad);
+        }
+        GeoQuad[] quads = visible.toArray(GeoQuad[]::new);
+        cubes.put(cube, quads);
+        return quads;
+    }
 
     private PBWGeoCubeOcclusionCullingHelper() {
     }
@@ -78,6 +98,7 @@ public final class PBWGeoCubeOcclusionCullingHelper {
             float maxZ = Float.NEGATIVE_INFINITY;
 
             for (GeoQuad quad : cube.quads()) {
+                if (quad == null) continue;
                 for (Vector3f vertex : transformQuad(cube, quad)) {
                     minX = Math.min(minX, vertex.x());
                     minY = Math.min(minY, vertex.y());

@@ -66,5 +66,18 @@
     "sounds": [
       "project_babylon_weapons:light_spear_shoot"
     ]
+  },
+  "light_breach_seal": {
+    "sounds": [
+      "project_babylon_weapons:light_seal"
+    ]
+  },
+  "light_breach_beam": {
+    "sounds": [
+      "project_babylon_weapons:light_beam_1",
+      "project_babylon_weapons:light_beam_2",
+      "project_babylon_weapons:light_beam_3",
+      "project_babylon_weapons:light_beam_4"
+    ]
   }
 }

@@ -61,7 +61,7 @@ public final class IceChillPassive {
 
         if (chilledInstance == null) {
             if (rollChance(attacker, profile.chillIProcChance())) {
-                applyChill(target, chilledEffect, profile.chillIDurationTicks(), IceChillBalance.CHILL_I_AMPLIFIER);
+                applyChill(target, attacker, chilledEffect, profile.chillIDurationTicks(), IceChillBalance.CHILL_I_AMPLIFIER);
             }
             return;
         }
@@ -70,21 +70,21 @@ public final class IceChillPassive {
 
         if (amplifier <= IceChillBalance.CHILL_I_AMPLIFIER) {
             if (rollChance(attacker, profile.chillIIProcChance())) {
-                applyChill(target, chilledEffect, profile.chillIIDurationTicks(), IceChillBalance.CHILL_II_AMPLIFIER);
+                applyChill(target, attacker, chilledEffect, profile.chillIIDurationTicks(), IceChillBalance.CHILL_II_AMPLIFIER);
             }
             return;
         }
 
         if (amplifier == IceChillBalance.CHILL_II_AMPLIFIER) {
             if (rollChance(attacker, profile.chillIIIProcChance())) {
-                applyChill(target, chilledEffect, profile.chillIIIDurationTicks(), IceChillBalance.CHILL_III_AMPLIFIER);
+                applyChill(target, attacker, chilledEffect, profile.chillIIIDurationTicks(), IceChillBalance.CHILL_III_AMPLIFIER);
             }
             return;
         }
 
         if (rollChance(attacker, profile.frozenFromChillIIIProcChance())) {
             target.removeEffect(chilledEffect);
-            target.addEffect(new MobEffectInstance(PBMEffects.FROZEN.get(), profile.frozenDurationTicks()));
+            target.addEffect(new MobEffectInstance(PBMEffects.FROZEN.get(), profile.frozenDurationTicks()), attacker);
         }
     }
 
@@ -96,8 +96,8 @@ public final class IceChillPassive {
         TOOLTIP.appendTooltip(tooltip);
     }
 
-    private static void applyChill(LivingEntity target, MobEffect chilledEffect, int durationTicks, int amplifier) {
-        target.addEffect(new MobEffectInstance(chilledEffect, durationTicks, amplifier));
+    private static void applyChill(LivingEntity target, LivingEntity owner, MobEffect chilledEffect, int durationTicks, int amplifier) {
+        target.addEffect(new MobEffectInstance(chilledEffect, durationTicks, amplifier), owner);
     }
 
     private static boolean rollChance(LivingEntity attacker, float chance) {

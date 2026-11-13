@@ -12,6 +12,6 @@ public class EtherealStaffItemRenderer extends PBCullingGeoItemRenderer<Ethereal
 
     @Override
     public RenderType getRenderType(EtherealStaffItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(this.getTextureLocation(animatable));
+        return PBWItemTextureRenderTypes.get(this.getTextureLocation(animatable), bufferSource);
     }
 }

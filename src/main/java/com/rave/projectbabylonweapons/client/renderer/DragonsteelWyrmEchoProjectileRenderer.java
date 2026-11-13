@@ -16,7 +16,7 @@ public class DragonsteelWyrmEchoProjectileRenderer extends EntityRenderer<Dragon
     @Override
     public void render(DragonsteelWyrmEchoProjectileEntity entity, float entityYaw, float partialTicks, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight) {
-        // Intentionally empty. The projectile is represented only by Photon effects.
+
     }
 
     @Override

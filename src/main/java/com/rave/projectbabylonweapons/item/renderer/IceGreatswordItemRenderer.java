@@ -30,7 +30,7 @@ public class IceGreatswordItemRenderer extends PBCullingGeoItemRenderer<IceGreat
 
     @Override
     public RenderType getRenderType(IceGreatswordItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(this.getTextureLocation(animatable));
+        return PBWItemTextureRenderTypes.get(this.getTextureLocation(animatable), bufferSource);
     }
 
     @Override

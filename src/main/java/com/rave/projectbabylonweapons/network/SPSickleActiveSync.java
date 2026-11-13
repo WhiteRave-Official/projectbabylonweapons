@@ -1,6 +1,6 @@
 package com.rave.projectbabylonweapons.network;
 
-import com.rave.projectbabylonweapons.skill.weapon_innate.SickleThrowSkill;
+import com.rave.projectbabylonweapons.client.input.SickleInputState;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
@@ -28,7 +28,7 @@ public class SPSickleActiveSync {
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
-        context.enqueueWork(() -> SickleThrowSkill.setClientActiveProjectile(playerId, entityId));
+        context.enqueueWork(() -> SickleInputState.setProjectile(playerId, entityId));
         context.setPacketHandled(true);
     }
 }

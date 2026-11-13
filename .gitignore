@@ -23,3 +23,11 @@ run
 
 # Files from Forge MDK
 forge*changelog.txt
+
+docs/
+test/
+tests/
+*-tests/
+/tools/test-*.ps1
+/tools/*Test.java
+/tools/*-test-classpath.gradle

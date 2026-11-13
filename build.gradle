@@ -18,7 +18,7 @@ base {
 // Mojang ships Java 17 to end users in 1.18+, so your mod should target Java 17.
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+logger.debug "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
     mappings channel: mapping_channel, version: mapping_version
     copyIdeResources = true
@@ -151,12 +151,16 @@ tasks.named('jar', Jar).configure {
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
+            groupId = project.group.toString()
+            artifactId = 'projectbabylonweapons'
+            version = project.version.toString()
             artifact jar
         }
     }
     repositories {
         maven {
-            url = uri("../projectbabylonweapons/mcmodsrepo")
+            name = 'projectLocal'
+            url = uri("${projectDir}/mcmodsrepo")
         }
     }
 }
@@ -175,3 +179,42 @@ tasks.withType(JavaCompile).configureEach {
 
 
 
+
+tasks.named('compileJava', JavaCompile).configure {
+    options.incremental = false
+    outputs.upToDateWhen {
+        file("${temporaryDir}/${mod_id}.refmap.json").isFile()
+    }
+}
+
+def verifyMixinRelease = tasks.register('verifyMixinRelease') {
+    dependsOn tasks.named('reobfJar')
+    inputs.file(tasks.named('jar', Jar).flatMap { it.archiveFile })
+    doLast {
+        def archive = tasks.named('jar', Jar).get().archiveFile.get().asFile
+        def jar = new java.util.zip.ZipFile(archive)
+        try {
+            def configEntry = jar.getEntry("${mod_id}.mixins.json")
+            if (configEntry == null) throw new GradleException("Missing mixin configuration in ${archive.name}")
+            def parser = new groovy.json.JsonSlurper()
+            def config = parser.parse(jar.getInputStream(configEntry))
+            def refmapEntry = config.refmap ? jar.getEntry(config.refmap.toString()) : null
+            if (refmapEntry == null) throw new GradleException("Missing or unconfigured refmap in ${archive.name}")
+            def refmap = parser.parse(jar.getInputStream(refmapEntry))
+            if (!(refmap.mappings instanceof Map) || refmap.mappings.isEmpty()
+                    || !(refmap.data?.searge instanceof Map) || refmap.data.searge.isEmpty()) {
+                throw new GradleException("Empty production mixin mappings in ${archive.name}")
+            }
+            (config.mixins + (config.client ?: []) + (config.server ?: [])).each { name ->
+                def path = (config.package + '.' + name).replace('.', '/') + '.class'
+                if (jar.getEntry(path) == null) throw new GradleException("Missing mixin class ${path}")
+            }
+            logger.lifecycle("Verified production mixins: ${archive.name} -> ${config.refmap}")
+        } finally {
+            jar.close()
+        }
+    }
+}
+
+tasks.named('check').configure { dependsOn verifyMixinRelease }
+tasks.withType(PublishToMavenRepository).configureEach { dependsOn verifyMixinRelease }

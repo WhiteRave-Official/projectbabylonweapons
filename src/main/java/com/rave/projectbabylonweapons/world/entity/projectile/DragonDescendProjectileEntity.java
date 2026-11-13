@@ -270,7 +270,7 @@ public class DragonDescendProjectileEntity extends Projectile implements GeoEnti
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        // Direct contact is handled by sweeping along the movement vector to preserve the projectile flight.
+
     }
 
     @Override

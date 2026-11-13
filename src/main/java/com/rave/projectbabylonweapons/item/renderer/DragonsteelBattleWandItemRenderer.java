@@ -29,7 +29,7 @@ public class DragonsteelBattleWandItemRenderer extends PBCullingGeoItemRenderer<
 
     @Override
     public RenderType getRenderType(DragonsteelBattleWandItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(this.getTextureLocation(animatable));
+        return PBWItemTextureRenderTypes.get(this.getTextureLocation(animatable), bufferSource);
     }
 
     @Override

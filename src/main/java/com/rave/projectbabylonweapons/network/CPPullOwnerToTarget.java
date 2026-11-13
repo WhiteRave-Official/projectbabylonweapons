@@ -12,12 +12,13 @@ import yesman.epicfight.world.capabilities.entitypatch.player.ServerPlayerPatch;
 import java.util.function.Supplier;
 
 public class CPPullOwnerToTarget {
+    private final int projectileId;
 
-    public CPPullOwnerToTarget() {}
+    public CPPullOwnerToTarget(int projectileId) { this.projectileId = projectileId; }
 
-    public CPPullOwnerToTarget(FriendlyByteBuf buf) {}
+    public CPPullOwnerToTarget(FriendlyByteBuf buf) { this.projectileId = buf.readVarInt(); }
 
-    public void encode(FriendlyByteBuf buf) {}
+    public void encode(FriendlyByteBuf buf) { buf.writeVarInt(projectileId); }
 
     public void handle(Supplier<NetworkEvent.Context> contextSupplier) {
         NetworkEvent.Context context = contextSupplier.get();
@@ -29,7 +30,7 @@ public class CPPullOwnerToTarget {
             if (playerPatch == null) return;
 
             SickleProjectileEntity projectile = SickleThrowSkill.getActiveProjectilePublic(player);
-            if (projectile == null || !projectile.isTethered()) return;
+            if (projectile == null || projectile.getId() != projectileId || !projectile.isTethered()) return;
 
 
             playerPatch.playAnimationSynchronized(PBAnimations.SICKLE_PULLING, 0.0f);

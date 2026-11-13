@@ -77,6 +77,18 @@ public class PBWSounds {
         )
     );
 
+    public static final RegistryObject<SoundEvent> LIGHT_BREACH_SEAL = SOUND_EVENTS.register("light_breach_seal",
+        () -> SoundEvent.createVariableRangeEvent(
+            ResourceLocation.fromNamespaceAndPath("project_babylon_weapons", "light_breach_seal")
+        )
+    );
+
+    public static final RegistryObject<SoundEvent> LIGHT_BREACH_BEAM = SOUND_EVENTS.register("light_breach_beam",
+        () -> SoundEvent.createVariableRangeEvent(
+            ResourceLocation.fromNamespaceAndPath("project_babylon_weapons", "light_breach_beam")
+        )
+    );
+
     public static void register(IEventBus eventBus) {
         SOUND_EVENTS.register(eventBus);
     }

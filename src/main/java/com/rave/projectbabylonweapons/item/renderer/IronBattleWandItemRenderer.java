@@ -29,7 +29,7 @@ public class IronBattleWandItemRenderer extends PBCullingGeoItemRenderer<IronBat
 
     @Override
     public RenderType getRenderType(IronBattleWandItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(this.getTextureLocation(animatable));
+        return PBWItemTextureRenderTypes.get(this.getTextureLocation(animatable), bufferSource);
     }
 
     @Override

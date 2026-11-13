@@ -161,8 +161,8 @@ public final class SmallShieldPassiveHandler {
 
         IceSmallShieldBalance.Profile ice = IceSmallShieldBalance.resolve(shieldStack);
         if (ice != null) {
-            attacker.addEffect(new MobEffectInstance(PBMEffects.FROZEN.get(), ice.frozenDurationTicks(), 0, false, true, true));
-            attacker.addEffect(new MobEffectInstance(MobEffectRegistry.CHILLED.get(), ice.chillDurationTicks(), 0, false, true, true));
+            attacker.addEffect(new MobEffectInstance(PBMEffects.FROZEN.get(), ice.frozenDurationTicks(), 0, false, true, true), player);
+            attacker.addEffect(new MobEffectInstance(MobEffectRegistry.CHILLED.get(), ice.chillDurationTicks(), 0, false, true, true), player);
         }
 
         NetheriteSmallShieldBalance.Profile netherite = NetheriteSmallShieldBalance.resolve(shieldStack);

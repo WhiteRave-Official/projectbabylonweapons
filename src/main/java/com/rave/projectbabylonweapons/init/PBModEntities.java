@@ -1,12 +1,16 @@
 package com.rave.projectbabylonweapons.init;
 
 import com.rave.projectbabylonweapons.ProjectBabylonWeapons;
+import com.rave.projectbabylonweapons.world.entity.mob.BiterEntity;
+import com.rave.projectbabylonweapons.world.entity.mob.ThornEntity;
+import com.rave.projectbabylonweapons.world.entity.projectile.ThornProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.ArclightRainPortalEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.DiamondShardEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.DragonFuryChargeEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.FireMagicalSealEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.FireStormEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.GlacierIceSpikeEntity;
+import com.rave.projectbabylonweapons.world.entity.effect.IceSpikeEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.HolyMagicalSealEntity;
 import com.rave.projectbabylonweapons.world.entity.effect.TectonicFallingBlockEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.ArclightMiniProjectileEntity;
@@ -21,7 +25,7 @@ import com.rave.projectbabylonweapons.world.entity.projectile.HolySpellProjectil
 import com.rave.projectbabylonweapons.world.entity.projectile.IceSpellProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.ManaBubbleProjectileEntity;
 import com.rave.projectbabylonweapons.world.entity.projectile.SickleProjectileEntity;
-import com.rave.projectbabylonweapons.world.entity.summon.ArclightSummonedWeaponEntity;
+import com.rave.projectbabylonweapons.world.entity.effect.LightBreachEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.registries.DeferredRegister;
@@ -31,6 +35,18 @@ import net.minecraftforge.registries.RegistryObject;
 public class PBModEntities {
     public static final DeferredRegister<EntityType<?>> ENTITIES =
             DeferredRegister.create(ForgeRegistries.ENTITY_TYPES, ProjectBabylonWeapons.MODID);
+
+    public static final RegistryObject<EntityType<BiterEntity>> BITER = ENTITIES.register("biter", () ->
+            EntityType.Builder.<BiterEntity>of(BiterEntity::new, MobCategory.CREATURE).sized(1.0F, 2.0F)
+                    .clientTrackingRange(8).updateInterval(2).build("biter"));
+
+    public static final RegistryObject<EntityType<ThornEntity>> THORN = ENTITIES.register("thorn", () ->
+            EntityType.Builder.<ThornEntity>of(ThornEntity::new, MobCategory.CREATURE).sized(1.0F, 2.0F)
+                    .clientTrackingRange(8).updateInterval(2).build("thorn"));
+
+    public static final RegistryObject<EntityType<ThornProjectileEntity>> THORN_PROJECTILE = ENTITIES.register("thorn_projectile", () ->
+            EntityType.Builder.<ThornProjectileEntity>of(ThornProjectileEntity::new, MobCategory.MISC).sized(.25F, .25F)
+                    .clientTrackingRange(8).updateInterval(1).noSave().build("thorn_projectile"));
 
     public static final RegistryObject<EntityType<SickleProjectileEntity>> SICKLE_PROJECTILE =
             ENTITIES.register("sickle_projectile", () ->
@@ -141,13 +157,15 @@ public class PBModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build("arclight_spear_projectile"));
-    public static final RegistryObject<EntityType<ArclightSummonedWeaponEntity>> ARCLIGHT_SUMMONED_WEAPON =
-            ENTITIES.register("arclight_summoned_weapon", () ->
-                    EntityType.Builder.<ArclightSummonedWeaponEntity>of(ArclightSummonedWeaponEntity::new, MobCategory.MISC)
-                            .sized(0.8F, 0.8F)
-                            .clientTrackingRange(64)
-                            .updateInterval(1)
-                            .build("arclight_summoned_weapon"));
+    public static final RegistryObject<EntityType<LightBreachEntity>> LIGHT_BREACH =
+            ENTITIES.register("light_breach", () ->
+                    EntityType.Builder.<LightBreachEntity>of(LightBreachEntity::new, MobCategory.MISC)
+                            .sized(0.1F, 0.1F)
+                            .clientTrackingRange(8)
+                            .updateInterval(20)
+                            .noSave()
+                            .fireImmune()
+                            .build("light_breach"));
 
     public static final RegistryObject<EntityType<GlacierIceSpikeEntity>> GLACIER_ICE_SPIKE =
             ENTITIES.register("glacier_ice_spike", () ->
@@ -156,6 +174,15 @@ public class PBModEntities {
                             .clientTrackingRange(64)
                             .updateInterval(1)
                             .build("glacier_ice_spike"));
+
+    public static final RegistryObject<EntityType<IceSpikeEntity>> ICE_SPIKE =
+            ENTITIES.register("ice_spike", () ->
+                    EntityType.Builder.<IceSpikeEntity>of(IceSpikeEntity::new, MobCategory.MISC)
+                            .sized(1, 2.5F)
+                            .clientTrackingRange(4)
+                            .updateInterval(20)
+                            .noSave()
+                            .build("ice_spike"));
 
     public static final RegistryObject<EntityType<HolyMagicalSealEntity>> HOLY_MAGICAL_SEAL =
             ENTITIES.register("holy_magical_seal", () ->

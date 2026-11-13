@@ -194,7 +194,7 @@ public class ManaBubbleProjectileEntity extends Projectile implements GeoEntity 
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        // Entity contacts are handled by affectEntitiesAlongPath so the bubble can keep travelling.
+
     }
 
     @Override

@@ -215,7 +215,7 @@ public class DragonsteelWyrmEchoProjectileEntity extends Projectile {
 
     @Override
     protected void onHitEntity(EntityHitResult result) {
-        // Entity hits are handled by sweeping so fast echoes do not miss targets between ticks.
+
     }
 
     @Override

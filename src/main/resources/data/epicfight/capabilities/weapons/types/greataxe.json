@@ -20,6 +20,7 @@
       "kneel": "epicfight:biped/living/hold_greatsword",
       "sneak": "epicfight:biped/living/hold_greatsword",
       "fall": "epicfight:biped/living/hold_greatsword",
+      "block": "epicfight:biped/skill/guard_spear",
       "swim": "epicfight:biped/living/hold_greatsword",
       "run": "epicfight:biped/living/run_greatsword",
       "walk": "epicfight:biped/living/walk_greatsword"

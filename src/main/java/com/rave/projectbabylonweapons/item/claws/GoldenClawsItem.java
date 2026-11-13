@@ -1,9 +1,8 @@
 package com.rave.projectbabylonweapons.item.claws;
 
-import com.rave.projectbabylonmaterials.init.PBMEffects;
+import com.rave.projectbabylonmaterials.effect.Bleeding;
 import com.rave.projectbabylonweapons.passive.golden.GoldenMagicPassive;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -28,9 +27,7 @@ public class GoldenClawsItem extends SwordItem {
     @Override
     public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker) {
         if (attacker instanceof Player player) {
-            if (player.getRandom().nextFloat() < 0.05F) { // 5%
-                target.addEffect(new MobEffectInstance(PBMEffects.BLEED_DEBUFF.get(), 20 * 20, 0));
-            }
+            Bleeding.tryApply(target, attacker, 0.05F, 20 * 20, 0);
         }
         return super.hurtEnemy(stack, target, attacker);
     }

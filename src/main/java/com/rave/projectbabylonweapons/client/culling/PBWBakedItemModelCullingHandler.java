@@ -33,6 +33,10 @@ import java.util.Map;
 public final class PBWBakedItemModelCullingHandler {
     private static final Map<BakedModel, BakedModel> RESOLVED_MODEL_CACHE = Collections.synchronizedMap(new IdentityHashMap<>());
 
+    public static void clearCache() {
+        RESOLVED_MODEL_CACHE.clear();
+    }
+
     private PBWBakedItemModelCullingHandler() {
     }
 

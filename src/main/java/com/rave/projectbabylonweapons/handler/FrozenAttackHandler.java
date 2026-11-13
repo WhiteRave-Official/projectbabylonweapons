@@ -81,7 +81,7 @@ public class FrozenAttackHandler {
                     (SkillCastEvent event) -> event.setCanceled(true)
             );
         } catch (Exception e) {
-            // Р»РѕРіРёСЂРѕРІР°РЅРёРµ
+
         }
     }
 
@@ -92,7 +92,7 @@ public class FrozenAttackHandler {
                     FROST_SKILL_LISTENER
             );
         } catch (Exception e) {
-            // Р»РѕРіРёСЂРѕРІР°РЅРёРµ
+
         }
     }
 }

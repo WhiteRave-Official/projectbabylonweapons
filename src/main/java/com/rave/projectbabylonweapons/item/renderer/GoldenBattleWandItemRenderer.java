@@ -30,7 +30,7 @@ public class GoldenBattleWandItemRenderer extends PBCullingGeoItemRenderer<Golde
 
     @Override
     public RenderType getRenderType(GoldenBattleWandItem animatable, ResourceLocation texture, MultiBufferSource bufferSource, float partialTick) {
-        return RenderType.entityTranslucent(this.getTextureLocation(animatable));
+        return PBWItemTextureRenderTypes.get(this.getTextureLocation(animatable), bufferSource);
     }
 
     @Override

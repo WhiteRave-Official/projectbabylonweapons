@@ -2,22 +2,35 @@ package com.rave.projectbabylonweapons.item.renderer;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.rave.projectbabylonweapons.client.culling.PBWGeoCubeOcclusionCullingHelper;
 import net.minecraft.world.item.Item;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.client.renderer.MultiBufferSource;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.cache.object.GeoBone;
-import software.bernie.geckolib.cache.object.GeoCube;
-import software.bernie.geckolib.cache.object.GeoQuad;
 import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
-import software.bernie.geckolib.util.RenderUtils;
 
 public class PBCullingGeoItemRenderer<T extends Item & GeoItem> extends GeoItemRenderer<T> {
     public PBCullingGeoItemRenderer(GeoModel<T> model) {
         super(model);
+    }
+
+    @Override
+    public void renderByItem(ItemStack stack, ItemDisplayContext context, PoseStack poses, MultiBufferSource source,
+                             int light, int overlay) {
+        MultiBufferSource target = source;
+        if (context != ItemDisplayContext.GUI && getRenderLayers().isEmpty()) {
+            @SuppressWarnings("unchecked")
+            T item = (T) stack.getItem();
+            var texture = getTextureLocation(item);
+            if (PBWItemTextureRenderTypes.get(texture) == net.minecraft.client.renderer.RenderType.entityCutoutNoCull(texture)
+                    && PBWItemTextureAtlas.supports(getGeoModel().getBakedModel(getGeoModel().getModelResource(item, this)))) {
+                var region = PBWItemTextureAtlas.resolve(texture);
+                if (!region.texture().equals(texture)) target = new PBWItemAtlasBufferSource(source, texture, region);
+            }
+        }
+        super.renderByItem(stack, context, poses, target, light, overlay);
     }
 
     @Override
@@ -26,28 +39,6 @@ public class PBCullingGeoItemRenderer<T extends Item & GeoItem> extends GeoItemR
             return;
         }
 
-        for (GeoCube cube : bone.getCubes()) {
-            poseStack.pushPose();
-            RenderUtils.translateToPivotPoint(poseStack, cube);
-            RenderUtils.rotateMatrixAroundCube(poseStack, cube);
-            RenderUtils.translateAwayFromPivotPoint(poseStack, cube);
-            Matrix3f normalisedPoseState = poseStack.last().normal();
-            Matrix4f poseState = poseStack.last().pose();
-
-            for (GeoQuad quad : cube.quads()) {
-                if (quad == null) {
-                    continue;
-                }
-                if (PBWGeoCubeOcclusionCullingHelper.isQuadOccludedBySiblingCube(cube, quad, bone.getCubes())) {
-                    continue;
-                }
-
-                Vector3f normal = normalisedPoseState.transform(new Vector3f(quad.normal()));
-                RenderUtils.fixInvertedFlatCube(cube, normal);
-                this.createVerticesOfQuad(quad, poseState, normal, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-            }
-
-            poseStack.popPose();
-        }
+        PBWRigidItemMesh.get(bone).render(poseStack, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 }

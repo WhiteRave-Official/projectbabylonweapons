@@ -19,6 +19,7 @@ public class PBColliderPresets {
     public static final Collider BEAST_ROAR_FIRST =  new OBBCollider(3.0F, 3.0F, 3.0F, 0.0F, 0.0F, 0.0F);
     public static final Collider BEAST_ROAR_SECOND =  new OBBCollider(4.0F, 4.0F, 4.0F, 0.0F, 0.0F, 0.0F);
     public static final Collider BEAST_ROAR_THIRD =  new OBBCollider(5.0F, 5.0F, 5.0F, 0.0F, 0.0F, 0.0F);
+    public static final Collider BASTION_RAM =  new OBBCollider(1.5F, 2.2F, 1.2F, 0.0F, 0.0F, -0.8F);
 
     public static Collider registerCollider(ResourceLocation rl, Collider collider) {
         if (PRESETS.containsKey(rl)) {

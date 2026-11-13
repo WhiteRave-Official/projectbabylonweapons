@@ -5,6 +5,8 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "project_babylon_weapons.refmap.json",
   "mixins": [
+    "PlayerShieldDisableMixin",
+    "BastionGuardCooldownMixin",
     "EntityPushMixin"
   ],
   "injectors": {

@@ -42,7 +42,7 @@ public class PBModItems {
     public static final RegistryObject<Item> FIRE_SPELL_PROJECTILE =
             ITEMS.register("fire_spell_projectile", () -> new Item(new Item.Properties()));
 
-    //IRON
+
     public static final RegistryObject<Item> IRON_PICKAXE =
             ITEMS.register("iron_pickaxe", () -> new IronPickaxeItem(new Item.Properties()));
 
@@ -101,7 +101,7 @@ public class PBModItems {
             ITEMS.register("iron_bastion_shield", IronBastionShieldItem::new);
 
 
-    //GOLDEN
+
     public static final RegistryObject<Item> GOLDEN_PICKAXE =
             ITEMS.register("golden_pickaxe", () -> new GoldenPickaxeItem(new Item.Properties()));
 
@@ -160,7 +160,7 @@ public class PBModItems {
             ITEMS.register("golden_bastion_shield", GoldenBastionShieldItem::new);
 
 
-    //DIAMOND
+
     public static final RegistryObject<Item> DIAMOND_PICKAXE =
             ITEMS.register("diamond_pickaxe", () -> new DiamondPickaxeItem(new Item.Properties()));
 
@@ -220,7 +220,7 @@ public class PBModItems {
 
 
 
-    //NETHERITE
+
     public static final RegistryObject<Item> NETHERITE_PICKAXE =
             ITEMS.register("netherite_pickaxe", () -> new NetheritePickaxeItem(new Item.Properties().fireResistant()));
 
@@ -279,7 +279,7 @@ public class PBModItems {
             ITEMS.register("netherite_bastion_shield", NetheriteBastionShieldItem::new);
 
 
-    //ICE
+
     public static final RegistryObject<Item> ICE_PICKAXE =
             ITEMS.register("ice_pickaxe", () -> new IcePickaxeItem(new Item.Properties()));
 
@@ -343,7 +343,7 @@ public class PBModItems {
     public static final RegistryObject<Item> ICE_BASTION_SHIELD =
             ITEMS.register("ice_bastion_shield", IceBastionShieldItem::new);
 
-    //DRAGONSTEEL
+
     public static final RegistryObject<Item> DRAGONSTEEL_BATTLEAXE =
             ITEMS.register("dragonsteel_battleaxe", () -> new DragonsteelBattleAxeItem(new Item.Properties()));
 
@@ -396,7 +396,7 @@ public class PBModItems {
             ITEMS.register("dragonsteel_bastion_shield", DragonsteelBastionShieldItem::new);
 
 
-    //ETHEREAL
+
     public static final RegistryObject<Item> ETHEREAL_BATTLEAXE =
             ITEMS.register("ethereal_battleaxe", () -> new EtherealBattleAxeItem(new Item.Properties()));
 
@@ -445,7 +445,7 @@ public class PBModItems {
     public static final RegistryObject<Item> ETHEREAL_BASTION_SHIELD =
             ITEMS.register("ethereal_bastion_shield", EtherealBastionShieldItem::new);
 
-    //DEMON
+
     public static final RegistryObject<Item> DEMON_BATTLEAXE =
             ITEMS.register("demon_battleaxe", () -> new DemonBattleAxeItem(new Item.Properties()));
 
@@ -456,7 +456,7 @@ public class PBModItems {
             ITEMS.register("demon_tachi", () -> new DemonTachiItem(new Item.Properties()));
 
 
-    //SPECIAL
+
     public static final RegistryObject<Item> ARCLIGHT_SWORD =
             ITEMS.register("arclight_sword", () -> new ArclightSwordItem(new Item.Properties()));
 
